@@ -1,0 +1,19 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getLangFromUrl } from "../../i18n/utils";
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'en' } },
+    { params: { locale: 'cy' } },
+  ];
+}
+
+const lang = getLangFromUrl(Astro.url);
+---
+<Layout locale={lang} pageTitle="Not Found" pageDescription="This page cannot be found">
+  <section class="container" id="intro">
+    <h1 class="colour-special">Not Found</h1>
+    <p>Sorry, no page was found for that route.</p>
+  </section>
+</Layout>

@@ -1,0 +1,53 @@
+---
+import { getCollection, render } from "astro:content";
+import { defaultLang, languages } from "../../i18n/translations";
+import { getLangFromUrl } from "../../i18n/utils";
+import PageLayout from "../../layouts/PageLayout.astro";
+
+export async function getStaticPaths() {
+  const allPages = await getCollection("staticpages");
+
+ // 1. Use pages in the default language as the "master list"
+  const basePosts = allPages.filter((page) => page.data.locale === defaultLang);
+
+  return Object.entries(languages).flatMap(([locale]) => {
+    return basePosts.map((basePost) => {
+      // Try to find a translated page with the same id (accounting for trailing dash)
+      const baseId = basePost.id.replace(/\-$/, "");
+      const translatedPost = allPages.find(
+        (p) => p.data.locale === locale && p.id.replace(/\-$/, "") === baseId
+      );
+
+      return {
+        params: { locale, slug: baseId },
+        props: {
+          page: translatedPost || basePost, // Provide `post` prop expected by the page
+          isFallback: !translatedPost,
+        },
+      };
+    });
+  });
+}
+
+const { page, isFallback } = Astro.props;
+const { Content } = await render(page);
+
+const lang = getLangFromUrl(Astro.url);
+---
+
+<PageLayout
+  pageTitle={page.data.title} 
+  pageDescription={page.data.description}
+  pageUrl={`/${lang}/${Astro.params.slug}/`}
+>
+  <>
+    {
+    isFallback && (
+      <div class="callout warning margin-start-s">
+        <p>Mae'n ddrwg gen i, dim cyfieithiad ar gael eto</p>
+      </div>
+    )
+  }
+  <Content />
+  </>
+</PageLayout>

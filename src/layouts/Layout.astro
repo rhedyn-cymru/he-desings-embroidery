@@ -1,0 +1,127 @@
+---
+import "../styles/global.css";
+
+import { SEO } from "astro-seo";
+import shareCard from "../assets/default-share-card.jpg";
+import logoSimple from "../assets/logo.svg";
+import { useTranslations } from "../i18n/utils"
+import LanguagePicker from "../components/LanguagePicker.astro";
+
+const { pageTitle, pageDescription, pageType, pageImage, pageUrl = "", locale } =
+  Astro.props;
+  
+const t = useTranslations(locale);
+
+const byline = t("website construction and security")
+
+const title = pageTitle ? `${pageTitle} - Rhedyn ${byline}` : `Home - Rhedyn ${byline}`;
+const description =
+  pageDescription ??
+  "Rhedyn are creative builders. We love building secure, handmade websites and improving website security.";
+
+const type = pageType ?? "Page";
+const image = pageImage?.src ?? shareCard.src;
+
+
+
+const navLinks = [
+  {
+    title: t("home"),
+    url: locale === 'en' ? `/` : `/${locale}/`,
+  },
+  {
+    title: t("services"),
+    url: locale === 'en' ? `/#services` : `/${locale}/#services`,
+  },
+  {
+    title: t("blog"),
+    url: `/${locale}/blog/`,
+  },
+  {
+    title: t("about"),
+    url: locale === 'en' ? `/#about` : `/${locale}/#about`,
+  },
+  {
+    title: t("contact"),
+    url: `/${locale}/contact/`,
+  },
+];
+
+const domain = "https://rhedyn.cymru"
+
+---
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <script async src="https://scripts.withcabin.com/hello.js"></script>
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preload" href="/ZenDots-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href={logoSimple.src} as="image">
+    <SEO
+      title={title}
+      description={description}
+      canonical={`${domain}${pageUrl}`}
+      openGraph={{
+        basic: {
+          title,
+          type,
+          image,
+          url: `${domain}${pageUrl}`
+        },
+      }}
+    />
+  </head>
+  <body>
+    <header>
+      <div class="container grid-s">
+        <a class="site-title item-third" title="Rhedyn" href={locale === 'en' ? '/' : `/${locale}/`}>
+          <img alt="Rhedyn company logo" src={logoSimple.src}/></a>
+        <nav class="navbar site-nav item-third">
+          <ul>
+            {
+              navLinks?.map((navLink) => (
+                <li>
+                  <a href={navLink.url}>
+                    {navLink.title}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <LanguagePicker classes="item-third" url={pageUrl}/>
+      </div>
+    </header>
+    <main class="margin-end-2xl" id="main">
+      <slot />
+    </main>
+    <footer>
+      <div class="container grid-m">
+        <div class="colophon margin-end-xl margin-start-xl item-half">
+          <a href={locale === "en" ? "/" : `/${locale}/`}><strong class="font-special colour-special">Rhedyn</strong></a>
+          <p>{t("web software + security")}</p>
+          <small>&copy; {t("copyright")} 2015-2026.</small>
+          <small>{t("some rights reserved")}.</small>
+          <small><a href={`/${locale}/sitemap/`}>{t("Site Map")}</a></small>
+        </div>
+        <nav class="navbar site-nav footer-nav item-half">
+          <ul>
+            {
+                navLinks?.map((navLink) => (
+                  <li>
+                  <a class="btn" href={navLink.url}>
+                    {navLink.title}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

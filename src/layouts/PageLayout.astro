@@ -1,0 +1,21 @@
+---
+import { getLangFromUrl } from "../i18n/utils";
+import Layout from "./Layout.astro";
+
+const { pageUrl, pageTitle, pageDescription } = Astro.props
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'en' } },
+    { params: { locale: 'cy' } },
+  ];
+}
+
+const lang = getLangFromUrl(Astro.url)
+---
+<Layout locale={lang} pageTitle={pageTitle} pageDescription={pageDescription} pageUrl={pageUrl}>
+  <div class="container">
+    <h1 class="colour-special">{pageTitle}</h1>
+    <slot />
+  </div>
+</Layout>

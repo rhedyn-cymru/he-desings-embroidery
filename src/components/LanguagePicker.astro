@@ -1,0 +1,59 @@
+---
+const { classes } = Astro.props;
+const currentPath = Astro.url.pathname;
+const isHomepage = currentPath === "/" || currentPath === "/en" || currentPath === "/en/" || currentPath === "/cy" || currentPath === "/cy/";
+const currentPathMinusLanguage = currentPath.split("/").slice(2).join("/");
+---
+
+<script>
+  function languageSwitcher() {
+    // use URL to read current language
+    const url = new URL(window.location.href);
+    const segments = url.pathname
+      .replace(/^\/+/, "")
+      .split("/")
+      .filter(Boolean);
+    const currentLanguage = segments[0] === "cy" ? "cy" : "en";
+
+    // Remove active class from all language options
+    const allLangDivs = document.querySelectorAll("#language-switcher > div");
+    allLangDivs.forEach((div) => div.classList.remove("active"));
+
+    // Add active class to current language
+    const activeDiv = document.querySelector(
+      `#language-switcher #${currentLanguage}`
+    );
+    if (activeDiv) {
+      activeDiv.classList.add("active");
+    }
+  }
+  document.addEventListener("DOMContentLoaded", () => languageSwitcher());
+</script>
+<div id="language-switcher" class={`flex-col ${classes}`}>
+  <div id="cy">
+    <a href={`/cy/${currentPathMinusLanguage}`} class="flex gap-4xs align-center">
+      Cymraeg
+      <svg
+        width="17"
+        height="17"
+        viewBox="0 0 17 17"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="8.5" cy="8.5" r="8.5" fill="currentColor"></circle>
+      </svg>
+    </a>
+  </div>
+  <div id="en">
+    <a href={isHomepage ? "/" : `/en/${currentPathMinusLanguage}`} class="flex gap-4xs align-center">
+      English
+      <svg
+        width="17"
+        height="17"
+        viewBox="0 0 17 17"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="8.5" cy="8.5" r="8.5" fill="currentColor"></circle>
+      </svg>
+    </a>
+  </div>
+</div>

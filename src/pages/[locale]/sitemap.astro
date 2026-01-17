@@ -1,0 +1,91 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import { getLangFromUrl, useTranslations } from "../../i18n/utils";
+
+export async function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "cy" } }];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const allPortfolioPosts = await getCollection("portfolio");
+const allBlogPosts = await getCollection("blog");
+const allStaticPages = await getCollection("staticpages");
+
+const languageSpecificStaticPages = allStaticPages.filter(
+  (staticPage) => staticPage.data.locale === lang
+);
+const languageSpecificBlogPosts = allBlogPosts.filter(
+  (blogPost) => blogPost.data.locale === lang
+);
+const languageSpecificPortfolioPosts = allPortfolioPosts.filter(
+  (portfolioPost) => portfolioPost.data.locale === lang
+);
+
+const t = useTranslations(lang);
+---
+
+<Layout
+  pageUrl={`/${lang}/sitemap/`}
+  pageTitle="Sitemap"
+  pageDescription="A list of all our pages"
+  locale={lang}
+>
+  <div class="container">
+    <h1 class="colour-special">{t("Site Map")}</h1>
+    <p>
+      Here is a list of all pages on <a href="https://rhedyn.cymru"
+        >rhedyn.cymru</a>
+    </p>
+    <h2>{t("Primary Pages")}:</h2>
+    <ul>
+      <li><a href="/">Home (English)</a></li>
+      <li><a href="/cy/">Hafod (Cymraeg)</a></li>
+      <li><a href="/en/sitemap/">Site map</a></li>
+      <li><a href="/cy/sitemap/">Map o'r wefan</a></li>
+    </ul>
+    <h2>{t("Other Pages")}:</h2>
+    <ul>
+      {
+        languageSpecificStaticPages?.map((page) => (
+          <li>
+            <a href={`/${lang}/${page.id.replace(/-$/, "")}/`}>
+              {page.data.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <h2>{t("Blog posts")}:</h2>
+    <ul>
+      {
+        languageSpecificBlogPosts?.map((page) => (
+          <li>
+            <a href={`/${lang}/blog/${page.id.replace(/-$/, "")}/`}>
+              {page.data.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <h2>{t("Portfolio articles")}:</h2>
+    <ul>
+      {
+        languageSpecificPortfolioPosts?.map((page) => (
+          <li>
+            <a href={`/${lang}/portfolio/${page.id.replace(/-$/, "")}/`}>
+              {page.data.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <h2>{t("Other")}</h2>
+    <ul>
+      <li>
+        <a href="https://withcabin.com/public/jRrIu23WzOxn">Website Analytics</a
+        >
+      </li>
+    </ul>
+  </div>
+</Layout>

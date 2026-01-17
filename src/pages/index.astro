@@ -1,0 +1,153 @@
+---
+import Layout from "../layouts/Layout.astro";
+import logoHiRes from "../assets/logo.png";
+
+import { getCollection, render } from "astro:content";
+const allPortfolioPosts = await getCollection("portfolio");
+const allServices = await getCollection("services");
+
+const allServicesRendered = await Promise.all(
+  allServices.map(async (service) => {
+    const { Content } = await render(service);
+    return { ...service, Content };
+  }).reverse()
+);
+import CalloutCard from "../components/CalloutCard.astro";
+
+const lang = "en";
+
+const featuredPortfolioPosts = allPortfolioPosts.filter(
+  (portfolioPost) => portfolioPost.data.featured
+).filter((portfolioPost => portfolioPost.data.locale === lang)).sort((a, b) => b.data.title.localeCompare(a.data.title, lang));
+
+const localisedFeaturedServices = allServicesRendered.filter(servicesPage => servicesPage.data.locale === lang).filter(localisedService => localisedService.data.featured)
+---
+<Layout locale={lang}>
+  <section class="container" id="intro">
+    <img src={logoHiRes.src} title="" loading="eager" />
+    <h1 class="colour-special margin-end-0">We build online solutions</h1>
+    <p>
+      Rhedyn are creative builders based in Flintshire, Wales. We love building secure, handmade websites, creating custom software solutions, and improving website security.
+    </p>
+    <blockquote class="testimonial">
+      <div class="flex gap-xs align-center margin-end-s">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 24" fill="yellow" width="120px">
+          <defs>
+            <path id="star" fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+          </defs>
+          <use href="#star" x="0" />
+          <use href="#star" x="24" />
+          <use href="#star" x="48" />
+          <use href="#star" x="72" />
+          <use href="#star" x="96" />
+        </svg>
+        <span class="size-3xs">(via Google)</span>
+      </div>
+      <p class="size-xs">"This business, run by Ben, helped me improve security on the British Dupuytren's Society's website. Ben was easy to understand (I am not a technical person) and responded quickly to all my queries. I would recommend him to anyone wanting help with their website."</p>
+      <span class="size-s">&mdash; A S Schurer</span>
+    </blockquote>
+    <div class="flex gap-s">
+      <a href={`/${lang}/contact/`} class="btn background-special hover-special"
+        >Contact us today</a
+      >
+    <a href={`/${lang}/portfolio/`} class="btn">View our work</a>
+   </div>
+  </section>
+  <hr class="container" />
+  <section class="container" id="services">
+    <h2 class="colour-special">Our services</h2>
+    <div class="flex gap-s direction-column">
+      {localisedFeaturedServices.map(({ data, Content }) => (
+        <CalloutCard icon={data.icon}, title={data.title} style={data.style} >
+          <Content />
+        </CalloutCard>
+        ))}
+    </div>
+  </section>
+  <hr class="container" />
+  <section class="container" id="testimonials">
+    <blockquote class="testimonial">
+      "Can't recommend [Rhedyn] enough!"
+      <br />
+      <attr> — Nikki Walker, Brookmans Path Osteopaths </attr>
+    </blockquote>
+    <blockquote class="testimonial">
+      "Every time I go there I'm struck at what a great looking site it is.
+      Really. I never get tired of it - colors, content, everything."
+      <br />
+      <attr> — Jan, #FreeBabylon5 Campaign Organiser </attr>
+    </blockquote>
+  </section>
+  <hr class="container" />
+  <section class="container" id="about">
+    <h2 class="colour-special">Who are we?</h2>
+    <p>
+      Rhedyn was founded by Benjamin Read, a designer and software developer who began
+      his career working on promotional and internal marketing material for a
+      social services provider in Cardiff in the 90s.
+    </p>
+    <p>
+      After working at his own digital marketing agency for a number of years,
+      Ben pivoted into enterprise software development where he worked for Zopa
+      Bank and later Purple Bricks.
+    </p>
+    <p>
+      Having recently relocated to North Wales and reestablishing his Welsh
+      connections, Ben realised there was more he wanted to achieve in the
+      digital marketing space.
+    </p>
+    <h3 class="colour-special">Why Rhedyn?</h3>
+    <p>
+      Rhedyn means "bracken" or ferns in Welsh.
+    </p>
+    <p>
+      The beautiful dark greens and auburn browns of these fractal leaves remind
+      us of the way ideas sprout and grow, and sometimes can take on completely
+      new directions with the right creative minds.
+    </p>
+    <p>
+      Recognising this is at the heart of Rhedyn's drive towards <strong
+        >creativity</strong
+      > and
+      <strong>ingenuity</strong>, both visually and technically.
+    </p>
+  </section>
+  <hr class="container" />
+  <section class="container" id="projects">
+    <h2 class="colour-special">Projects:</h2>
+    <div class="flex direction-column gap-3xl margin-end-5xl">
+      {
+        featuredPortfolioPosts?.map((portfolioItem) => (
+          <article class="portfoliocard">
+            <a href={`/${lang}/portfolio/${portfolioItem.id}/`}>
+              <img loading="lazy" class="size-s" src={portfolioItem.data.thumbnail ?? portfolioItem.data.image} alt={portfolioItem.data.title}  />
+            </a>
+            <div>
+              <h4 class="colour-special">
+                <a href={`/${lang}/portfolio/${portfolioItem.id}/`}>
+                  {portfolioItem.data.title}
+                </a>
+              </h4>
+              <p>{portfolioItem.data.description}</p>
+              <a class="btn outline" href={`/${lang}/portfolio/${portfolioItem.id}/`}>
+                View project &raquo;
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+    <a class="btn size-xl background-special hover-special" href={`/${lang}/portfolio/`}
+      >See our whole portfolio &raquo;</a
+    >
+  </section>
+  <hr class="container" />
+  <section class="container" id="contact">
+    <h2 class="colour-special">Let's work together</h2>
+    <p>
+      We want to help you achieve your goals through the medium of technology.
+    </p>
+    <p>Whether that's reaching new consumer markets, building a specific software tool, a new feature for existing software, or improving your online marketing.</p>
+    <a class="btn" href={`/${lang}/contact/`}>Contact us today</a>
+  </section>
+</Layout>

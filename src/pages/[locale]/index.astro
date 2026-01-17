@@ -1,0 +1,21 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getLangFromUrl } from "../../i18n/utils";
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'en' } },
+    { params: { locale: 'cy' } },
+  ];
+}
+
+const lang = getLangFromUrl(Astro.url);
+---
+<Layout locale={lang} >
+  <section class="container" id="intro">
+    <h1 class="colour-special">Croeso &bull; Welcome</h1>
+    <p>dewiswch eich iaith &bull; Choose your language:</p>
+    <a class="btn" href={`/cy/`}>Hafan - Cymraeg</a>
+    <a class="btn" href={`/`}>Home - English</a>
+  </section>
+</Layout>

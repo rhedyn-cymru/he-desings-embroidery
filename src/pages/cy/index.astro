@@ -1,0 +1,156 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import logoHiRes from "../../assets/rhedyn.png";
+
+import { getCollection, render } from "astro:content";
+const allPortfolioPosts = await getCollection("portfolio");
+const allServices = await getCollection("services");
+
+const allServicesRendered = await Promise.all(
+  allServices.map(async (service) => {
+    const { Content } = await render(service);
+    return { ...service, Content };
+  }).reverse()
+);
+import { getLangFromUrl } from "../../i18n/utils"
+import CalloutCard from "../../components/CalloutCard.astro";
+
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'en' } },
+    { params: { locale: 'cy' } },
+  ];
+}
+const lang = getLangFromUrl(Astro.url);
+
+const featuredPortfolioPosts = allPortfolioPosts.filter(
+  (portfolioPost) => portfolioPost.data.featured
+).filter((portfolioPost => portfolioPost.data.locale === lang)).sort((a, b) => b.data.title.localeCompare(a.data.title, lang));
+
+const localisedFeaturedServices = allServicesRendered.filter(servicesPage => servicesPage.data.locale === lang).filter(localisedService => localisedService.data.featured)
+---
+<Layout 
+  locale={lang}
+  pageUrl={`/${lang}/`}
+  pageDescription="Rydyn ni creu atebion meddalwedd wedi eu teilwra, a gwella diogelwch gwefannau."
+  pageTitle="Hafan"
+>
+  <section class="container" id="intro">
+    <img src={logoHiRes.src} title="" />
+    <h1 class="colour-special margin-end-0">Rydyn ni’n creu atebion i broblemau ar-lein</h1>
+    <p>
+      Mae Rhedyn yn gwmni adeiladu creadigol, wedi ei leoli yn Sir Fflint. Rydyn ni wrth ein boddau yn adeiladu gwefannau diogel â’n dwylo ein hunain, creu atebion meddalwedd wedi eu teilwra i ddatrys eich problem, a gwella diogelwch gwefannau.
+    </p>
+        <blockquote class="testimonial">
+      <div class="flex gap-xs align-center margin-end-s">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 24" fill="yellow" width="120px">
+          <defs>
+            <path id="star" fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+          </defs>
+          <use href="#star" x="0" />
+          <use href="#star" x="24" />
+          <use href="#star" x="48" />
+          <use href="#star" x="72" />
+          <use href="#star" x="96" />
+        </svg>
+        <span class="size-3xs">(o Google)</span>
+      </div>
+      <p class="size-xs">"Gwnaeth y busnes yma, sy’n cael ei redeg gan Ben, fy helpu i wella diogelwch ar wefan y British Dupuytren's Society. Roedd hi’n hawdd deall Ben (dydw i ddim yn un am bethau technegol) ac ymatebodd yn brydlon i fy holl ymholiadau. Byddwn i’n ei argymell i unrhyw un sydd eisiau help gyda’u gwefan."</p>
+      <span class="size-s">&mdash; A S Schurer</span>
+    </blockquote>
+    <div class="flex gap-s">
+      <a href={`/${lang}/contact/`} class="btn background-special hover-special"
+      >Cysylltu â ni heddiw</a
+    >
+    <a href={`/${lang}/portfolio/`} class="btn">Gweld ein gwaith</a>
+    </div>
+  </section>
+  <hr class="container" />
+  <section class="container" id="services">
+    <h2 class="colour-special">Ein gwasanaethau</h2>
+    <div class="flex gap-s direction-column">
+      {localisedFeaturedServices.map(({ data, Content }) => (
+        <CalloutCard icon={data.icon}, title={data.title} style={data.style} >
+          <Content />
+        </CalloutCard>
+        ))}
+    </div>
+  </section>
+  <hr class="container" />
+  <section class="container" id="testimonials">
+    <blockquote class="testimonial">
+      “Allwn ni ddim argymell [Rhedyn] ddigon!”
+      <br />
+      <attr> — Nikki Walker, Brookmans Path Osteopaths </attr>
+    </blockquote>
+    <blockquote class="testimonial">
+      “Bob tro rydw i’n mynd i’r wefan, mae’n fy nharo i pa mor ddeniadol ydi hi. Wir ichi. Dydw i byth yn blino arni—y lliwiau, y cynnwys, popeth.” 
+      <br />
+      <attr> — Jan, #FreeBabylon5 Campaign Organiser </attr>
+    </blockquote>
+  </section>
+  <hr class="container" />
+  <section class="container" id="about">
+    <h2 class="colour-special">Pwy ydyn ni?</h2>
+    <p>
+      Cafodd Rhedyn ei sefydlu gan Benjamin Read, dylunydd a datblygwr a gychwynnodd ei yrfa yn gweithio ar ddeunydd marchnata mewnol a hysbysebol ar gyfer darparwr gwasanaethau cymdeithasol yng Nghaerdydd yn y 90au.
+    </p>
+    <p>
+      Ar ôl gweithio yn ei asiantaeth marchnata digidol ei hun am nifer o flynyddoedd, trodd Ben ei law at ddatblygu meddalwedd menter, gan weithio i Zopa Bank, ac yn hwyrach ymlaen, Purple Bricks.
+    </p>
+    <p>
+      Ar ôl symud i Ogledd Cymru yn ddiweddar, a mynd yn ôl i’w wreiddiau Cymreig, sylweddolodd Ben ei fod eisiau cyflawni mwy yn y maes marchnata digidol.
+    </p>
+    <h3 class="colour-special">Pam Rhedyn?</h3>
+    <p>
+      Cafodd yr enw Cymraeg hwn ei ysbrydoli gan y gerdd “Gwyn Fyd y Griafolen” gan Alun Llywelyn-Williams.
+    </p>
+    <p>
+      Mae dail ffractal y planhigion hyn, yn eu lliwiau gwyrdd tywyll ac eurfrown hyfryd, yn ein hatgoffa o’r ffordd mae syniad yn egino ac yn tyfu, ac weithiau’n mynd i gyfeiriad hollol newydd, gyda’r tîm creadigol cywir.
+    </p>
+    <p>
+      Mae cydnabod hyn wrth wraidd ymdrechion Rhedyn i sicrhau deunydd <strong>creadigol</strong> a <strong>gwreiddiol</strong>, a hynny ar yr ochr weledol a’r ochr dechnegol.
+    </p>
+  </section>
+  <hr class="container" />
+  <section class="container" id="projects">
+    <h2 class="colour-special">Prosiectau:</h2>
+    <div class="flex direction-column gap-3xl margin-end-5xl">
+      {
+        featuredPortfolioPosts?.map((portfolioItem) => (
+          <article class="portfoliocard">
+            <a href={`/${lang}/portfolio/${portfolioItem.id.replace(/\-$/, "")}/`}>
+              <img class="size-s" src={portfolioItem.data.thumbnail ?? portfolioItem.data.image} title="" />
+            </a>
+            <div>
+              <h4 class="colour-special">
+                <a href={`/${lang}/portfolio/${portfolioItem.id.replace(/\-$/, "")}/`}>
+                  {portfolioItem.data.title}
+                </a>
+              </h4>
+              <p>{portfolioItem.data.description}</p>
+              <a class="btn outline" href={`/${lang}/portfolio/${portfolioItem.id.replace(/\-$/, "")}/`}>
+                Gweld y prosiect &raquo;
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+    <a class="btn size-xl background-special hover-special" href={`/${lang}/portfolio/`}
+      >Gweld ein portffolio cyfan &raquo;</a
+    >
+  </section>
+  <hr class="container" />
+  <section class="container" id="contact">
+    <h2 class="colour-special">Dewch inni weithio gyda’n gilydd</h2>
+    <p>
+      Rydyn ni eisiau eich helpu i gyrraedd eich amcanion drwy gyfrwng technoleg.
+    </p>
+    <p>
+      Ac mae hynny’n cynnwys cyrraedd marchnadoedd newydd o gwsmeriaid, adeiladu offer meddalwedd penodol, neu wella eich marchnata ar-lein.
+    </p>
+    <a class="btn" href={`/${lang}/contact/`}>Cysylltu â ni heddiw</a>
+  </section>
+</Layout>
