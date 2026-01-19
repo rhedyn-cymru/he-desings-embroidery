@@ -113,19 +113,19 @@ const justUniqueTags = [
   pageDescription="Some of the recent projects we've enjoyed working on."
   pageUrl={`/${lang}/portfolio/`}
 >
-  <section class="container">
-    <h2 class="colour-special">{t("Our Portfolio")}</h2>
+  <section>
+    <h2>{t("Our Portfolio")}</h2>
     <p>
       {t("Passionate brands for passionate people and organisations, vibrant designs for the public and business consumers, and advanced technical know-how.")}
     </p>
     <p>{t("Here are some of our favourites")}.</p>
-    <div class="flex gap-4xs margin-end-m wrap">
-      <button type="button" class="badge active" data-tag="all" title="See all articles">all</button>
+    <div>
+      <button type="button" class="btn" data-tag="all" title="See all articles">all</button>
       {
         justUniqueTags.map((tag) => (
           <button
             type="button"
-            class="badge"
+            class="btn"
             data-tag={tag.toLocaleLowerCase()}
             title={`See all ${tag} articles`}
           >
@@ -134,11 +134,10 @@ const justUniqueTags = [
         ))
       }
     </div>
-    <div class="grid-m gap-s">
+    <div>
       {
         localisedPortfolioPosts?.map((portfolioItem) => (
           <article
-            class="callout item-half"
             data-tags={portfolioItem.data.tags
               .map((tag) => tag.toLocaleLowerCase())
               .join(" ")}
@@ -147,13 +146,12 @@ const justUniqueTags = [
               href={`/${lang}/portfolio/${portfolioItem.id.replace(/\-$/, "")}/`}
             >
               <img
-                class="size-s"
                 src={`${portfolioItem.data.image}`}
                 title=""
               />
             </a>
             <div>
-              <h4 class="colour-special">
+              <h4>
                 <a
                   href={`/${lang}/portfolio/${portfolioItem.id.replace(/\-$/, "")}/`}
                 >
@@ -161,10 +159,9 @@ const justUniqueTags = [
                 </a>
               </h4>
               <p>{portfolioItem.data.description}</p>
-              <div class="flex gap-4xs">
+              <div>
                 {portfolioItem.data.tags.map((tag) => (
                   <span
-                    class="badge"
                   >
                     {tag}
                   </span>

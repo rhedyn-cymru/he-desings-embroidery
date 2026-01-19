@@ -30,20 +30,20 @@ const localisedBlogPosts = allBlogPosts
     </p>
     {
       !localisedBlogPosts.length && (
-        <div class="callout warning margin-start-s">
+        <div>
           <p>Mae'n ddrwg gen i, dim erthygylau yn Gymraeg eto.</p>
         </div>
       )
     }
-    <div class="grid-m gap-s">
+    <div>
       {
         localisedBlogPosts?.map((blogItem) => (
-          <article class="callout item-half">
+          <article>
             <a href={`/${lang}/blog/${blogItem.id.replace(/\-$/, "")}/`}>
               <img class="size-s" src={`${blogItem.data.image}`} title="" />
             </a>
             <div>
-              <h4 class="colour-special">
+              <h4>
                 <a href={`/${lang}/blog/${blogItem.id.replace(/\-$/, "")}/`}>
                   {blogItem.data.title}
                 </a>

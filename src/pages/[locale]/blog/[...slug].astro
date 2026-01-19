@@ -47,7 +47,7 @@ const lang = getLangFromUrl(Astro.url);
   <section class="container">
     {
       isFallback && (
-        <div class="callout warning margin-start-s">
+        <div>
           <p>Mae'n ddrwg gen i, dim cyfieithiad ar gael eto</p>
         </div>
       )
@@ -58,14 +58,14 @@ const lang = getLangFromUrl(Astro.url);
       <strong>{t("Published on")}:</strong>&nbsp;{post.data.date}<br />
       <strong>{t("Author")}:</strong>&nbsp;
       {post.data.author}<br />
-      <div class="flex gap-4xs">
+      <div>
         <strong>{t("Tags")}:</strong>
-        {post.data.tags.map((tag) => <span class="badge">{tag}</span>)}
+        {post.data.tags.map((tag) => <span>{tag}</span>)}
       </div><br />
     </div>
-    <article class="margin-end-m">
+    <article>
       <Content />
     </article>
-    <a href={`/${lang}/blog/`} class="btn">&laquo; {t("All articles")}</a>
+    <a href={`/${lang}/blog/`}>&laquo; {t("All articles")}</a>
   </section>
 </Layout>

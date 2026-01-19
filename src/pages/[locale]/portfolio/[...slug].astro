@@ -45,29 +45,28 @@ const lang = getLangFromUrl(Astro.url);
   <section class="container">
     {
       isFallback && (
-        <div class="callout warning margin-start-s">
+        <div>
           <p>Mae'n ddrwg gen i, dim cyfieithiad ar gael eto</p>
         </div>
       )
     }
-    <h1 class="colour-special">{post.data.title}</h1>
+    <h1>{post.data.title}</h1>
     <img src={post.data.image} />
     <div>
       <strong>{t("Brief")}:</strong>&nbsp;{post.data.description}<br />
       <strong>{t("Client")}:</strong>&nbsp;
       {post.data.client}<br />
-      <div class="flex gap-4xs">
+      <div>
         <strong>{t("Tags")}:</strong>
         {post.data.tags.map((tag) => (
           <a 
             href={`/${lang}/portfolio/?tags=${tag}`} 
-            class="badge"
             title={`See all ${tag} articles`}
           >{tag}</a>
         ))}
       </div><br />
     </div>
-    <article class="margin-end-m">
+    <article>
       <Content />
     </article>
     <a href={`/${lang}/portfolio/`} class="btn">&laquo; {t("back to projects")}</a>

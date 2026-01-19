@@ -1,9 +1,9 @@
 ---
 const { style, title, icon } = Astro.props
 ---
-<div class={`callout ${style}`}>
-  <div class="header flex gap-4xs">
-    {icon ? <span class="icon" set:html={icon} aria-hidden="true"></span> : null}
+<div>
+  <div>
+    {icon ? <span set:html={icon} aria-hidden="true"></span> : null}
     <h3>{title}</h3>
   </div>
   <slot/>
