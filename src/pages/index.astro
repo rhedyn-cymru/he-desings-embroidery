@@ -9,7 +9,12 @@ const query = `
   }
 `;
 
-const data = await executeQuery(query);
+const data = await executeQuery(
+  query,
+  {
+     token: import.meta.env.DATOCMS_CDA_TOKEN,
+  }
+);
 ---
 <Layout locale={lang}>
   <section class="container" id="intro">
