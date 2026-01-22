@@ -1,0 +1,34 @@
+---
+import {
+  type Record as DatocmsRecord,
+  RenderError,
+  type ItemLink,
+} from 'datocms-structured-text-utils';
+
+import type { LinkToRecordComponents } from '../types';
+
+import { defaultMetaTransformer } from 'datocms-structured-text-generic-html-renderer';
+
+interface Props {
+  node: ItemLink;
+  record: DatocmsRecord;
+  linkToRecordComponents?: LinkToRecordComponents<DatocmsRecord, DatocmsRecord>;
+}
+
+const { node, record, linkToRecordComponents } = Astro.props;
+
+const Component = linkToRecordComponents?.[record.__typename];
+
+if (!Component) {
+  throw new RenderError(
+    `The Structured Text document contains an 'itemLink' node, but no component for rendering it is specified in the linkToRecordComponents prop!`,
+    node,
+  );
+}
+
+const { meta } = node;
+
+const attrs = meta ? defaultMetaTransformer({ node, meta }) : {};
+---
+
+<Component {node} {record} {attrs}><slot /></Component>

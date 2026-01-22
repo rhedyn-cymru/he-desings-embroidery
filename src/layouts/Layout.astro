@@ -5,14 +5,15 @@ import { SEO } from "astro-seo";
 import shareCard from "../assets/default-sharecard.png";
 import logoSimple from "../assets/logo.png";
 import { useTranslations } from "../i18n/utils"
-import LanguagePicker from "../components/LanguagePicker.astro";
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
 
 const { pageTitle, pageDescription, pageType, pageImage, pageUrl = "", locale } =
   Astro.props;
   
 const t = useTranslations(locale);
 
-const byline = t("website construction and security")
+const byline = t("Web Creation + Security")
 
 const title = pageTitle ? `${pageTitle} - Rhedyn ${byline}` : `Home - Rhedyn ${byline}`;
 const description =
@@ -77,51 +78,11 @@ const domain = "https://rhedyn.cymru"
   </head>
   <body>
     <header>
-      <div>
-        <a title="Rhedyn" href={locale === 'en' ? '/' : `/${locale}/`}>
-          <img alt="Rhedyn company logo" src={logoSimple.src}/></a>
-        <nav>
-          <ul>
-            {
-              navLinks?.map((navLink) => (
-                <li>
-                  <a href={navLink.url}>
-                    {navLink.title}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
-        <LanguagePicker url={pageUrl}/>
-      </div>
+      <Navbar navlinks={navLinks} />
     </header>
-    <main id="main">
+    <main id="main" h-full>
       <slot />
     </main>
-    <footer>
-      <div class="container">
-        <div class="colophon">
-          <a href={locale === "en" ? "/" : `/${locale}/`}><strong class="font-special">HE Designs</strong></a>
-          <p>{t("web software + security")}</p>
-          <small>&copy; {t("copyright")} 2015-2026.</small>
-          <small>{t("some rights reserved")}.</small>
-          <small><a href={`/${locale}/sitemap/`}>{t("Site Map")}</a></small>
-        </div>
-        <nav class="navbar">
-          <ul>
-            {
-                navLinks?.map((navLink) => (
-                  <li>
-                  <a href={navLink.url}>
-                    {navLink.title}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
-      </div>
-    </footer>
+    <Footer navLinks={navLinks} />
   </body>
 </html>

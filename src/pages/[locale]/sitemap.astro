@@ -1,5 +1,4 @@
 ---
-import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { getLangFromUrl, useTranslations } from "../../i18n/utils";
 
@@ -8,20 +7,6 @@ export async function getStaticPaths() {
 }
 
 const lang = getLangFromUrl(Astro.url);
-const allPortfolioPosts = await getCollection("portfolio");
-const allBlogPosts = await getCollection("blog");
-const allStaticPages = await getCollection("staticpages");
-
-const languageSpecificStaticPages = allStaticPages.filter(
-  (staticPage) => staticPage.data.locale === lang
-);
-const languageSpecificBlogPosts = allBlogPosts.filter(
-  (blogPost) => blogPost.data.locale === lang
-);
-const languageSpecificPortfolioPosts = allPortfolioPosts.filter(
-  (portfolioPost) => portfolioPost.data.locale === lang
-);
-
 const t = useTranslations(lang);
 ---
 
@@ -45,47 +30,6 @@ const t = useTranslations(lang);
       <li><a href="/cy/sitemap/">Map o'r wefan</a></li>
     </ul>
     <h2>{t("Other Pages")}:</h2>
-    <ul>
-      {
-        languageSpecificStaticPages?.map((page) => (
-          <li>
-            <a href={`/${lang}/${page.id.replace(/-$/, "")}/`}>
-              {page.data.title}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <h2>{t("Blog posts")}:</h2>
-    <ul>
-      {
-        languageSpecificBlogPosts?.map((page) => (
-          <li>
-            <a href={`/${lang}/blog/${page.id.replace(/-$/, "")}/`}>
-              {page.data.title}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <h2>{t("Portfolio articles")}:</h2>
-    <ul>
-      {
-        languageSpecificPortfolioPosts?.map((page) => (
-          <li>
-            <a href={`/${lang}/portfolio/${page.id.replace(/-$/, "")}/`}>
-              {page.data.title}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <h2>{t("Other")}</h2>
-    <ul>
-      <li>
-        <a href="https://withcabin.com/public/jRrIu23WzOxn">Website Analytics</a
-        >
-      </li>
-    </ul>
+    
   </div>
 </Layout>
