@@ -1,12 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import logoHiRes from "../assets/logo.png";
-
+import { executeQuery } from "@datocms/cda-client";
 const lang = "en";
+
+const query = `
+  query HomeQuery {
+    blogPost { title }
+  }
+`;
+
+const data = await executeQuery(query);
 ---
 <Layout locale={lang}>
   <section class="container" id="intro">
-    <logoHiRes />
+    {JSON.stringify(data)}
   </section>
 </Layout>
   

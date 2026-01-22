@@ -9,10 +9,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.6.1",
+    "@astrojs/sitemap": "^3.7.0",
+    "@datocms/cda-client": "^0.2.10",
     "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.16.3",
-    "astro-seo": "^0.8.4",
+    "astro": "^5.16.14",
+    "astro-seo": "^1.1.0",
+    "datocms-listen": "^1.0.2",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
