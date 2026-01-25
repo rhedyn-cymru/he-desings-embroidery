@@ -1,24 +1,26 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { executeQuery } from "@datocms/cda-client";
-const lang = "en";
+import connector from "../components/datocms/connector"
 
-const query = `
-  query HomeQuery {
-    blogPost { title }
-  }
-`;
+const pagesData = await connector("fetchAllPages");
+const homePageContent = await connector("fetchHomePage");
 
-const data = await executeQuery(
-  query,
-  {
-     token: import.meta.env.DATOCMS_CDA_TOKEN,
-  }
-);
+console.log({ homePageContent })
+
+const lang = 'en'
 ---
 <Layout locale={lang}>
   <section class="container" id="intro">
-    {JSON.stringify(data)}
+    {pagesData.allPages.length && (
+        <section>
+          <h2>Pages:</h2>
+          {pagesData.allPages.map(page => (
+            <article>
+              <h4><a href={page.slug}>{page.title}</a></h4>
+            </article>
+          ))}
+        </section>
+    )}
   </section>
 </Layout>
   
