@@ -5,8 +5,6 @@ import connector from "../components/datocms/connector"
 const pagesData = await connector("fetchAllPages");
 const homePageContent = await connector("fetchHomePage");
 
-console.log({ homePageContent })
-
 const lang = 'en'
 ---
 <Layout locale={lang}>
