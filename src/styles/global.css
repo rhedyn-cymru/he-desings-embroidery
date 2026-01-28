@@ -18,3 +18,7 @@ h3.
 .font-special {
   font-family: "TitanOne", sans-serif;
 }
+
+.hovertext {
+  @apply hover:text-white transition-colors duration-300
+}
