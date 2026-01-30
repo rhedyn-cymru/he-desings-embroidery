@@ -43,15 +43,50 @@ const queries = {
     }
   }
 `,
+  fetchPage: `  
+    query MyQuery($slug: SlugFilter) {
+      page(filter:{ slug: $slug }) {
+        id
+        title
+        slug
+        structuredText {
+          value
+          blocks {
+            ... on RecordInterface {
+              id
+              __typename
+            }
+            ... on ImageBlockRecord {
+              ...ImageBlockFragment
+            }
+            ... on ImageGalleryBlockRecord {
+              ...ImageGalleryBlockFragment
+            }
+            ... on VideoBlockRecord {
+              ...VideoBlockFragment
+            }
+          }
+          links {
+            ... on RecordInterface {
+              id
+              __typename
+            }
+            ...PageLinkFragment
+            ...PageInlineFragment
+          }
+        }
+      }
+    }
+  `,
 };
 
 /**
  *
  * @param {string} queryType
+ * @param {Object} variables - GraphQL query variables
  * @returns {Promise<string>}
  */
-async function retrieveData(queryType) {
-  console.log({ queryType });
+async function retrieveData(queryType, variables = {}) {
 
   const query = queries[queryType];
 
@@ -59,9 +94,8 @@ async function retrieveData(queryType) {
 
   const result = await executeQuery(query, {
     token: import.meta.env.DATOCMS_CDA_TOKEN,
+    variables,
   });
-
-  console.log({ result });
 
   return result;
 }

@@ -1,0 +1,16 @@
+---
+import { readFragment, type FragmentOf } from "../../graphql";
+import { PageInlineFragment } from './fragments';
+
+interface Props {
+  record: FragmentOf<typeof PageInlineFragment>;
+}
+
+const { record } = Astro.props;
+
+const unmaskedRecord = readFragment(PageInlineFragment, record);
+---
+
+<a href={`/page/${unmaskedRecord.slug}`} class="pill">
+  {unmaskedRecord.title}
+</a>
