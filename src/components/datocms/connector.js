@@ -1,57 +1,151 @@
 import { executeQuery } from "@datocms/cda-client";
+import { graphql } from "./graphql";
+import { ResponsiveImageFragment } from "./ResponsiveImage/fragments";
 
 const queries = {
-  fetchAllPages: `
-  {
-    allPages {
-      id
-      title
-      _status
-      _firstPublishedAt
-      slug
-    }
-    _allPagesMeta {
-      count
-    }
-  }
-`,
-  fetchHomePage: `
-  {
-    homepage {
-      introTitle
-      introFeaturedImage {
-        url
-        alt
+  fetchAllPages: graphql(/* GraphQL */ `
+    {
+      allPages {
+        id
+        title
+        _status
+        _firstPublishedAt
+        slug
       }
-      introStructuredText {
-        value
-        links {
+      _allPagesMeta {
+        count
+      }
+    }
+  `),
+  fetchHomePage: graphql(/* GraphQL */ `
+    {
+      homepage {
+        introTitle
+        introFeaturedImage {
+          url
+          alt
+        }
+        introStructuredText {
+          value
+          links {
+            slug
+          }
+        }
+        aboutTitle
+        aboutFeaturedImage {
+          url
+          alt
+        }
+        aboutStructuredText {
+          value
+          links {
+            slug
+          }
+        }
+      }
+    }
+  `),
+  fetchPage: graphql(
+    /* GraphQL */ `
+      fragment ImageBlockFragment on ImageBlockRecord {
+        asset {
+          title
+          responsiveImage(sizes: "(max-width: 700px) 100vw, 700px") {
+            ...ResponsiveImageFragment
+          }
+        }
+      }
+
+      fragment ImageGalleryBlockFragment on ImageGalleryBlockRecord {
+        assets {
+          id
+          title
+          responsiveImage(imgixParams: { w: 300 }, sizes: "300px") {
+            ...ResponsiveImageFragment
+          }
+        }
+      }
+
+      fragment VideoBlockFragment on VideoBlockRecord {
+        asset {
+          title
+          video {
+            muxPlaybackId
+            title
+            width
+            height
+            blurUpThumb
+          }
+        }
+      }
+
+      fragment PageLinkFragment on PageRecord {
+        ... on RecordInterface {
+          id
+          __typename
+        }
+        ... on PageRecord {
+          title
           slug
         }
       }
-      aboutTitle
-      aboutFeaturedImage {
-        url
-        alt
-      }
-      aboutStructuredText {
-        value
-        links {
+
+      fragment PageInlineFragment on PageRecord {
+        ... on RecordInterface {
+          id
+          __typename
+        }
+        ... on PageRecord {
+          title
           slug
         }
       }
-    }
-  }
-`,
+
+      query MyQuery($slug: SlugFilter) {
+        page(filter:{ slug: $slug }) {
+          id
+          title
+          slug
+          structuredText {
+            value
+            blocks {
+              ... on RecordInterface {
+                id
+                __typename
+              }
+              ... on ImageBlockRecord {
+                ...ImageBlockFragment
+              }
+              ... on ImageGalleryBlockRecord {
+                ...ImageGalleryBlockFragment
+              }
+              ... on VideoBlockRecord {
+                ...VideoBlockFragment
+              }
+            }
+            links {
+              ... on RecordInterface {
+                id
+                __typename
+              }
+              ...PageLinkFragment
+              ...PageInlineFragment
+            }
+          }
+        }
+      }
+    `,
+    [ResponsiveImageFragment],
+  ),
 };
 
 /**
  *
  * @param {string} queryType
+ * @param {Object} variables - GraphQL query variables
  * @returns {Promise<string>}
  */
-async function retrieveData(queryType) {
-  console.log({ queryType });
+async function retrieveData(queryType, variables = {}) {
 
   const query = queries[queryType];
 
@@ -59,9 +153,8 @@ async function retrieveData(queryType) {
 
   const result = await executeQuery(query, {
     token: import.meta.env.DATOCMS_CDA_TOKEN,
+    variables,
   });
-
-  console.log({ result });
 
   return result;
 }
