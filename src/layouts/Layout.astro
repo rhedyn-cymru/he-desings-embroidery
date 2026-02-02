@@ -27,23 +27,23 @@ const image = pageImage?.src ?? shareCard.src;
 
 const navLinks = [
   {
-    title: t("home"),
+    title: t("Home"),
     url: locale === 'en' ? `/` : `/${locale}/`,
   },
   {
-    title: t("services"),
-    url: locale === 'en' ? `/#services` : `/${locale}/#services`,
+    title: t("Services"),
+    url:  `/${locale}/services`,
   },
   {
-    title: t("blog"),
-    url: `/${locale}/blog/`,
+    title: t("Products"),
+    url: `/${locale}/products/`,
   },
   {
-    title: t("about"),
-    url: locale === 'en' ? `/#about` : `/${locale}/#about`,
+    title: t("About"),
+    url: `/${locale}/about`,
   },
   {
-    title: t("contact"),
+    title: t("Contact"),
     url: `/${locale}/contact/`,
   },
 ];
