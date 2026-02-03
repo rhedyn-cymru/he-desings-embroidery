@@ -47,7 +47,7 @@ const lang = getLangFromUrl(Astro.url);
 
 <PageLayout
   pageTitle={page.title}
-  pageDescription={page.title}
+  pageDescription={productData.product.description}
   pageUrl={`/${lang}/${Astro.params.slug}/`}
   pageImage={productData.product.images[0].url}
 >
