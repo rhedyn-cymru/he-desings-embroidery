@@ -61,7 +61,7 @@ const lang = getLangFromUrl(Astro.url);
   pageDescription={page.title}
   pageUrl={`/${lang}/${Astro.params.slug}/`}
 >
-  <div>
+  <div class="[&_p]:my-6 [&_h2]:my-8 [&_img]:mt-6 [&_figcaption]:mb-6 [&_video]:mt-6">
     <!-- {JSON.stringify(pageData.page.structuredText)} -->
     <StructuredText
       data={pageData.page.structuredText}
