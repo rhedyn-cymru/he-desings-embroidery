@@ -1,4 +1,4 @@
-import { graphql } from '~/lib/datocms/graphql';
+import { graphql } from './graphql';
 
 /*
  * This file lists a series of fragments not related to any specific Vue
@@ -10,5 +10,69 @@ export const TagFragment = graphql(`
     tag
     attributes
     content
+  }
+`);
+
+export const ImageBlockFragment = graphql(`
+  fragment ImageBlockFragment on ImageBlockRecord {
+    asset {
+      title
+      responsiveImage(sizes: "(max-width: 700px) 100vw, 700px") {
+        ...ResponsiveImageFragment
+      }
+    }
+  }
+`);
+
+export const ImageGalleryBlockFragment = graphql(`
+  fragment ImageGalleryBlockFragment on ImageGalleryBlockRecord {
+    assets {
+      id
+      title
+      responsiveImage(imgixParams: { w: 300 }, sizes: "300px") {
+        ...ResponsiveImageFragment
+      }
+    }
+  }
+`);
+
+export const VideoBlockFragment = graphql(`
+  fragment VideoBlockFragment on VideoBlockRecord {
+    asset {
+      title
+      video {
+        muxPlaybackId
+        title
+        width
+        height
+        blurUpThumb
+      }
+    }
+  }
+`);
+
+export const PageLinkFragment = graphql(`
+  fragment PageLinkFragment on PageRecord {
+    ... on RecordInterface {
+      id
+      __typename
+    }
+    ... on PageRecord {
+      title
+      slug
+    }
+  }
+`);
+
+export const PageInlineFragment = graphql(`
+  fragment PageInlineFragment on PageRecord {
+    ... on RecordInterface {
+      id
+      __typename
+    }
+    ... on PageRecord {
+      title
+      slug
+    }
   }
 `);
