@@ -1,9 +1,10 @@
 ---
 import MiniCart from "./MiniCart.astro"
+import Logo from "../assets/logo.png"
 
 const { navlinks } = Astro.props
 ---
-<div class="navbar bg-base-100 shadow-sm">
+<div class="navbar bg-base-100 shadow-sm mb-6">
   <div class="flex-1 navbar-start">
     <div class="dropdown lg:hidden">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
@@ -18,7 +19,7 @@ const { navlinks } = Astro.props
       </ul>
     </div>
     <a href="/" class="px-2">
-      <img src="src/assets/logo.png" alt="Logo" class="h-8" />
+      <img src={Logo.src} alt="Logo" class="h-12" />
     </a>
     <div class="hidden lg:flex">
       <ul class="menu menu-horizontal px-1">
