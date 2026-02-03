@@ -1,0 +1,155 @@
+---
+const { locale = "en" } = Astro.props;
+---
+<script>
+  /**
+   * 
+   * button fires events
+   *  
+   */ 
+  document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      
+      const button = target.closest("[data-cart-button]");
+      if (!(button instanceof HTMLElement)) return;
+      
+      const sku = button.getAttribute("data-sku");
+      const priceAttr = button.getAttribute("data-price");
+      const price = priceAttr ? Number(priceAttr) : 0;
+      
+      if (!sku) return;
+      
+      const cartEvent = new CustomEvent("cartUpdate", {
+        detail: {
+          item: { sku },
+          price,
+        },
+      });
+      
+      window.dispatchEvent(cartEvent);
+    });
+</script>
+<script>
+  /**
+   * 
+   * Cart recieves events and updates the cart
+   *  
+   */ 
+  const CART_ITEMS = "cartitems";
+  const CART_TOTAL = "carttotal";
+
+  function ensureStorageDefaults() {
+    if (!localStorage.getItem(CART_ITEMS)) {
+      localStorage.setItem(CART_ITEMS, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(CART_TOTAL)) {
+      localStorage.setItem(CART_TOTAL, JSON.stringify(0));
+    }
+  };
+
+  function getCartItems() {
+    const cartItemsRaw = localStorage.getItem(CART_ITEMS);
+    try {
+      return cartItemsRaw ? JSON.parse(cartItemsRaw) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  function getCartTotal() {
+    const cartTotalRaw = localStorage.getItem(CART_TOTAL);
+    const parsed = cartTotalRaw ? JSON.parse(cartTotalRaw) : 0;
+    return Number(parsed) || 0;
+  };
+
+  function setCartItems(items) {
+    localStorage.setItem(CART_ITEMS, JSON.stringify(items));
+  };
+
+  function setCartTotal(total) {
+    localStorage.setItem(CART_TOTAL, JSON.stringify(total));
+  };
+
+  function updateIndicators(itemsCount = 0, total = 0) {
+    const itemIndicator = document.querySelector("#item-indicator");
+    const dropdownItemIndicator = document.querySelector(
+      "#dropdown-item-indicator",
+    );
+    const totalCostIndicator = document.querySelector("#total-cost-indicator");
+
+    if (itemIndicator instanceof HTMLElement) {
+      itemIndicator.innerText = `${itemsCount}`;
+    }
+    if (dropdownItemIndicator instanceof HTMLElement) {
+      dropdownItemIndicator.innerText = `${itemsCount}`;
+    }
+    if (totalCostIndicator instanceof HTMLElement) {
+      totalCostIndicator.innerText = `${total.toFixed(2)}`;
+    }
+  };
+
+  window.addEventListener("DOMContentLoaded", () => {
+    ensureStorageDefaults();
+
+    const initialItems = getCartItems();
+    const initialTotal = getCartTotal();
+    updateIndicators(initialItems.length, initialTotal);
+
+  });
+  window.addEventListener("cartUpdate", (event) => {
+    const { item, price } = event.detail || {};
+
+    if (!item || price == null) return;
+
+    const existingCartItems = getCartItems();
+    const existingCartTotal = getCartTotal();
+
+    const updatedCartItems = [item, ...existingCartItems];
+    const updatedCartTotal = existingCartTotal + Number(price);
+
+    setCartItems(updatedCartItems);
+    setCartTotal(updatedCartTotal);
+
+    updateIndicators(updatedCartItems.length, updatedCartTotal);
+  });
+</script>
+<div class="dropdown dropdown-end">
+  <div tabindex="0" role="button" class="btn btn-primary">
+    <div class="indicator flex gap-2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 text-secondary"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+        ></path>
+      </svg>
+      <span id="item-indicator" class="badge badge-sm">0</span>
+    </div>
+  </div>
+  <div
+    tabindex="0"
+    class="card card-compact dropdown-content bg-base-200 z-1 mt-3 w-52 shadow-xl"
+  >
+    <div class="card-body">
+      <span class="text-lg font-bold"
+        ><span id="dropdown-item-indicator">0</span> Items</span
+      >
+      <span class="text-info"
+        >Subtotal: &pound;<span id="total-cost-indicator">00.00</span></span
+      >
+      <div class="card-actions">
+        <a href={`/${locale}/your-cart`} class="btn btn-primary btn-block"
+          >View cart</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
