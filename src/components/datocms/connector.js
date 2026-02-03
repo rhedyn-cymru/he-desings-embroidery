@@ -10,6 +10,20 @@ import {
 } from "./commonFragments";
 
 const queries = {
+  fetchGlobalSeo: graphql(/* GraphQL */`
+    {
+      _site {
+        globalSeo {
+          titleSuffix
+          fallbackSeo {
+            description
+            title
+            image { url }
+          }
+        }
+      }
+    }
+  `),
   fetchAllPages: graphql(/* GraphQL */ `
     {
       allPages {
