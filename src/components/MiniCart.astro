@@ -20,7 +20,7 @@ const { locale = "en" } = Astro.props;
       
       if (!sku) return;
       
-      const cartEvent = new CustomEvent("cartUpdate", {
+      const cartEvent = new CustomEvent("updatecart", {
         detail: {
           item: { sku },
           price,
