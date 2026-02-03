@@ -39,7 +39,7 @@ const lang = getLangFromUrl(Astro.url);
               <p class="mb-4">{product.description}</p>
               <div class="card-actions justify-between items-center">
                 &pound;{product.price}
-                <button data-productsku={product.id} class="btn btn-primary">Add to Cart</button>
+                <button data-sku={product.id} class="btn btn-primary">Add to Cart</button>
               </div>
             </div>
           </article>
