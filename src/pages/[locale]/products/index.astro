@@ -22,7 +22,6 @@ const lang = getLangFromUrl(Astro.url);
         allProducts.map((product) => (
           <article
             class="card bg-base-100 shadow-sm"
-            id={`product-${product.id}`}
           >
             <a href={product.slug}>
               {product.images && (
@@ -40,7 +39,7 @@ const lang = getLangFromUrl(Astro.url);
               <p class="mb-4">{product.description}</p>
               <div class="card-actions justify-between items-center">
                 &pound;{product.price}
-                <button class="btn btn-primary">Add to Cart</button>
+                <button data-productsku={product.id} class="btn btn-primary">Add to Cart</button>
               </div>
             </div>
           </article>
