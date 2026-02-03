@@ -12,6 +12,7 @@ import { PageLink } from "../../../components/datocms/linkToRecord/PageLink";
 import { VideoBlock } from "../../../components/datocms/blocks/VideoBlock";
 import { ImageBlock } from "../../../components/datocms/blocks/ImageBlock";
 import { ImageGalleryBlock } from "../../../components/datocms/blocks/ImageGalleryBlock";
+import AddToCartButton from "../../../components/AddToCartButton.astro";
 
 export async function getStaticPaths() {
   const data = await retrieveData("fetchAllProducts");
@@ -47,7 +48,7 @@ const lang = getLangFromUrl(Astro.url);
 
 <PageLayout
   pageTitle={page.title}
-  pageDescription={page.title}
+  pageDescription={productData.product.description}
   pageUrl={`/${lang}/${Astro.params.slug}/`}
   pageImage={productData.product.images[0].url}
 >
@@ -92,7 +93,7 @@ const lang = getLangFromUrl(Astro.url);
       <hr class="my-4">
       <div class="flex justify-between items-center">
         &pound;{productData.product.price}
-        <button data-sku={productData.product.id} class="btn btn-primary">Add to Cart</button>
+        <AddToCartButton sku={productData.product.id} price={productData.product.price}/>
       </div>
     </div>
   </article>

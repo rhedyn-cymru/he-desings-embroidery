@@ -2,6 +2,7 @@
 import Layout from "../../../layouts/Layout.astro";
 import { getLangFromUrl } from "../../../i18n/utils";
 import retrieveData from "../../../components/datocms/connector";
+import AddToCartButton from "../../../components/AddToCartButton.astro";
 
 export async function getStaticPaths() {
   return [{ params: { locale: "en" } }, { params: { locale: "cy" } }];
@@ -39,7 +40,7 @@ const lang = getLangFromUrl(Astro.url);
               <p class="mb-4">{product.description}</p>
               <div class="card-actions justify-between items-center">
                 &pound;{product.price}
-                <button data-sku={product.id} class="btn btn-primary">Add to Cart</button>
+                <AddToCartButton sku={product.id} price={product.price} />
               </div>
             </div>
           </article>
