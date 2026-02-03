@@ -51,7 +51,7 @@ const lang = getLangFromUrl(Astro.url);
   pageUrl={`/${lang}/${Astro.params.slug}/`}
   pageImage={productData.product.images[0].url}
 >
-  <article class="grid grid-cols-2 gap-6">
+  <article class="grid grid-cols-2 gap-6 mb-6">
     {
       productData.product.images && (
         <div class="product-images">
