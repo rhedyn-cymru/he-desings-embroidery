@@ -1,0 +1,92 @@
+---
+import retrieveData from "../../../components/datocms/connector";
+import { getLangFromUrl } from "../../../i18n/utils";
+import PageLayout from "../../../layouts/ProductLayout.astro";
+import { languages } from "../../../i18n/translations";
+import { StructuredText } from "../../../components/datocms";
+
+// Structured text components
+import { HeadingWithAnchorLink } from "../../../components/datocms/HeadingWithAnchorLink";
+import { PageInline } from "../../../components/datocms/inlineRecord/PageInline";
+import { PageLink } from "../../../components/datocms/linkToRecord/PageLink";
+import { VideoBlock } from "../../../components/datocms/blocks/VideoBlock";
+import { ImageBlock } from "../../../components/datocms/blocks/ImageBlock";
+import { ImageGalleryBlock } from "../../../components/datocms/blocks/ImageGalleryBlock";
+
+export async function getStaticPaths() {
+  const data = await retrieveData("fetchAllProducts");
+  const allProducts = data?.allProducts || [];
+
+  const paths = [];
+  for (const page of allProducts) {
+    const productData = await retrieveData("fetchProduct", {
+      slug: { eq: page.slug },
+    });
+
+    for (const locale of Object.keys(languages)) {
+      paths.push({
+        params: {
+          locale,
+          slug: page.slug,
+        },
+        props: {
+          page,
+          productData,
+        },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { page, productData } = Astro.props;
+
+const lang = getLangFromUrl(Astro.url);
+---
+
+<PageLayout
+  pageTitle={page.title}
+  pageDescription={page.title}
+  pageUrl={`/${lang}/${Astro.params.slug}/`}
+  pageImage={productData.product.images[0].url}
+>
+  <article class="grid grid-cols-2 gap-6 mb-6">
+    {
+      productData.product.images && (
+        <div class="product-images">
+          {productData.product.images.map((image) => (
+            <figure>
+              <img src={image.url} alt={image.alt} class="rounded" />
+            </figure>
+          ))}
+        </div>
+      )
+    }
+    <div>
+      <h1 class="colour-special text-3xl mb-2">{page.title}</h1>
+      <StructuredText
+        data={productData.product.structuredText}
+        blockComponents={{
+          ImageBlockRecord: ImageBlock,
+          ImageGalleryBlockRecord: ImageGalleryBlock,
+          VideoBlockRecord: VideoBlock,
+        }}
+        linkToRecordComponents={{
+          PageRecord: PageLink,
+        }}
+        inlineRecordComponents={{
+          PageRecord: PageInline,
+        }}
+        nodeOverrides={{
+          heading: HeadingWithAnchorLink,
+        }}
+      />
+      <hr class="my-4">
+      <div class="flex justify-between items-center">
+        &pound;{productData.product.price}
+        <button data-sku={productData.product.id} class="btn btn-primary">Add to Cart</button>
+      </div>
+    </div>
+  </article>
+</PageLayout>

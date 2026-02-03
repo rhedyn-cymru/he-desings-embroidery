@@ -1,0 +1,50 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { getLangFromUrl } from "../../../i18n/utils";
+import retrieveData from "../../../components/datocms/connector";
+
+export async function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "cy" } }];
+}
+
+const data = await retrieveData("fetchAllProducts");
+const allProducts = data?.allProducts || [];
+
+const lang = getLangFromUrl(Astro.url);
+
+---
+
+<Layout locale={lang}>
+  <section class="container m-auto" id="intro">
+    <h1 class="colour-special text-3xl mb-2">All Products</h1>
+    <div class="grid grid-cols-4 gap-4">
+      {
+        allProducts.map((product) => (
+          <article
+            class="card bg-base-100 shadow-sm"
+          >
+            <a href={product.slug}>
+              {product.images && (
+              <div class="product-images">
+                {product.images.map((image) => (
+                  <figure>
+                    <img src={image.url} alt={image.alt} class="rounded" />
+                  </figure>
+                ))}
+              </div>
+            )}
+            </a>
+            <div class="card-body">
+              <h2 class="card-title"><a href={product.slug}>{product.title}</a></h2>
+              <p class="mb-4">{product.description}</p>
+              <div class="card-actions justify-between items-center">
+                &pound;{product.price}
+                <button data-sku={product.id} class="btn btn-primary">Add to Cart</button>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</Layout>
