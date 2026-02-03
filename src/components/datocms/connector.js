@@ -17,6 +17,23 @@ const queries = {
       }
     }
   `),
+  fetchAllProducts: graphql(/* GraphQL */ `
+    {
+      allProducts {
+        id
+        title
+        slug
+        price
+        category {
+          category
+        }
+        description
+        images {
+          url
+        }
+      }
+    }
+  `),
   fetchHomePage: graphql(/* GraphQL */ `
     {
       homepage {
@@ -106,6 +123,107 @@ const queries = {
           id
           title
           slug
+          structuredText {
+            value
+            blocks {
+              ... on RecordInterface {
+                id
+                __typename
+              }
+              ... on ImageBlockRecord {
+                ...ImageBlockFragment
+              }
+              ... on ImageGalleryBlockRecord {
+                ...ImageGalleryBlockFragment
+              }
+              ... on VideoBlockRecord {
+                ...VideoBlockFragment
+              }
+            }
+            links {
+              ... on RecordInterface {
+                id
+                __typename
+              }
+              ...PageLinkFragment
+              ...PageInlineFragment
+            }
+          }
+        }
+      }
+    `,
+    [ResponsiveImageFragment],
+  ),
+
+  fetchProduct: graphql(
+    /* GraphQL */ `
+      fragment ImageBlockFragment on ImageBlockRecord {
+        asset {
+          title
+          responsiveImage(sizes: "(max-width: 700px) 100vw, 700px") {
+            ...ResponsiveImageFragment
+          }
+        }
+      }
+
+      fragment ImageGalleryBlockFragment on ImageGalleryBlockRecord {
+        assets {
+          id
+          title
+          responsiveImage(imgixParams: { w: 300 }, sizes: "300px") {
+            ...ResponsiveImageFragment
+          }
+        }
+      }
+
+      fragment VideoBlockFragment on VideoBlockRecord {
+        asset {
+          title
+          video {
+            muxPlaybackId
+            title
+            width
+            height
+            blurUpThumb
+          }
+        }
+      }
+
+      fragment PageLinkFragment on PageRecord {
+        ... on RecordInterface {
+          id
+          __typename
+        }
+        ... on PageRecord {
+          title
+          slug
+        }
+      }
+
+      fragment PageInlineFragment on PageRecord {
+        ... on RecordInterface {
+          id
+          __typename
+        }
+        ... on PageRecord {
+          title
+          slug
+        }
+      }
+
+      query MyQuery($slug: SlugFilter) {
+        product(filter:{ slug: $slug }) {
+          id
+          title
+          slug
+          price
+          category {
+            category
+          }
+          description
+          images {
+            url
+          }
           structuredText {
             value
             blocks {

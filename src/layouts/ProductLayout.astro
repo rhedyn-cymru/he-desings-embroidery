@@ -15,7 +15,6 @@ const lang = getLangFromUrl(Astro.url)
 ---
 <Layout locale={lang} pageTitle={pageTitle} pageDescription={pageDescription} pageUrl={pageUrl}>
   <div class="container mx-auto">
-    <h1 class="colour-special text-3xl mb-2">>{pageTitle}</h1>
     <slot />
   </div>
 </Layout>
