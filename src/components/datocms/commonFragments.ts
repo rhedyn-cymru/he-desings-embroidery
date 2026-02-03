@@ -5,7 +5,7 @@ import { graphql } from './graphql';
  * component, but necessary in various parts of the code.
  */
 
-export const TagFragment = graphql(`
+export const TagFragment = graphql(/* GraphQL */`
   fragment TagFragment on Tag @_unmask {
     tag
     attributes
@@ -13,7 +13,7 @@ export const TagFragment = graphql(`
   }
 `);
 
-export const ImageBlockFragment = graphql(`
+export const ImageBlockFragment = graphql(/* GraphQL */`
   fragment ImageBlockFragment on ImageBlockRecord {
     asset {
       title
@@ -24,7 +24,7 @@ export const ImageBlockFragment = graphql(`
   }
 `);
 
-export const ImageGalleryBlockFragment = graphql(`
+export const ImageGalleryBlockFragment = graphql(/* GraphQL */`
   fragment ImageGalleryBlockFragment on ImageGalleryBlockRecord {
     assets {
       id
@@ -36,7 +36,7 @@ export const ImageGalleryBlockFragment = graphql(`
   }
 `);
 
-export const VideoBlockFragment = graphql(`
+export const VideoBlockFragment = graphql(/* GraphQL */`
   fragment VideoBlockFragment on VideoBlockRecord {
     asset {
       title
@@ -51,7 +51,7 @@ export const VideoBlockFragment = graphql(`
   }
 `);
 
-export const PageLinkFragment = graphql(`
+export const PageLinkFragment = graphql(/* GraphQL */`
   fragment PageLinkFragment on PageRecord {
     ... on RecordInterface {
       id
@@ -64,7 +64,7 @@ export const PageLinkFragment = graphql(`
   }
 `);
 
-export const PageInlineFragment = graphql(`
+export const PageInlineFragment = graphql(/* GraphQL */`
   fragment PageInlineFragment on PageRecord {
     ... on RecordInterface {
       id

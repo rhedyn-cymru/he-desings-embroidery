@@ -67,34 +67,18 @@ const lang = getLangFromUrl(Astro.url);
       <h1 class="colour-special text-3xl mb-2">{page.title}</h1>
       <StructuredText
         data={productData.product.structuredText}
-        blockComponents={/*
-         * If the structured text embeds any blocks, it's up to you to decide
-         * how to render them:
-         */
-        {
+        blockComponents={{
           ImageBlockRecord: ImageBlock,
           ImageGalleryBlockRecord: ImageGalleryBlock,
           VideoBlockRecord: VideoBlock,
         }}
-        linkToRecordComponents={/*
-         * If the structured text includes a link to another DatoCMS record,
-         * it's your decision to determine where the link should lead, or if
-         * you wish to customize its appearance:
-         */
-        {
+        linkToRecordComponents={{
           PageRecord: PageLink,
         }}
-        inlineRecordComponents={/*
-         * If the structured text includes a reference to another DatoCMS
-         * record, it's up to you to decide how to render them:
-         */
-        {
+        inlineRecordComponents={{
           PageRecord: PageInline,
         }}
-        nodeOverrides={/*
-         * You can also override the default rendering of certain nodes.
-         * In this case, we want to tweak the way headings (h1-h6) are rendered.
-         */ {
+        nodeOverrides={{
           heading: HeadingWithAnchorLink,
         }}
       />
