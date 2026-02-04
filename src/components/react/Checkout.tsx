@@ -87,6 +87,9 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
     setCartTotal(initialCartTotal);
 
     const initialCartItems = getLSCartItems();
+
+    setCartItems(initialCartItems)
+
     if (!initialCartItems || !initialCartItems.length) return;
 
   }, [allProducts]);
