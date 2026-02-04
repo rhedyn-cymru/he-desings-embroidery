@@ -77,6 +77,10 @@ const { locale = "en" } = Astro.props;
     return Number(parsed) || 0;
   }
 
+  function getCartItemQuantity(cartItems) {
+    return cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+  }
+
   /**
    * 
    * @param {Product[]} items
@@ -116,23 +120,25 @@ const { locale = "en" } = Astro.props;
 
     const initialItems = getCartItems();
     const initialTotal = getCartTotal();
-    updateIndicators(initialItems.length, initialTotal);
+    const quantity = getCartItemQuantity(initialItems);
+
+    updateIndicators(quantity, initialTotal);
   });
   window.addEventListener(UPDATE_CART, (event) => {
     const { product, price } = event.detail || {};
-    
-    console.log({product, price})
 
     if (!product || price == null) return;
     
     const items = getCartItems();
     const total = getCartTotal();
 
-    const newCartItems = mergeCartItems([product], items)
+    const newCartItems = mergeCartItems(items, [product])
+    const quantity = getCartItemQuantity(newCartItems);
+
     setCartItems(newCartItems)
     setCartTotal(total + price);
 
-    updateIndicators(newCartItems.length, total + price);
+    updateIndicators(quantity, total + price);
   });
   window.addEventListener(REPLACE_CART, (event) => {
     const { items, carttotal } = event.detail || {};

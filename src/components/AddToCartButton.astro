@@ -2,5 +2,10 @@
 const { product, price, classes = "" } = Astro.props;
 
 const allClasses = `btn btn-primary ${classes}`.trim();
+
+const productWithQuantity = {
+  ...product,
+  quantity: 1
+}
 ---
-<button data-cart-button data-product={JSON.stringify(product)} data-price={price} class={allClasses}>Add to Cart</button>
+<button data-cart-button data-product={JSON.stringify(productWithQuantity)} data-price={price} class={allClasses}>Add to Cart</button>
