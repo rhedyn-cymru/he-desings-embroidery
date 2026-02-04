@@ -93,7 +93,7 @@ const lang = getLangFromUrl(Astro.url);
       <hr class="my-4">
       <div class="flex justify-between items-center">
         &pound;{productData.product.price}
-        <AddToCartButton sku={productData.product.id} price={productData.product.price}/>
+        <AddToCartButton product={productData.product} price={productData.product.price}/>
       </div>
     </div>
   </article>

@@ -2,42 +2,21 @@ import React, { useEffect, useState } from "react";
 import type {
   CheckoutProps,
   CompleteCartItem,
-  CartItem,
   Product,
-} from "./Checkout.types";
+} from "../Checkout.types";
 
 import {
-  UPDATE_CART,
+  REPLACE_CART,
   CART_TOTAL,
   CART_ITEMS,
   CLEAR_CART,
 } from "../cart-actions";
 
-const Checkout = ({ products }: CheckoutProps) => {
+import { mergeCartItems } from "../merge-cart-items";
+
+const Checkout = ({ allProducts }: CheckoutProps) => {
   const [cartItems, setCartItems] = useState<CompleteCartItem[]>([]);
   const [cartTotal, setCartTotal] = useState<number>(0);
-
-  function mergeCartItemsWithNewProducts(
-    currentCartItems: CartItem[],
-    newProducts: Product[],
-  ): CompleteCartItem[] {
-    return Object.values(
-      currentCartItems.reduce(
-        (acc, cartItem) => {
-          const product = newProducts.find((p) => p.id === cartItem.sku);
-          if (!product) return acc;
-
-          if (acc[cartItem.sku]) {
-            acc[cartItem.sku].quantity++;
-          } else {
-            acc[cartItem.sku] = { ...product, quantity: 1 };
-          }
-          return acc;
-        },
-        {} as Record<string, CompleteCartItem>,
-      ),
-    );
-  }
 
   function getLSCartItems() {
     const cartItemsRaw = localStorage.getItem(CART_ITEMS);
@@ -54,13 +33,12 @@ const Checkout = ({ products }: CheckoutProps) => {
     return Number(parsed) || 0;
   }
 
-
-  function updateMiniCart(products) {
+  function updateMiniCart(products: Product[], totalcost: number) {
     window.dispatchEvent(
-      new CustomEvent(UPDATE_CART, {
+      new CustomEvent(REPLACE_CART, {
         detail: {
-          items: { sku: product.sku },
-          price: product.price,
+          items: products,
+          carttotal: totalcost,
         },
       }),
     );
@@ -72,15 +50,14 @@ const Checkout = ({ products }: CheckoutProps) => {
    *
   */
   function clearCart() {
-    setCartItems([]);
     window.dispatchEvent(new CustomEvent(CLEAR_CART));
   }
-  function removeItem(cartItem: CartItem) {
+  function removeItem(cartItem: Product) {
     const removedTotal = cartItem.price * cartItem.quantity;
     setCartTotal((prevCartTotal) => prevCartTotal - removedTotal);
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== cartItem.id));
   }
-  function increaseQuantity(cartItem: CartItem) {
+  function increaseQuantity(cartItem: Product) {
     const increasedTotal = cartItem.price;
     setCartTotal((prevCartTotal) => prevCartTotal + increasedTotal);
     setCartItems((prevItems) =>
@@ -89,7 +66,7 @@ const Checkout = ({ products }: CheckoutProps) => {
       ),
     );
   }
-  function decreaseQuantity(cartItem: CartItem) {
+  function decreaseQuantity(cartItem: Product) {
     const decreasedTotal = cartItem.price;
     setCartTotal((prevCartTotal) => prevCartTotal - decreasedTotal);
     setCartItems((prevItems) =>
@@ -99,22 +76,33 @@ const Checkout = ({ products }: CheckoutProps) => {
     );
   }
 
+  /*
+   * Update local state 
+   *
+  */  
   useEffect(() => {
-    const currentCartTotal = getLSCartTotal();
-    setCartTotal(currentCartTotal);
+    const initialCartTotal = getLSCartTotal();
+    setCartTotal(initialCartTotal);
 
-    const currentCartItems = getLSCartItems();
-    if (!currentCartItems || !currentCartItems.length) return;
-    const completeCartItems = mergeCartItemsWithNewProducts(
-      currentCartItems,
-      products,
+
+    const initialCartItems = getLSCartItems();
+    if (!initialCartItems || !initialCartItems.length) return;
+    const completeCartItems = mergeCartItems(
+      initialCartItems,
+      allProducts,
     );
     setCartItems(completeCartItems);
-  }, []);
+  }, [allProducts]);
 
+  /*
+   * Update minicart 
+   *
+  */ 
   useEffect(() => {
-
-  }, [setCartTotal, setCartItems])
+    if(cartItems.length) {
+      updateMiniCart(cartItems, cartTotal)
+    }
+    }, [cartTotal, cartItems])
 
   if (!cartItems.length) {
     return (

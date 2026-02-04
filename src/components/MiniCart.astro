@@ -4,27 +4,31 @@ const { locale = "en" } = Astro.props;
 
 <script>
   import { UPDATE_CART } from "./cart-actions";
+
   /**
    *
    * button fires events
    *
    */
-  document.addEventListener("click", (event) => {
+  document.addEventListener("click", (event) => {    
     const target = event.target;
+
     if (!(target instanceof HTMLElement)) return;
 
     const button = target.closest("[data-cart-button]");
     if (!(button instanceof HTMLElement)) return;
 
-    const sku = button.getAttribute("data-sku");
+    const product = button.getAttribute("data-product");
     const priceAttr = button.getAttribute("data-price");
     const price = priceAttr ? Number(priceAttr) : 0;
 
-    if (!sku) return;
+    if (!product) return;
+
+    const productParsed = JSON.parse(product)
 
     const cartEvent = new CustomEvent(UPDATE_CART, {
       detail: {
-        item: { sku },
+        product: productParsed,
         price,
       },
     });
@@ -33,19 +37,23 @@ const { locale = "en" } = Astro.props;
   });
 </script>
 <script>
+  /** @typedef {import("./Checkout.types").Product} Product */
+
+  import { mergeCartItems } from "./merge-cart-items"
   import {
-    UPDATE_CART,
     CLEAR_CART,
+    REPLACE_CART,
+    UPDATE_CART,
     CART_ITEMS,
     CART_TOTAL,
   } from "./cart-actions";
   /**
    *
-   * Cart recieves events and updates the cart
+   * Cart receives events and updates the cart
    *
    */
 
-  function ensureStorageDefaults() {
+  function setStorageDefaults() {
     if (!localStorage.getItem(CART_ITEMS)) {
       localStorage.setItem(CART_ITEMS, JSON.stringify([]));
     }
@@ -69,14 +77,31 @@ const { locale = "en" } = Astro.props;
     return Number(parsed) || 0;
   }
 
+  /**
+   * 
+   * @param {Product[]} items
+   * @returns {void} 
+   */
   function setCartItems(items) {
     localStorage.setItem(CART_ITEMS, JSON.stringify(items));
   }
 
+  /**
+   * @param {number} total 
+   */
   function setCartTotal(total) {
     localStorage.setItem(CART_TOTAL, JSON.stringify(total));
   }
 
+  /**
+   * @param {Product[]} newProducts
+   * @param {Product[]} existingCartItems
+   * @returns {void} 
+   */
+  function updateCartItems(newProducts, existingCartItems) {
+    const newCartItems = mergeCartItems(existingCartItems,newProducts)
+    setCartItems(newCartItems)
+  }
   function updateIndicators(itemsCount = 0, total = 0) {
     const itemIndicator = document.querySelector("#item-indicator");
     const dropdownItemIndicator = document.querySelector(
@@ -96,33 +121,40 @@ const { locale = "en" } = Astro.props;
   }
 
   window.addEventListener("DOMContentLoaded", () => {
-    ensureStorageDefaults();
+    setStorageDefaults();
 
     const initialItems = getCartItems();
     const initialTotal = getCartTotal();
     updateIndicators(initialItems.length, initialTotal);
   });
   window.addEventListener(UPDATE_CART, (event) => {
-    const { item, price } = event.detail || {};
+    const { product, price } = event.detail || {};
 
-    if (!item || price == null) return;
+    if (!product || price == null) return;
+    
+    const items = getCartItems();
+    const total = getCartTotal();
 
-    const existingCartItems = getCartItems();
-    const existingCartTotal = getCartTotal();
+    updateCartItems([product], items);
+    setCartTotal(total + price);
 
-    const updatedCartItems = [item, ...existingCartItems];
-    const updatedCartTotal = existingCartTotal + Number(price);
+    updateIndicators(items.length, price);
+  });
+  window.addEventListener(REPLACE_CART, (event) => {
+    const { items, carttotal } = event.detail || {};
 
-    setCartItems(updatedCartItems);
-    setCartTotal(updatedCartTotal);
+    if (!items || carttotal == null) return;
 
-    updateIndicators(updatedCartItems.length, updatedCartTotal);
+    setCartItems(items);
+    setCartTotal(carttotal);
+
+    updateIndicators(items.length, carttotal);
   });
   window.addEventListener(CLEAR_CART, () => {
     setCartItems([]);
     setCartTotal(0);
-    localStorage.removeItem(CART_ITEMS);
-    localStorage.removeItem(CART_TOTAL);
+    localStorage.set(CART_ITEMS, JSON.stringify([]));
+    localStorage.set(CART_TOTAL, 0);
   });
 </script>
 <div class="dropdown dropdown-end">

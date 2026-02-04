@@ -8,10 +8,7 @@ export interface Product {
   title: string;
   price: number;
   images: ProductImage[];
-}
-
-export interface CartItem {
-  sku: string;
+  quantity: number
 }
 
 export interface CompleteCartItem extends Product {
@@ -19,5 +16,5 @@ export interface CompleteCartItem extends Product {
 }
 
 export interface CheckoutProps {
-  products: Product[];
+  allProducts: Product[];
 }
