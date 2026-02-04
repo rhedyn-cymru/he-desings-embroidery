@@ -50,6 +50,8 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
    *
   */
   function clearCart() {
+    setCartItems([])
+    setCartTotal(0)
     window.dispatchEvent(new CustomEvent(CLEAR_CART));
   }
   function removeItem(cartItem: Product) {
@@ -84,14 +86,9 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
     const initialCartTotal = getLSCartTotal();
     setCartTotal(initialCartTotal);
 
-
     const initialCartItems = getLSCartItems();
     if (!initialCartItems || !initialCartItems.length) return;
-    const completeCartItems = mergeCartItems(
-      initialCartItems,
-      allProducts,
-    );
-    setCartItems(completeCartItems);
+
   }, [allProducts]);
 
   /*

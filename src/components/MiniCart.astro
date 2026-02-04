@@ -93,15 +93,6 @@ const { locale = "en" } = Astro.props;
     localStorage.setItem(CART_TOTAL, JSON.stringify(total));
   }
 
-  /**
-   * @param {Product[]} newProducts
-   * @param {Product[]} existingCartItems
-   * @returns {void} 
-   */
-  function updateCartItems(newProducts, existingCartItems) {
-    const newCartItems = mergeCartItems(existingCartItems,newProducts)
-    setCartItems(newCartItems)
-  }
   function updateIndicators(itemsCount = 0, total = 0) {
     const itemIndicator = document.querySelector("#item-indicator");
     const dropdownItemIndicator = document.querySelector(
@@ -129,16 +120,19 @@ const { locale = "en" } = Astro.props;
   });
   window.addEventListener(UPDATE_CART, (event) => {
     const { product, price } = event.detail || {};
+    
+    console.log({product, price})
 
     if (!product || price == null) return;
     
     const items = getCartItems();
     const total = getCartTotal();
 
-    updateCartItems([product], items);
+    const newCartItems = mergeCartItems([product], items)
+    setCartItems(newCartItems)
     setCartTotal(total + price);
 
-    updateIndicators(items.length, price);
+    updateIndicators(newCartItems.length, total + price);
   });
   window.addEventListener(REPLACE_CART, (event) => {
     const { items, carttotal } = event.detail || {};
@@ -153,8 +147,9 @@ const { locale = "en" } = Astro.props;
   window.addEventListener(CLEAR_CART, () => {
     setCartItems([]);
     setCartTotal(0);
-    localStorage.set(CART_ITEMS, JSON.stringify([]));
-    localStorage.set(CART_TOTAL, 0);
+    localStorage.setItem(CART_ITEMS, JSON.stringify([]));
+    localStorage.setItem(CART_TOTAL, '0');
+    updateIndicators(0, 0)
   });
 </script>
 <div class="dropdown dropdown-end">
