@@ -145,10 +145,14 @@ const { locale = "en" } = Astro.props;
 
     if (!items || carttotal == null) return;
 
+    console.log(`replace cart: `, items.length)
+
     setCartItems(items);
     setCartTotal(carttotal);
 
-    updateIndicators(items.length, carttotal);
+    const quantity = getCartItemQuantity(items)
+
+    updateIndicators(quantity, carttotal);
   });
   window.addEventListener(CLEAR_CART, () => {
     setCartItems([]);

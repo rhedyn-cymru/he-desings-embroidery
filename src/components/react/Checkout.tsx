@@ -12,8 +12,6 @@ import {
   CLEAR_CART,
 } from "../cart-actions";
 
-import { mergeCartItems } from "../merge-cart-items";
-
 const Checkout = ({ allProducts }: CheckoutProps) => {
   const [cartItems, setCartItems] = useState<CompleteCartItem[]>([]);
   const [cartTotal, setCartTotal] = useState<number>(0);
@@ -33,17 +31,6 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
     return Number(parsed) || 0;
   }
 
-  function updateMiniCart(products: Product[], totalcost: number) {
-    window.dispatchEvent(
-      new CustomEvent(REPLACE_CART, {
-        detail: {
-          items: products,
-          carttotal: totalcost,
-        },
-      }),
-    );
-  }
-
   /*
    *
    * INTERNAL FUNCTIONS 
@@ -58,6 +45,7 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
     const removedTotal = cartItem.price * cartItem.quantity;
     setCartTotal((prevCartTotal) => prevCartTotal - removedTotal);
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== cartItem.id));
+    console.log(`remove items`, {cartItems})
   }
   function increaseQuantity(cartItem: Product) {
     const increasedTotal = cartItem.price;
@@ -71,6 +59,12 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
   function decreaseQuantity(cartItem: Product) {
     const decreasedTotal = cartItem.price;
     setCartTotal((prevCartTotal) => prevCartTotal - decreasedTotal);
+    
+    if(cartItem.quantity === 0) {
+      // its now zero so we should remove it from the cart
+      removeItem(cartItem)
+      return;
+    }
     setCartItems((prevItems) =>
       prevItems.map((item) =>
         item.id === cartItem.id ? { ...item, quantity: item.quantity - 1 } : item,
@@ -100,7 +94,16 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
   */ 
   useEffect(() => {
     if(cartItems.length) {
-      updateMiniCart(cartItems, cartTotal)
+      console.log(`useeffect`, cartItems.length)
+      // Update mini cart
+      window.dispatchEvent(
+      new CustomEvent(REPLACE_CART, {
+        detail: {
+          items: cartItems,
+          carttotal: cartTotal,
+        },
+      }),
+    );
     }
     }, [cartTotal, cartItems])
 
@@ -124,7 +127,7 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
         </button>
       </div>
       {cartItems.map((cartItem) => (
-        <article className="grid grid-cols-2 gap-4 mb-4 p-4" key={cartItem.id}>
+        <article className={`grid grid-cols-2 gap-4 mb-4 p-4 ${cartItem.quantity == 0 ? "opacity-25" : ""}`} key={cartItem.id}>
           {cartItem.images?.length ? (
             <img src={cartItem.images[0].url} alt={cartItem.images[0].alt} />
           ) : null}
