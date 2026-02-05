@@ -47,6 +47,7 @@ const { locale = "en" } = Astro.props;
     CART_ITEMS,
     CART_TOTAL,
   } from "./cart-actions";
+
   /**
    *
    * Cart receives events and updates the cart
@@ -127,7 +128,7 @@ const { locale = "en" } = Astro.props;
   window.addEventListener(UPDATE_CART, (event) => {
     const { product, price } = event.detail || {};
 
-    if (!product || price == null) return;
+    if (!product || !price) return;
     
     const items = getCartItems();
     const total = getCartTotal();
@@ -145,8 +146,6 @@ const { locale = "en" } = Astro.props;
 
     if (!items || carttotal == null) return;
 
-    console.log(`replace cart: `, items.length)
-
     setCartItems(items);
     setCartTotal(carttotal);
 
@@ -159,6 +158,7 @@ const { locale = "en" } = Astro.props;
     setCartTotal(0);
     localStorage.setItem(CART_ITEMS, JSON.stringify([]));
     localStorage.setItem(CART_TOTAL, '0');
+    console.log('event listener recieved')
     updateIndicators(0, 0)
   });
 </script>

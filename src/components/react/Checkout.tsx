@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type {
   CheckoutProps,
   CompleteCartItem,
@@ -7,6 +7,7 @@ import type {
 
 import {
   REPLACE_CART,
+  UPDATE_CART,
   CART_TOTAL,
   CART_ITEMS,
   CLEAR_CART,
@@ -15,6 +16,7 @@ import {
 const Checkout = ({ allProducts }: CheckoutProps) => {
   const [cartItems, setCartItems] = useState<CompleteCartItem[]>([]);
   const [cartTotal, setCartTotal] = useState<number>(0);
+  const hasMountedRef = useRef(false);
 
   function getLSCartItems() {
     const cartItemsRaw = localStorage.getItem(CART_ITEMS);
@@ -33,79 +35,96 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
 
   /*
    *
-   * INTERNAL FUNCTIONS 
+   * INTERNAL FUNCTIONS
    *
-  */
+   */
   function clearCart() {
-    setCartItems([])
-    setCartTotal(0)
+    setCartItems([]);
+    setCartTotal(0);
+    console.log('clear cart called')
     window.dispatchEvent(new CustomEvent(CLEAR_CART));
   }
   function removeItem(cartItem: Product) {
     const removedTotal = cartItem.price * cartItem.quantity;
     setCartTotal((prevCartTotal) => prevCartTotal - removedTotal);
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== cartItem.id));
-    console.log(`remove items`, {cartItems})
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.id !== cartItem.id),
+    );
+    if(cartItems.length === 1) {
+      window.dispatchEvent(new CustomEvent(CLEAR_CART))
+    }
   }
   function increaseQuantity(cartItem: Product) {
     const increasedTotal = cartItem.price;
     setCartTotal((prevCartTotal) => prevCartTotal + increasedTotal);
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === cartItem.id ? { ...item, quantity: item.quantity + 1 } : item,
+        item.id === cartItem.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item,
       ),
     );
   }
   function decreaseQuantity(cartItem: Product) {
+    if (cartItem.quantity <= 1) {
+      // its now zero so we should remove it from the cart
+      removeItem(cartItem);
+    }
     const decreasedTotal = cartItem.price;
     setCartTotal((prevCartTotal) => prevCartTotal - decreasedTotal);
-    
-    if(cartItem.quantity === 0) {
-      // its now zero so we should remove it from the cart
-      removeItem(cartItem)
-      return;
-    }
+
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === cartItem.id ? { ...item, quantity: item.quantity - 1 } : item,
+        item.id === cartItem.id
+          ? { ...item, quantity: item.quantity - 1 }
+          : item,
       ),
     );
   }
 
   /*
-   * Update local state 
+   * Update local state
    *
-  */  
+   */
   useEffect(() => {
     const initialCartTotal = getLSCartTotal();
     setCartTotal(initialCartTotal);
 
     const initialCartItems = getLSCartItems();
 
-    setCartItems(initialCartItems)
+    setCartItems(initialCartItems);
 
     if (!initialCartItems || !initialCartItems.length) return;
-
   }, [allProducts]);
 
   /*
-   * Update minicart 
+   * Update minicart after initial load
    *
-  */ 
+   */
   useEffect(() => {
-    if(cartItems.length) {
-      console.log(`useeffect`, cartItems.length)
-      // Update mini cart
-      window.dispatchEvent(
-      new CustomEvent(REPLACE_CART, {
-        detail: {
-          items: cartItems,
-          carttotal: cartTotal,
-        },
-      }),
-    );
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
     }
-    }, [cartTotal, cartItems])
+    if (hasMountedRef.current && cartItems.length) {
+      window.dispatchEvent(
+        new CustomEvent(REPLACE_CART, {
+          detail: {
+            items: cartItems,
+            carttotal: cartTotal,
+          },
+        }),
+      );
+    }
+  }, [cartTotal, cartItems]);
+
+  useEffect(() => {
+    window.addEventListener(UPDATE_CART, (event) => {
+      const { product, price } = event.detail || {};
+      if (!product || price == null) return;
+
+      increaseQuantity(product);
+    });
+  }, []);
 
   if (!cartItems.length) {
     return (
@@ -127,7 +146,10 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
         </button>
       </div>
       {cartItems.map((cartItem) => (
-        <article className={`grid grid-cols-2 gap-4 mb-4 p-4 ${cartItem.quantity == 0 ? "opacity-25" : ""}`} key={cartItem.id}>
+        <article
+          className={`grid grid-cols-2 gap-4 mb-4 p-4`}
+          key={cartItem.id}
+        >
           {cartItem.images?.length ? (
             <img src={cartItem.images[0].url} alt={cartItem.images[0].alt} />
           ) : null}

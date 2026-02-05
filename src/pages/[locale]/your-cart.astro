@@ -23,31 +23,4 @@ const t = useTranslations(lang);
   <div id="content" class="mb-6">
     <Checkout client:only="react" allProducts={allProducts}/>
   </div>
-  <h2 class="text-2xl mb-4">Popular items:</h2>
-        <div class="grid grid-cols-4 gap-4">
-          {allProducts.slice(0, 4).map(product => (
-          <article
-            class="card bg-base-100 shadow-sm"
-          >
-            <a href={product.slug}>
-              {product.images && (
-              <div class="product-images">
-                {product.images.map((image) => (
-                  <figure>
-                    <img src={image.url} alt={image.alt} class="rounded" />
-                  </figure>
-                ))}
-              </div>
-            )}
-            </a>
-            <div class="card-body">
-              <h2 class="card-title"><a href={product.slug}>{product.title}</a></h2>
-              <p class="mb-4">{product.description}</p>
-              <div class="card-actions justify-between items-center">
-                &pound;{product.price}
-                <AddToCartButton product={product} price={product.price} />
-              </div>
-            </div>
-          </article>
-        ))}
 </PageLayout>
