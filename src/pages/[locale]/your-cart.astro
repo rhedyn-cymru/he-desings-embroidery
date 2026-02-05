@@ -1,0 +1,18 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro"
+import { getLangFromUrl, useTranslations } from "../../i18n/utils";
+
+export async function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "cy" } }];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+<PageLayout
+  pageTitle="Your cart"
+  pageDescription="View the items currently in your cart"
+  pageUrl="your-cart"
+>
+  <p class="mb-6">There are currently no items in your cart.</p>
+</PageLayout>

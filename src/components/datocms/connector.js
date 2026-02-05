@@ -1,8 +1,29 @@
 import { executeQuery } from "@datocms/cda-client";
 import { graphql } from "./graphql";
 import { ResponsiveImageFragment } from "./ResponsiveImage/fragments";
+import {
+  ImageBlockFragment,
+  ImageGalleryBlockFragment,
+  VideoBlockFragment,
+  PageLinkFragment,
+  PageInlineFragment,
+} from "./commonFragments";
 
 const queries = {
+  fetchGlobalSeo: graphql(/* GraphQL */`
+    {
+      _site {
+        globalSeo {
+          titleSuffix
+          fallbackSeo {
+            description
+            title
+            image { url }
+          }
+        }
+      }
+    }
+  `),
   fetchAllPages: graphql(/* GraphQL */ `
     {
       allPages {
@@ -14,6 +35,23 @@ const queries = {
       }
       _allPagesMeta {
         count
+      }
+    }
+  `),
+  fetchAllProducts: graphql(/* GraphQL */ `
+    {
+      allProducts {
+        id
+        title
+        slug
+        price
+        category {
+          category
+        }
+        description
+        images {
+          url
+        }
       }
     }
   `),
@@ -47,60 +85,6 @@ const queries = {
   `),
   fetchPage: graphql(
     /* GraphQL */ `
-      fragment ImageBlockFragment on ImageBlockRecord {
-        asset {
-          title
-          responsiveImage(sizes: "(max-width: 700px) 100vw, 700px") {
-            ...ResponsiveImageFragment
-          }
-        }
-      }
-
-      fragment ImageGalleryBlockFragment on ImageGalleryBlockRecord {
-        assets {
-          id
-          title
-          responsiveImage(imgixParams: { w: 300 }, sizes: "300px") {
-            ...ResponsiveImageFragment
-          }
-        }
-      }
-
-      fragment VideoBlockFragment on VideoBlockRecord {
-        asset {
-          title
-          video {
-            muxPlaybackId
-            title
-            width
-            height
-            blurUpThumb
-          }
-        }
-      }
-
-      fragment PageLinkFragment on PageRecord {
-        ... on RecordInterface {
-          id
-          __typename
-        }
-        ... on PageRecord {
-          title
-          slug
-        }
-      }
-
-      fragment PageInlineFragment on PageRecord {
-        ... on RecordInterface {
-          id
-          __typename
-        }
-        ... on PageRecord {
-          title
-          slug
-        }
-      }
-
       query MyQuery($slug: SlugFilter) {
         page(filter:{ slug: $slug }) {
           id
@@ -135,7 +119,68 @@ const queries = {
         }
       }
     `,
-    [ResponsiveImageFragment],
+    [
+      ResponsiveImageFragment,
+      ImageBlockFragment,
+      ImageGalleryBlockFragment,
+      VideoBlockFragment,
+      PageLinkFragment,
+      PageInlineFragment,
+    ],
+  ),
+
+  fetchProduct: graphql(
+    /* GraphQL */ `
+      query MyQuery($slug: SlugFilter) {
+        product(filter:{ slug: $slug }) {
+          id
+          title
+          slug
+          price
+          category {
+            category
+          }
+          description
+          images {
+            url
+          }
+          structuredText {
+            value
+            blocks {
+              ... on RecordInterface {
+                id
+                __typename
+              }
+              ... on ImageBlockRecord {
+                ...ImageBlockFragment
+              }
+              ... on ImageGalleryBlockRecord {
+                ...ImageGalleryBlockFragment
+              }
+              ... on VideoBlockRecord {
+                ...VideoBlockFragment
+              }
+            }
+            links {
+              ... on RecordInterface {
+                id
+                __typename
+              }
+              ...PageLinkFragment
+              ...PageInlineFragment
+            }
+          }
+        }
+      }
+    `,
+    [
+      ResponsiveImageFragment,
+      ImageBlockFragment,
+      ImageGalleryBlockFragment,
+      VideoBlockFragment,
+      PageLinkFragment,
+      PageInlineFragment,
+    ],
   ),
 };
 

@@ -2,37 +2,35 @@
 import "../styles/global.css";
 
 import { SEO } from "astro-seo";
-import shareCard from "../assets/default-sharecard.png";
 import logoSimple from "../assets/logo.png";
 import { useTranslations } from "../i18n/utils"
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
+import retrieveData from "../components/datocms/connector";
 
 const { pageTitle, pageDescription, pageType, pageImage, pageUrl = "", locale } =
   Astro.props;
   
 const t = useTranslations(locale);
+const globalSEO = await retrieveData("fetchGlobalSeo")
 
-const byline = t("Web Creation + Security")
+const { globalSeo } = globalSEO._site
+const { fallbackSeo, titleSuffix } = globalSeo
+const { title, description, image } = fallbackSeo
 
-const title = pageTitle ? `${pageTitle} - Rhedyn ${byline}` : `Home - Rhedyn ${byline}`;
-const description =
+const metaTitle = pageTitle ? `${pageTitle} - ${title} ${titleSuffix}` : `Home - ${title} ${titleSuffix}`;
+
+const metaDescription =
   pageDescription ??
-  "Rhedyn are creative builders. We love building secure, handmade websites and improving website security.";
+  description;
 
 const type = pageType ?? "Page";
-const image = pageImage?.src ?? shareCard.src;
-
-
+const shareImage = pageImage?.src ?? image;
 
 const navLinks = [
   {
     title: t("Home"),
     url: locale === 'en' ? `/` : `/${locale}/`,
-  },
-  {
-    title: t("Services"),
-    url:  `/${locale}/services`,
   },
   {
     title: t("Products"),
@@ -48,7 +46,7 @@ const navLinks = [
   },
 ];
 
-const domain = "https://rhedyn.cymru"
+const domain = "https://hedesigns.cymru"
 
 ---
 <!doctype html>
@@ -60,17 +58,17 @@ const domain = "https://rhedyn.cymru"
     <meta name="generator" content={Astro.generator} />
     <script async src="https://scripts.withcabin.com/hello.js"></script>
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="preload" href="/TitanOne-Regular.woff" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href="/TitanOne-Regular.woff" as="font" type="font/woff" crossorigin="anonymous">
     <link rel="preload" href={logoSimple.src} as="image">
     <SEO
-      title={title}
-      description={description}
+      title={metaTitle}
+      description={metaDescription}
       canonical={`${domain}${pageUrl}`}
       openGraph={{
         basic: {
-          title,
+          title: metaTitle,
           type,
-          image,
+          image: shareImage,
           url: `${domain}${pageUrl}`
         },
       }}

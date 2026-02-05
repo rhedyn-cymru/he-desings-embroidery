@@ -1,0 +1,6 @@
+---
+const { sku, price, classes = "" } = Astro.props;
+
+const allClasses = `btn btn-primary ${classes}`.trim();
+---
+<button data-cart-button data-sku={sku} data-price={price} class={allClasses}>Add to Cart</button>
