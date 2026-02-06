@@ -9,6 +9,7 @@ export interface Product {
   price: number;
   images: ProductImage[];
   quantity: number
+  description: string
 }
 
 export interface CompleteCartItem extends Product {
@@ -19,3 +20,8 @@ export interface CheckoutProps {
   allProducts: Product[];
   locale: string
 }
+
+export type UpdateCartDetail = {
+  product: Product;
+  price: number;
+};

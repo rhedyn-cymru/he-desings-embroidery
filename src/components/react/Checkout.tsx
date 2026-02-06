@@ -6,6 +6,7 @@ import type {
   CheckoutProps,
   CompleteCartItem,
   Product,
+  UpdateCartDetail
 } from "../Checkout.types";
 
 import {
@@ -86,7 +87,12 @@ const Checkout = ({ allProducts, locale }: CheckoutProps) => {
       ),
     );
   }
+  function handleUpdateCart(event: CustomEvent<UpdateCartDetail>) {
+    const { product, price } = event.detail || {};
+    if (!product || price == null) return;
 
+    increaseQuantity(product);
+  };
   /*
    * Update local state
    *
@@ -123,12 +129,10 @@ const Checkout = ({ allProducts, locale }: CheckoutProps) => {
   }, [cartTotal, cartItems]);
 
   useEffect(() => {
-    window.addEventListener(UPDATE_CART, (event) => {
-      const { product, price } = event.detail || {};
-      if (!product || price == null) return;
-
-      increaseQuantity(product);
-    });
+    window.addEventListener(UPDATE_CART, handleUpdateCart as EventListener);
+    return () => {
+      window.removeEventListener(UPDATE_CART, handleUpdateCart as EventListener);
+    };
   }, []);
 
   if (!cartItems.length) {
