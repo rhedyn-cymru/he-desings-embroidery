@@ -27,7 +27,13 @@ const t = useTranslations(locale)
 
     if (!product) return;
 
-    const productParsed = JSON.parse(product)
+    let productParsed;
+    try {
+      productParsed = JSON.parse(product);
+    } catch (error) {
+      console.error('Failed to parse product data:', error);
+      return;
+    }
 
     const cartEvent = new CustomEvent(UPDATE_CART, {
       detail: {
