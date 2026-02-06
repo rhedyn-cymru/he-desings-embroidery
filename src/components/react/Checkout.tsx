@@ -73,7 +73,7 @@ const Checkout = ({ locale }: CheckoutProps) => {
   }
   function decreaseQuantity(cartItem: Product) {
     if (cartItem.quantity <= 1) {
-      // its now zero so we should remove it from the cart
+      // it's now zero so we should remove it from the cart
       removeItem(cartItem);
       return;
     }
