@@ -18,7 +18,7 @@ import {
 } from "../cart-actions";
 
 
-const Checkout = ({ allProducts, locale }: CheckoutProps) => {
+const Checkout = ({ locale }: CheckoutProps) => {
   const [cartItems, setCartItems] = useState<CompleteCartItem[]>([]);
   const [cartTotal, setCartTotal] = useState<number>(0);
   const hasMountedRef = useRef(false);
@@ -75,6 +75,7 @@ const Checkout = ({ allProducts, locale }: CheckoutProps) => {
     if (cartItem.quantity <= 1) {
       // its now zero so we should remove it from the cart
       removeItem(cartItem);
+      return;
     }
     const decreasedTotal = cartItem.price;
     setCartTotal((prevCartTotal) => prevCartTotal - decreasedTotal);
@@ -93,20 +94,6 @@ const Checkout = ({ allProducts, locale }: CheckoutProps) => {
 
     increaseQuantity(product);
   };
-  /*
-   * Update local state
-   *
-   */
-  useEffect(() => {
-    const initialCartTotal = getLSCartTotal();
-    setCartTotal(initialCartTotal);
-
-    const initialCartItems = getLSCartItems();
-
-    setCartItems(initialCartItems);
-
-    if (!initialCartItems || !initialCartItems.length) return;
-  }, [allProducts]);
 
   /*
    * Update minicart after initial load
@@ -128,7 +115,18 @@ const Checkout = ({ allProducts, locale }: CheckoutProps) => {
     }
   }, [cartTotal, cartItems]);
 
+  /*
+   * Update local state
+   *
+   */
   useEffect(() => {
+    const initialCartTotal = getLSCartTotal();
+    setCartTotal(initialCartTotal);
+
+    const initialCartItems = getLSCartItems();
+
+    setCartItems(initialCartItems);
+
     window.addEventListener(UPDATE_CART, handleUpdateCart as EventListener);
     return () => {
       window.removeEventListener(UPDATE_CART, handleUpdateCart as EventListener);
@@ -157,7 +155,7 @@ const Checkout = ({ allProducts, locale }: CheckoutProps) => {
       </div>
       {cartItems.map((cartItem) => (
         <article
-          className={`grid grid-cols-2 gap-4 mb-4 p-4`}
+          className="grid grid-cols-2 gap-4 mb-4 p-4"
           key={cartItem.id}
         >
           {cartItem.images?.length ? (

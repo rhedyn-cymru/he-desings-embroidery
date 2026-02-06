@@ -4,8 +4,8 @@
  */
 
 /**
- * @param {Product[]} currentCartItems 
  * @param {Product[]} newProducts 
+ * @param {Product[]} currentCartItems 
  * @returns {Product[]} - all products
  */
 export function mergeCartItems(newProducts, currentCartItems) {

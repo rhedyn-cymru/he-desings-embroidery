@@ -11,11 +11,6 @@ export interface Product {
   quantity: number
   description: string
 }
-
-export interface CompleteCartItem extends Product {
-  quantity: number;
-}
-
 export interface CheckoutProps {
   allProducts: Product[];
   locale: string

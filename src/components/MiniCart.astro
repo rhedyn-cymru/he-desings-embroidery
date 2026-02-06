@@ -29,8 +29,6 @@ const t = useTranslations(locale)
 
     const productParsed = JSON.parse(product)
 
-    console.log(`add to cart click`, { product, productParsed })
-
     const cartEvent = new CustomEvent(UPDATE_CART, {
       detail: {
         product: productParsed,
@@ -93,7 +91,6 @@ const t = useTranslations(locale)
    * @returns {void} 
    */
   function setCartItems(items) {
-    console.log(`setCartItems`, {items})
     localStorage.setItem(CART_ITEMS, JSON.stringify(items));
   }
 
@@ -142,8 +139,6 @@ const t = useTranslations(locale)
     const newCartItems = mergeCartItems(items, [product])
     const quantity = getCartItemQuantity(newCartItems);
 
-    console.log({items})
-
     setCartItems(newCartItems)
     setCartTotal(total + price);
 
@@ -166,7 +161,6 @@ const t = useTranslations(locale)
     setCartTotal(0);
     localStorage.setItem(CART_ITEMS, JSON.stringify([]));
     localStorage.setItem(CART_TOTAL, '0');
-    console.log('event listener recieved')
     updateIndicators(0, 0)
   });
 </script>
