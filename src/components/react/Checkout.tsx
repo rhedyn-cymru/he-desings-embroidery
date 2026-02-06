@@ -36,7 +36,7 @@ const Checkout = ({ locale }: CheckoutProps) => {
   function getLSCartTotal() {
     const cartTotalRaw = localStorage.getItem(CART_TOTAL);
     const parsed = Number(cartTotalRaw || 0);
-    parsed;
+    return parsed;
   }
 
   /*
@@ -94,6 +94,14 @@ const Checkout = ({ locale }: CheckoutProps) => {
     increaseQuantity(product);
   };
 
+  /**
+   * 
+   * @param {Product[]} cartItems - items currently in the cart 
+   */
+  function findItemCountTotal(cartItems) {
+    return cartItems.reduce((sum, cartItem) => sum + cartItem.quantity, 0)
+  }
+
 
   /*
    * Update minicart after initial load
@@ -143,10 +151,10 @@ const Checkout = ({ locale }: CheckoutProps) => {
   }
 
   return (
-    <div className="max-w-xl">
-      <div className="mb-4 flex justify-between items-center">
+    <div className="max-w-xl relative">
+      <div className="mb-4 flex justify-between items-center sticky">
         <h2>
-          {cartItems.map(cartItem => cartItem.quantity)}&nbsp;{t("items")}, total cost: &pound;{cartTotal}
+          {findItemCountTotal(cartItems)}&nbsp;{t("items")}, total cost: &pound;{cartTotal}
         </h2>
         <button
           onClick={clearCart}
