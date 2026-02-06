@@ -3,41 +3,26 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "../../i18n/utils";
 
 import type {
-  CheckoutProps,
+  CartProps,
   Product,
   UpdateCartDetail
-} from "../Checkout.types";
+} from "../Cart.types";
 
 import {
   REPLACE_CART,
-  UPDATE_CART,
-  CART_TOTAL,
-  CART_ITEMS,
   CLEAR_CART,
-} from "../cart-actions";
+  deriveCartItemQuantity,
+  deriveCartTotal,
+  getCartItems,
+  setStorageDefaults
+} from "../cart-common-functions"
 
-
-const Checkout = ({ locale }: CheckoutProps) => {
+const Cart = ({ locale }: CartProps) => {
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const [cartTotal, setCartTotal] = useState<number>(0);
   const hasMountedRef = useRef(false);
   
   const t = useTranslations(locale)
-
-  function getLSCartItems() {
-    const cartItemsRaw = localStorage.getItem(CART_ITEMS);
-    try {
-      return cartItemsRaw ? JSON.parse(cartItemsRaw) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  function getLSCartTotal() {
-    const cartTotalRaw = localStorage.getItem(CART_TOTAL);
-    const parsed = Number(cartTotalRaw || 0);
-    return parsed;
-  }
 
   /*
    *
@@ -94,15 +79,6 @@ const Checkout = ({ locale }: CheckoutProps) => {
     increaseQuantity(product);
   };
 
-  /**
-   * 
-   * @param {Product[]} cartItems - items currently in the cart 
-   */
-  function findItemCountTotal(cartItems) {
-    return cartItems.reduce((sum, cartItem) => sum + cartItem.quantity, 0)
-  }
-
-
   /*
    * Update minicart after initial load
    *
@@ -128,17 +104,11 @@ const Checkout = ({ locale }: CheckoutProps) => {
    *
    */
   useEffect(() => {
-    const initialCartTotal = getLSCartTotal();
-    setCartTotal(initialCartTotal);
-
-    const initialCartItems = getLSCartItems();
-
-    setCartItems(initialCartItems);
-
-    window.addEventListener(UPDATE_CART, handleUpdateCart as EventListener);
-    return () => {
-      window.removeEventListener(UPDATE_CART, handleUpdateCart as EventListener);
-    };
+    setStorageDefaults()
+    const initialCartItems = getCartItems();
+    setCartItems(initialCartItems || []);
+    const initialCartTotal = deriveCartTotal(initialCartItems);
+    setCartTotal(initialCartTotal || 0);
   }, []);
 
   if (!cartItems.length) {
@@ -152,16 +122,23 @@ const Checkout = ({ locale }: CheckoutProps) => {
 
   return (
     <div className="max-w-xl relative">
-      <div className="mb-4 flex justify-between items-center sticky">
-        <h2>
-          {findItemCountTotal(cartItems)}&nbsp;{t("items")}, total cost: &pound;{cartTotal}
+      <div className="mb-4 flex justify-end items-center sticky">
+        <h2 className="mr-auto">
+          {deriveCartItemQuantity(cartItems)}&nbsp;{t("items")}, total cost: &pound;{cartTotal}
         </h2>
         <button
           onClick={clearCart}
-          className="btn btn-sm btn-outline btn-error"
-        >
+          className="btn btn-sm btn-ghost btn-error"
+          >
           {t("Clear Cart")}
         </button>
+        <a
+          href={`/${locale}/checkout/`}
+          title="checkout now"
+          className="btn btn-sm btn-primary"
+        >
+          {t("Checkout")}
+        </a>
       </div>
       <hr className="my-4"/>
       {cartItems.map((cartItem) => (
@@ -206,4 +183,4 @@ const Checkout = ({ locale }: CheckoutProps) => {
   );
 };
 
-export default Checkout;
+export default Cart;

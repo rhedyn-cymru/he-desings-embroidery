@@ -1,20 +1,22 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
-import { getLangFromUrl } from "../../i18n/utils";
-import Cart from "../../components/react/Cart";
+import { getLangFromUrl, useTranslations } from "../../i18n/utils";
 
 export async function getStaticPaths() {
   return [{ params: { locale: "en" } }, { params: { locale: "cy" } }];
 }
 
+const { origin } = Astro.url
+
 const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 <PageLayout
-  pageTitle="Your cart"
-  pageDescription="View the items currently in your cart"
-  pageUrl="your-cart"
+  pageTitle="Checkout"
+  pageDescription="Purchase your items"
+  pageUrl="checkout"
 >
   <div id="content" class="mb-6">
-    <Cart client:only="react" locale={lang} />
+    
   </div>
 </PageLayout>

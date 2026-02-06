@@ -43,68 +43,20 @@ const t = useTranslations(locale)
   /** @typedef {import("./Checkout.types").Product} Product */
 
   import { mergeCartItems } from "./merge-cart-items/merge-cart-items.js"
+
+    import {
+    setStorageDefaults,
+    deriveCartItemQuantity,
+    getCartItems,
+    setCartItems,
+    deriveCartTotal,
+  } from "./cart-common-functions.js"
+
   import {
     CLEAR_CART,
     REPLACE_CART,
     UPDATE_CART,
-    CART_ITEMS,
-    CART_TOTAL,
   } from "./cart-actions";
-
-  /**
-   *
-   * Cart receives events and updates the cart
-   *
-   */
-
-  function setStorageDefaults() {
-    if (!localStorage.getItem(CART_ITEMS)) {
-      localStorage.setItem(CART_ITEMS, JSON.stringify([]));
-    }
-    if (!localStorage.getItem(CART_TOTAL)) {
-      localStorage.setItem(CART_TOTAL, '0');
-    }
-  }
-
-  function getCartItems() {
-    const cartItemsRaw = localStorage.getItem(CART_ITEMS);
-    try {
-      return cartItemsRaw ? JSON.parse(cartItemsRaw) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  function getCartTotal() {
-    const cartTotalRaw = localStorage.getItem(CART_TOTAL);
-    const parsed = Number(cartTotalRaw || 0);
-    return Number(parsed) || 0;
-  }
-  
-  /**
-   * 
-   * @param {Product[]} items
-   * @returns {void} 
-   */
-  function getCartItemQuantity(cartItems) {
-    return cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
-  }
-
-  /**
-   * 
-   * @param {Product[]} items
-   * @returns {void} 
-   */
-  function setCartItems(items) {
-    localStorage.setItem(CART_ITEMS, JSON.stringify(items));
-  }
-
-  /**
-   * @param {number} total 
-   */
-  function setCartTotal(total) {
-    localStorage.setItem(CART_TOTAL, total);
-  }
 
   function updateIndicators(itemsCount = 0, total = 0) {
     const itemIndicator = document.querySelector("#item-indicator");
@@ -128,8 +80,8 @@ const t = useTranslations(locale)
     setStorageDefaults();
 
     const initialItems = getCartItems();
-    const initialTotal = getCartTotal();
-    const quantity = getCartItemQuantity(initialItems);
+    const initialTotal = deriveCartTotal(initialItems);
+    const quantity = deriveCartItemQuantity(initialItems);
 
     updateIndicators(quantity, initialTotal);
   });
@@ -139,13 +91,12 @@ const t = useTranslations(locale)
     if (!product || !price) return;
     
     const items = getCartItems();
-    const total = getCartTotal();
+    const total = deriveCartTotal(items);
 
     const newCartItems = mergeCartItems([product], items)
-    const quantity = getCartItemQuantity(newCartItems);
+    const quantity = deriveCartItemQuantity(newCartItems);
 
     setCartItems(newCartItems)
-    setCartTotal(total + price);
 
     updateIndicators(quantity, total + price);
   });
@@ -155,15 +106,13 @@ const t = useTranslations(locale)
     if (!items || carttotal == null) return;
 
     setCartItems(items);
-    setCartTotal(carttotal);
 
-    const quantity = getCartItemQuantity(items)
+    const quantity = deriveCartItemQuantity(items)
 
     updateIndicators(quantity, carttotal);
   });
   window.addEventListener(CLEAR_CART, () => {
     setCartItems([]);
-    setCartTotal(0);
     updateIndicators(0, 0)
   });
 </script>
