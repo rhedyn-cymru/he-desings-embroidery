@@ -174,7 +174,7 @@ const Checkout = ({ locale }: CheckoutProps) => {
               >
                 −
               </button>
-              {cartItem.quantity}
+              <span aria-label={t("Quantity")}>{cartItem.quantity}</span>
               <button
                 onClick={() => increaseQuantity(cartItem)}
                 className="btn btn-sm btn-outline"
