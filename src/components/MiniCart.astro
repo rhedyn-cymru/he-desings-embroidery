@@ -159,8 +159,6 @@ const t = useTranslations(locale)
   window.addEventListener(CLEAR_CART, () => {
     setCartItems([]);
     setCartTotal(0);
-    localStorage.setItem(CART_ITEMS, JSON.stringify([]));
-    localStorage.setItem(CART_TOTAL, '0');
     updateIndicators(0, 0)
   });
 </script>
