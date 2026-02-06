@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @typedef {import("./Checkout.types").Product} Product
+ * @typedef {import("../Checkout.types").Product} Product
  */
 
 /**

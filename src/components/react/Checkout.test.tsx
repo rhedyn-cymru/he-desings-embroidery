@@ -23,7 +23,7 @@ const product: Product = {
 function setCart(items: Product[]) {
   localStorage.setItem(CART_ITEMS, JSON.stringify(items));
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  localStorage.setItem(CART_TOTAL, JSON.stringify(total));
+  localStorage.setItem(CART_TOTAL, `${total}`);
 }
 
 describe("<Checkout />", () => {

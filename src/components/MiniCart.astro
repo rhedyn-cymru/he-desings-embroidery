@@ -42,7 +42,7 @@ const t = useTranslations(locale)
 <script>
   /** @typedef {import("./Checkout.types").Product} Product */
 
-  import { mergeCartItems } from "./merge-cart-items"
+  import { mergeCartItems } from "./merge-cart-items/merge-cart-items.js"
   import {
     CLEAR_CART,
     REPLACE_CART,
@@ -62,7 +62,7 @@ const t = useTranslations(locale)
       localStorage.setItem(CART_ITEMS, JSON.stringify([]));
     }
     if (!localStorage.getItem(CART_TOTAL)) {
-      localStorage.setItem(CART_TOTAL, JSON.stringify(0));
+      localStorage.setItem(CART_TOTAL, '0');
     }
   }
 
@@ -77,10 +77,15 @@ const t = useTranslations(locale)
 
   function getCartTotal() {
     const cartTotalRaw = localStorage.getItem(CART_TOTAL);
-    const parsed = cartTotalRaw ? JSON.parse(cartTotalRaw) : 0;
+    const parsed = Number(cartTotalRaw || 0);
     return Number(parsed) || 0;
   }
-
+  
+  /**
+   * 
+   * @param {Product[]} items
+   * @returns {void} 
+   */
   function getCartItemQuantity(cartItems) {
     return cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
   }

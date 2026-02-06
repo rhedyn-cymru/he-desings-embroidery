@@ -4,7 +4,6 @@ import { useTranslations } from "../../i18n/utils";
 
 import type {
   CheckoutProps,
-  CompleteCartItem,
   Product,
   UpdateCartDetail
 } from "../Checkout.types";
@@ -19,7 +18,7 @@ import {
 
 
 const Checkout = ({ locale }: CheckoutProps) => {
-  const [cartItems, setCartItems] = useState<CompleteCartItem[]>([]);
+  const [cartItems, setCartItems] = useState<Product[]>([]);
   const [cartTotal, setCartTotal] = useState<number>(0);
   const hasMountedRef = useRef(false);
   
@@ -36,8 +35,8 @@ const Checkout = ({ locale }: CheckoutProps) => {
 
   function getLSCartTotal() {
     const cartTotalRaw = localStorage.getItem(CART_TOTAL);
-    const parsed = cartTotalRaw ? JSON.parse(cartTotalRaw) : 0;
-    return Number(parsed) || 0;
+    const parsed = Number(cartTotalRaw || 0);
+    parsed;
   }
 
   /*
@@ -95,6 +94,7 @@ const Checkout = ({ locale }: CheckoutProps) => {
     increaseQuantity(product);
   };
 
+
   /*
    * Update minicart after initial load
    *
@@ -145,7 +145,9 @@ const Checkout = ({ locale }: CheckoutProps) => {
   return (
     <div className="max-w-xl">
       <div className="mb-4 flex justify-between items-center">
-        <h2>{t("Your Cart")}</h2>
+        <h2>
+          {cartItems.map(cartItem => cartItem.quantity)}&nbsp;{t("items")}, total cost: &pound;{cartTotal}
+        </h2>
         <button
           onClick={clearCart}
           className="btn btn-sm btn-outline btn-error"
@@ -153,9 +155,10 @@ const Checkout = ({ locale }: CheckoutProps) => {
           {t("Clear Cart")}
         </button>
       </div>
+      <hr className="my-4"/>
       {cartItems.map((cartItem) => (
         <article
-          className="grid grid-cols-2 gap-4 mb-4 p-4"
+          className="grid grid-cols-2 gap-4 mb-4"
           key={cartItem.id}
         >
           {cartItem.images?.length ? (
