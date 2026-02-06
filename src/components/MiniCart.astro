@@ -136,7 +136,7 @@ const t = useTranslations(locale)
     const items = getCartItems();
     const total = getCartTotal();
 
-    const newCartItems = mergeCartItems(items, [product])
+    const newCartItems = mergeCartItems([product], items)
     const quantity = getCartItemQuantity(newCartItems);
 
     setCartItems(newCartItems)
