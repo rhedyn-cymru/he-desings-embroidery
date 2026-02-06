@@ -14,6 +14,7 @@
     "@astrojs/sitemap": "^3.7.0",
     "@datocms/astro": "^0.6.11",
     "@datocms/cda-client": "^0.2.10",
+    "@netlify/functions": "^5.1.2",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.16.14",
     "astro-seo": "^1.1.0",

@@ -50,6 +50,7 @@ const t = useTranslations(locale)
     getCartItems,
     setCartItems,
     deriveCartTotal,
+    formatAsGbp
   } from "./cart-common-functions.js"
 
   import {
@@ -65,6 +66,8 @@ const t = useTranslations(locale)
     );
     const totalCostIndicator = document.querySelector("#total-cost-indicator");
 
+    const totalAsCurrency = formatAsGbp(total);
+
     if (itemIndicator instanceof HTMLElement) {
       itemIndicator.innerText = `${itemsCount}`;
     }
@@ -72,7 +75,7 @@ const t = useTranslations(locale)
       dropdownItemIndicator.innerText = `${itemsCount}`;
     }
     if (totalCostIndicator instanceof HTMLElement) {
-      totalCostIndicator.innerText = `${total.toFixed(2)}`;
+      totalCostIndicator.innerText = `${totalAsCurrency}`;
     }
   }
 
@@ -145,7 +148,7 @@ const t = useTranslations(locale)
         ><span id="dropdown-item-indicator">0</span> {t("Items")}</span
       >
       <span class="text-info"
-        >{t("Subtotal")}: &pound;<span id="total-cost-indicator">00.00</span></span
+        >{t("Subtotal")}: <span id="total-cost-indicator">00.00</span></span
       >
       <div class="card-actions">
         <a href={`/${locale}/your-cart`} class="btn btn-primary btn-block"

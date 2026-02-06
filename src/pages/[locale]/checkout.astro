@@ -6,17 +6,55 @@ export async function getStaticPaths() {
   return [{ params: { locale: "en" } }, { params: { locale: "cy" } }];
 }
 
-const { origin } = Astro.url
+const { origin } = Astro.url;
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
+
+<script>
+  import {
+    deriveCartItemQuantity,
+    getCartItems,
+  } from "../../components/cart-common-functions";
+  import { deriveCartTotal } from "../../components/cart-common-functions";
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const quantityElement = document.querySelector("#quantity");
+    const costElement = document.querySelector("#cost");
+
+    if (
+      !(costElement instanceof HTMLElement) ||
+      !(quantityElement instanceof HTMLElement)
+    )
+      return;
+
+    const cartItems = getCartItems();
+    const quantity = deriveCartItemQuantity(cartItems);
+    const cost = deriveCartTotal(cartItems);
+
+    const costCurrency = new Intl.NumberFormat("en-GB", {
+      style: "currency",
+      currency: "GBP",
+    }).format(cost);
+
+    const costInPence = Math.round(cost * 100);
+  
+    costElement.innerHTML = costCurrency;
+    quantityElement.innerHTML = `${quantity}`;
+  });
+</script>
 <PageLayout
   pageTitle="Checkout"
   pageDescription="Purchase your items"
   pageUrl="checkout"
 >
   <div id="content" class="mb-6">
-    
+    <p class="mb-4">
+      Your order is for <span id="quantity"></span> item at a total cost of <span
+        id="cost"></span>.
+    </p>
+    <a href={`/${lang}/your-cart/`} class="btn">Change quantities</a>
+    <a href={`/${lang}/products/`} class="btn">View all products</a>
   </div>
 </PageLayout>

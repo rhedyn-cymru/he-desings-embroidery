@@ -53,8 +53,8 @@ describe("<Cart />", () => {
 
     expect(screen.getByRole("heading", { name: product.title })).not.toBeNull();
     expect(screen.getByText(product.description)).not.toBeNull();
-    expect(screen.getByText("price: £10")).not.toBeNull();
-    expect(screen.getByText("Total cost: £10")).not.toBeNull();
+    expect(screen.getByText("price: £10.00")).not.toBeNull();
+    expect(screen.getByText("Total cost: £10.00")).not.toBeNull();
   });
 
   it("increases quantity when + is clicked", () => {

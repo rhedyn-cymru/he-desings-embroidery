@@ -15,7 +15,8 @@ import {
   deriveCartItemQuantity,
   deriveCartTotal,
   getCartItems,
-  setStorageDefaults
+  setStorageDefaults,
+  formatAsGbp
 } from "../cart-common-functions"
 
 const Cart = ({ locale }: CartProps) => {
@@ -136,7 +137,7 @@ const Cart = ({ locale }: CartProps) => {
     <div className="max-w-xl relative">
       <div className="mb-4 flex justify-end items-center sticky">
         <h2 className="mr-auto">
-          {deriveCartItemQuantity(cartItems)}&nbsp;{t("items")}, total cost: &pound;{cartTotal}
+          {deriveCartItemQuantity(cartItems)}&nbsp;{t("items")}, total cost: {formatAsGbp(cartTotal)}
         </h2>
         <button
           onClick={clearCart}
@@ -164,8 +165,8 @@ const Cart = ({ locale }: CartProps) => {
           <div>
             <h3 className="text-lg">{cartItem.title}</h3>
             <p className="mb-2">{cartItem.description}</p>
-            <div>{t("price")}: &pound;{cartItem.price}</div>
-            <div>{t("Total cost")}: &pound;{cartItem.price * cartItem.quantity}</div>
+            <div>{t("price")}: {formatAsGbp(cartItem.price)}</div>
+            <div>{t("Total cost")}: {formatAsGbp(cartItem.price * cartItem.quantity)}</div>
 
             <div className="flex gap-2 mt-4 items-center">
               <button

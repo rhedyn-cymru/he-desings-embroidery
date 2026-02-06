@@ -1,29 +1,34 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2023-10-16",
+});
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
-    return {
+    return new Response({
       statusCode: 405,
       headers: { Allow: 'POST' },
       body: JSON.stringify({ error: 'Method Not Allowed' })
-    }
+    })
   }
 
   if (!process.env.STRIPE_SECRET_KEY) {
-    return {
+    return new Response({
       statusCode: 500,
       body: JSON.stringify({ error: 'Missing STRIPE_SECRET_KEY' })
-    }
+    })
   }
 
   let payload
+
   try {
     payload = event.body ? JSON.parse(event.body) : {}
   } catch (error) {
-    return {
+    return new Response({
       statusCode: 400,
       body: JSON.stringify({ error: 'Invalid JSON body' })
-    }
+    })
   }
 
   const {
@@ -54,14 +59,14 @@ exports.handler = async (event) => {
       metadata
     })
 
-    return {
+    return new Response({
       statusCode: 200,
       body: JSON.stringify({ id: session.id, url: session.url, clientSecret: session.client_secret })
-    }
+    })
   } catch (error) {
-    return {
+    return new Reponse({
       statusCode: 500,
       body: JSON.stringify({ error: error.message })
-    }
+    })
   }
 }
