@@ -1,5 +1,8 @@
 ---
+import { useTranslations } from "../i18n/utils";
+
 const { locale = "en" } = Astro.props;
+const t = useTranslations(locale)
 ---
 
 <script>
@@ -188,14 +191,14 @@ const { locale = "en" } = Astro.props;
   >
     <div class="card-body">
       <span class="text-lg font-bold"
-        ><span id="dropdown-item-indicator">0</span> Items</span
+        ><span id="dropdown-item-indicator">0</span> {t("Items")}</span
       >
       <span class="text-info"
-        >Subtotal: &pound;<span id="total-cost-indicator">00.00</span></span
+        >{t("Subtotal")}: &pound;<span id="total-cost-indicator">00.00</span></span
       >
       <div class="card-actions">
         <a href={`/${locale}/your-cart`} class="btn btn-primary btn-block"
-          >View cart</a
+          >{t("View cart")}</a
         >
       </div>
     </div>

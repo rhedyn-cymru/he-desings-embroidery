@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+
+import { useTranslations } from "../../i18n/utils";
+
 import type {
   CheckoutProps,
   CompleteCartItem,
@@ -13,10 +16,13 @@ import {
   CLEAR_CART,
 } from "../cart-actions";
 
-const Checkout = ({ allProducts, locale, t }: CheckoutProps) => {
+
+const Checkout = ({ allProducts, locale }: CheckoutProps) => {
   const [cartItems, setCartItems] = useState<CompleteCartItem[]>([]);
   const [cartTotal, setCartTotal] = useState<number>(0);
   const hasMountedRef = useRef(false);
+  
+  const t = useTranslations(locale)
 
   function getLSCartItems() {
     const cartItemsRaw = localStorage.getItem(CART_ITEMS);
@@ -128,8 +134,8 @@ const Checkout = ({ allProducts, locale, t }: CheckoutProps) => {
   if (!cartItems.length) {
     return (
       <div>
-        <p className="mb-4">There are no items in your cart.</p>
-        <a className="btn btn-primary mb-4" href={`/${locale}/products/`}>View products</a>
+        <p className="mb-4">{t("There are no items in your cart")}.</p>
+        <a className="btn btn-primary mb-4" href={`/${locale}/products/`}>{t("View products")}</a>
       </div>
     );
   }
@@ -137,12 +143,12 @@ const Checkout = ({ allProducts, locale, t }: CheckoutProps) => {
   return (
     <div className="max-w-xl">
       <div className="mb-4 flex justify-between items-center">
-        <h2>Your Cart</h2>
+        <h2>{t("Your Cart")}</h2>
         <button
           onClick={clearCart}
           className="btn btn-sm btn-outline btn-error"
         >
-          Clear Cart
+          {t("Clear Cart")}
         </button>
       </div>
       {cartItems.map((cartItem) => (
@@ -156,8 +162,8 @@ const Checkout = ({ allProducts, locale, t }: CheckoutProps) => {
           <div>
             <h3 className="text-lg">{cartItem.title}</h3>
             <p className="mb-2">{cartItem.description}</p>
-            <div>price: &pound;{cartItem.price}</div>
-            <div>Total cost: &pound;{cartItem.price * cartItem.quantity}</div>
+            <div>{t("price")}: &pound;{cartItem.price}</div>
+            <div>{t("Total cost")}: &pound;{cartItem.price * cartItem.quantity}</div>
 
             <div className="flex gap-2 mt-4 items-center">
               <button
@@ -177,7 +183,7 @@ const Checkout = ({ allProducts, locale, t }: CheckoutProps) => {
                 onClick={() => removeItem(cartItem)}
                 className="btn btn-sm btn-outline btn-error"
               >
-                Remove
+                {t("Remove")}
               </button>
             </div>
           </div>

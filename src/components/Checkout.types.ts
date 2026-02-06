@@ -18,5 +18,4 @@ export interface CompleteCartItem extends Product {
 export interface CheckoutProps {
   allProducts: Product[];
   locale: string
-  t: (key: string) => string
 }
