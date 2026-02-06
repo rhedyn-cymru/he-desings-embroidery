@@ -4,21 +4,27 @@
  */
 
 /**
- * @param {Product[]} newProducts 
- * @param {Product[]} currentCartItems 
+ * @param {Product[]} baseProducts - initial products in the cart
+ * @param {Product[]} itemsToMerge - items to merge into the base products
  * @returns {Product[]} - all products
  */
-export function mergeCartItems(newProducts, currentCartItems) {
-  if (!newProducts.length) {
-    return currentCartItems;
+export function mergeCartItems(baseProducts, itemsToMerge) {
+  if (!baseProducts.length) {
+    return itemsToMerge;
   }
-  
-  return currentCartItems.reduce((acc, item) => {
+
+  return itemsToMerge.reduce((acc, item) => {
     const existingItem = acc.find(cartItem => cartItem.id === item.id);
     if (existingItem) {
-      existingItem.quantity = (existingItem.quantity || 1) + 1;
-      return acc;
+      return acc.map(cartItem =>
+        cartItem.id === item.id
+          ? { 
+              ...cartItem, 
+              quantity: (cartItem.quantity || 1) + 1 
+            }
+          : cartItem
+      );
     }
     return [...acc, item];
-  }, newProducts);
+  }, baseProducts);
 }
