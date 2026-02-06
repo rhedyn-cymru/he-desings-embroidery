@@ -21,6 +21,6 @@ const t = useTranslations(lang);
   pageUrl="your-cart"
 >
   <div id="content" class="mb-6">
-    <Checkout client:only="react" allProducts={allProducts}/>
+    <Checkout client:only="react" allProducts={allProducts} locale={lang} t={t} />
   </div>
 </PageLayout>

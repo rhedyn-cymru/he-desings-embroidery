@@ -13,7 +13,7 @@ import {
   CLEAR_CART,
 } from "../cart-actions";
 
-const Checkout = ({ allProducts }: CheckoutProps) => {
+const Checkout = ({ allProducts, locale, t }: CheckoutProps) => {
   const [cartItems, setCartItems] = useState<CompleteCartItem[]>([]);
   const [cartTotal, setCartTotal] = useState<number>(0);
   const hasMountedRef = useRef(false);
@@ -41,7 +41,6 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
   function clearCart() {
     setCartItems([]);
     setCartTotal(0);
-    console.log('clear cart called')
     window.dispatchEvent(new CustomEvent(CLEAR_CART));
   }
   function removeItem(cartItem: Product) {
@@ -130,6 +129,7 @@ const Checkout = ({ allProducts }: CheckoutProps) => {
     return (
       <div>
         <p className="mb-4">There are no items in your cart.</p>
+        <a className="btn btn-primary mb-4" href={`/${locale}/products/`}>View products</a>
       </div>
     );
   }
