@@ -11,6 +11,7 @@ import type {
 import {
   REPLACE_CART,
   CLEAR_CART,
+  UPDATE_CART,
   deriveCartItemQuantity,
   deriveCartTotal,
   getCartItems,
@@ -78,6 +79,17 @@ const Cart = ({ locale }: CartProps) => {
 
     increaseQuantity(product);
   };
+
+  useEffect(() => {
+    const onUpdateCart = (event: Event) => {
+      handleUpdateCart(event as CustomEvent<UpdateCartDetail>);
+    };
+
+    window.addEventListener(UPDATE_CART, onUpdateCart);
+    return () => {
+      window.removeEventListener(UPDATE_CART, onUpdateCart);
+    };
+  }, []);
 
   /*
    * Update minicart after initial load
