@@ -30,9 +30,9 @@ const currentPathMinusLanguage = currentPath.split("/").slice(2).join("/");
   document.addEventListener("DOMContentLoaded", () => languageSwitcher());
 </script>
 
-<div id="language-switcher" class="flex border-primary border rounded justify-between">
+<div id="language-switcher" class="flex overflow-hidden justify-between border-primary border rounded xl:border-none">
   <div id="cy" class="join-item">
-    <a class="btn-sm lg:btn rounded-r-none active:translate-0 flex items-center" href={`/cy/${currentPathMinusLanguage}`}>
+    <a class="lang-cymru" href={`/cy/${currentPathMinusLanguage}`}>
       <p class="mr-1 xl:mr-0">Cymraeg</p>
       <svg
         width="17"
@@ -45,7 +45,7 @@ const currentPathMinusLanguage = currentPath.split("/").slice(2).join("/");
     </a>
   </div>
   <div id="en" class="join-item">
-    <a class="btn-sm lg:btn rounded-l-none active:translate-0 flex items-center" href={isHomepage ? "/" : `/en/${currentPathMinusLanguage}`}>
+    <a class="lang-english" href={isHomepage ? "/" : `/en/${currentPathMinusLanguage}`}>
       <p class="mr-1 xl:mr-0">English</p>
       <svg
         width="17"
