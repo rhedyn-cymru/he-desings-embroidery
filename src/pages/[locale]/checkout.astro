@@ -38,10 +38,16 @@ const t = useTranslations(lang);
       currency: "GBP",
     }).format(cost);
 
-    const costInPence = Math.round(cost * 100);
-  
     costElement.innerHTML = costCurrency;
     quantityElement.innerHTML = `${quantity}`;
+
+    const checkoutButton = document.querySelector("#checkout");
+
+    if (!(checkoutButton instanceof HTMLButtonElement)) return;
+
+    checkoutButton.addEventListener("click", async () => {
+      return await fetch("/.netlify/functions/checkout")
+    });
   });
 </script>
 <PageLayout
@@ -49,12 +55,87 @@ const t = useTranslations(lang);
   pageDescription="Purchase your items"
   pageUrl="checkout"
 >
-  <div id="content" class="mb-6">
-    <p class="mb-4">
-      Your order is for <span id="quantity"></span> item at a total cost of <span
-        id="cost"></span>.
+  <div class="mb-6">
+    <p class="text-base-content/70">
+      {t("Review your order and proceed to payment")}.
     </p>
-    <a href={`/${lang}/your-cart/`} class="btn">Change quantities</a>
-    <a href={`/${lang}/products/`} class="btn">View all products</a>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="card bg-base-200 shadow">
+        <div class="card-body">
+          <h2 class="card-title">{t("Order summary")}</h2>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-base-content/70">{t("Items")}</span>
+            <span class="font-medium"><span id="quantity"></span></span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-base-content/70">{("Subtotal")}</span>
+            <span class="font-semibold"><span id="cost"></span></span>
+          </div>
+          <div class="divider my-2"></div>
+          <div class="flex items-center justify-between text-lg">
+            <span class="font-semibold">{t("Total")}</span>
+            <span class="font-bold"><span id="cost"></span></span>
+          </div>
+          <p class="text-sm text-base-content/60">
+            {t("Taxes calculated at checkout.")}
+          </p>
+        </div>
+      </div>
+
+      <div class="card bg-base-200 shadow mb-6">
+        <div class="card-body">
+          <h2 class="card-title">{t("Delivery")}</h2>
+          <p class="text-base-content/70">
+            {t("We will update you with shipping details once your products have been made.")}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <aside class="lg:col-span-1">
+      <div class="card bg-base-100 shadow sticky top-6">
+        <div class="card-body">
+          <h2 class="card-title sr-only">{t("Payment")}</h2>
+          <button id="checkout" class="btn btn-primary w-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-4"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+              ></path>
+            </svg>
+            {t("Checkout now")}
+          </button>
+          <p class="text-xs text-base-content/60 mt-2 text-center">
+            {t("All cards accepted")}
+          </p>
+          <div class="divider">{t("or")}</div>
+          <div class="flex flex-col gap-2">
+            <a href={`/${lang}/your-cart/`} class="btn btn-ghost w-full"
+              >{t("Change quantities")}</a
+            >
+            <a href={`/${lang}/products/`} class="btn btn-ghost w-full"
+              >{t("View all products")}</a
+            >
+          </div>
+          <a
+            href={`/${lang}/terms`}
+            class="text-xs text-base-content/60 mt-2 text-center"
+          >
+            {t("By continuing, you agree to our terms")}.
+          </a>
+        </div>
+      </div>
+    </aside>
   </div>
 </PageLayout>
