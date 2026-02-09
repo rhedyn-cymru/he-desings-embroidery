@@ -1,5 +1,5 @@
 ---
-const { navLinks, description = "" } = Astro.props;
+const { navLinks, description = "", lang = "en" } = Astro.props;
 
 import Minicart from "../components/MiniCart.astro";
 import Logo from "../assets/logo.png";
@@ -31,8 +31,12 @@ import Logo from "../assets/logo.png";
       <p>{description}</p>
     </div>
     <div>
-      <h6 class="footer-title">Your Cart:</h6>
-      <Minicart position="bottom" />
+      <h6 class="footer-title">Your products:</h6>
+      <nav>
+        <ul>
+          <li><a class="btn" href={`/${lang}/your-cart`}>View Your Cart</a></li>
+        </ul>
+      </nav>
     </div>
   </div>
 </footer>
