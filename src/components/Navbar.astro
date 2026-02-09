@@ -1,33 +1,59 @@
 ---
-import MiniCart from "./MiniCart.astro"
-import Logo from "../assets/logo.png"
+import MiniCart from "./MiniCart.astro";
+import Logo from "../assets/logo.png";
 
-const { navlinks } = Astro.props
+const { navlinks } = Astro.props;
 ---
+
 <div class="navbar bg-base-100 shadow-sm mb-6">
-  <div class="flex-1 navbar-start">
-    <div class="dropdown lg:hidden">
-      <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /> </svg>
+  <div class="container mx-auto flex">
+    <div class="flex-1 navbar-start">
+      <div class="dropdown lg:hidden">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h7"></path>
+          </svg>
+        </div>
+        <nav>
+          <ul
+            tabindex="-1"
+            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+          >
+            {
+              navlinks.map((link) => (
+                <li>
+                  <a href={link.url}>{link.title}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
       </div>
-      <ul
-        tabindex="-1"
-        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-        {navlinks.map(link => (
-          <li><a href={link.url}>{link.title}</a></li>
-        ))}
-      </ul>
+      <a href="/" class="px-2">
+        <img src={Logo.src} alt="Logo" class="h-12" />
+      </a>
+      <nav class="hidden lg:flex">
+        <ul class="menu menu-horizontal px-1">
+          {
+            navlinks.map((link) => (
+              <li>
+                <a href={link.url}>{link.title}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
     </div>
-    <a href="/" class="px-2">
-      <img src={Logo.src} alt="Logo" class="h-12" />
-    </a>
-    <div class="hidden lg:flex">
-      <ul class="menu menu-horizontal px-1">
-        {navlinks.map(link => (
-          <li><a href={link.url}>{link.title}</a></li>
-        ))}
-      </ul>
-    </div>
+    <MiniCart />
   </div>
-  <MiniCart />
 </div>

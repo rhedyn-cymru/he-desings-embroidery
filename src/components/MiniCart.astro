@@ -1,7 +1,7 @@
 ---
 import { useTranslations } from "../i18n/utils";
 
-const { locale = "en" } = Astro.props;
+const { locale = "en", position = "top" } = Astro.props;
 const t = useTranslations(locale)
 ---
 
@@ -167,7 +167,7 @@ const t = useTranslations(locale)
     updateIndicators(0, 0)
   });
 </script>
-<div class="dropdown dropdown-end">
+<div class={`dropdown dropdown-end ${position === "bottom" ? "dropdown-top" : ""}`}>
   <div tabindex="0" role="button" class="btn btn-primary">
     <div class="indicator flex gap-2">
       <svg
