@@ -3,8 +3,9 @@ import MiniCart from "./MiniCart.astro"
 import Logo from "../assets/logo.png"
 import LanguagePicker from "./LanguagePicker.astro"
 
-const { navlinks } = Astro.props
+const { navlinks } = Astro.props;
 ---
+
 <div class="navbar bg-base-100 shadow-sm mb-6">
   <div class="navbar-start">
     <div class="dropdown xl:hidden">
@@ -31,7 +32,7 @@ const { navlinks } = Astro.props
       </ul>
     </div>
   </div>
-  <div class="xl:flex xl:gap-2 navbar-end">
+  <div class="xl:flex gap-2 navbar-end">
     <span class="hidden lg:block">
       <LanguagePicker />
     </span>
