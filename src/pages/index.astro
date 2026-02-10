@@ -9,16 +9,7 @@ const lang = 'en'
 ---
 <Layout locale={lang}>
   <section class="container" id="intro">
-    {pagesData.allPages.length && (
-        <section>
-          <h2>Pages:</h2>
-          {pagesData.allPages.map(page => (
-            <article>
-              <h4><a href={page.slug}>{page.title}</a></h4>
-            </article>
-          ))}
-        </section>
-    )}
+    {JSON.stringify(homePageContent.homepage)}
   </section>
 </Layout>
   

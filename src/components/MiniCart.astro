@@ -1,52 +1,70 @@
 ---
-const { locale = "en" } = Astro.props;
+import { useTranslations } from "../i18n/utils";
+
+const { locale = "en", position = "top" } = Astro.props;
+const t = useTranslations(locale)
 ---
+
 <script>
+  import { UPDATE_CART } from "./cart-actions";
+
   /**
-   * 
-   * button fires events
-   *  
-   */ 
-  document.addEventListener("click", (event) => {
-      const target = event.target;
-      if (!(target instanceof HTMLElement)) return;
-      
-      const button = target.closest("[data-cart-button]");
-      if (!(button instanceof HTMLElement)) return;
-      
-      const sku = button.getAttribute("data-sku");
-      const priceAttr = button.getAttribute("data-price");
-      const price = priceAttr ? Number(priceAttr) : 0;
-      
-      if (!sku) return;
-      
-      const cartEvent = new CustomEvent("cartUpdate", {
-        detail: {
-          item: { sku },
-          price,
-        },
-      });
-      
-      window.dispatchEvent(cartEvent);
+   *
+   * Add to Cart button event
+   *
+   */
+  document.addEventListener("click", (event) => {    
+    const target = event.target;
+
+    if (!(target instanceof HTMLElement)) return;
+
+    const button = target.closest("[data-cart-button]");
+    if (!(button instanceof HTMLElement)) return;
+
+    const product = button.getAttribute("data-product");
+    const priceAttr = button.getAttribute("data-price");
+    const price = priceAttr ? Number(priceAttr) : 0;
+
+    if (!product) return;
+
+    const productParsed = JSON.parse(product)
+
+    const cartEvent = new CustomEvent(UPDATE_CART, {
+      detail: {
+        product: productParsed,
+        price,
+      },
     });
+
+    window.dispatchEvent(cartEvent);
+  });
 </script>
 <script>
-  /**
-   * 
-   * Cart recieves events and updates the cart
-   *  
-   */ 
-  const CART_ITEMS = "cartitems";
-  const CART_TOTAL = "carttotal";
+  /** @typedef {import("./Checkout.types").Product} Product */
 
-  function ensureStorageDefaults() {
+  import { mergeCartItems } from "./merge-cart-items/merge-cart-items.js"
+  import {
+    CLEAR_CART,
+    REPLACE_CART,
+    UPDATE_CART,
+    CART_ITEMS,
+    CART_TOTAL,
+  } from "./cart-actions";
+
+  /**
+   *
+   * Cart receives events and updates the cart
+   *
+   */
+
+  function setStorageDefaults() {
     if (!localStorage.getItem(CART_ITEMS)) {
       localStorage.setItem(CART_ITEMS, JSON.stringify([]));
     }
     if (!localStorage.getItem(CART_TOTAL)) {
-      localStorage.setItem(CART_TOTAL, JSON.stringify(0));
+      localStorage.setItem(CART_TOTAL, '0');
     }
-  };
+  }
 
   function getCartItems() {
     const cartItemsRaw = localStorage.getItem(CART_ITEMS);
@@ -55,21 +73,38 @@ const { locale = "en" } = Astro.props;
     } catch {
       return [];
     }
-  };
+  }
 
   function getCartTotal() {
     const cartTotalRaw = localStorage.getItem(CART_TOTAL);
-    const parsed = cartTotalRaw ? JSON.parse(cartTotalRaw) : 0;
+    const parsed = Number(cartTotalRaw || 0);
     return Number(parsed) || 0;
-  };
+  }
+  
+  /**
+   * 
+   * @param {Product[]} items
+   * @returns {void} 
+   */
+  function getCartItemQuantity(cartItems) {
+    return cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+  }
 
+  /**
+   * 
+   * @param {Product[]} items
+   * @returns {void} 
+   */
   function setCartItems(items) {
     localStorage.setItem(CART_ITEMS, JSON.stringify(items));
-  };
+  }
 
+  /**
+   * @param {number} total 
+   */
   function setCartTotal(total) {
-    localStorage.setItem(CART_TOTAL, JSON.stringify(total));
-  };
+    localStorage.setItem(CART_TOTAL, total);
+  }
 
   function updateIndicators(itemsCount = 0, total = 0) {
     const itemIndicator = document.querySelector("#item-indicator");
@@ -87,34 +122,52 @@ const { locale = "en" } = Astro.props;
     if (totalCostIndicator instanceof HTMLElement) {
       totalCostIndicator.innerText = `${total.toFixed(2)}`;
     }
-  };
+  }
 
   window.addEventListener("DOMContentLoaded", () => {
-    ensureStorageDefaults();
+    setStorageDefaults();
 
     const initialItems = getCartItems();
     const initialTotal = getCartTotal();
-    updateIndicators(initialItems.length, initialTotal);
+    const quantity = getCartItemQuantity(initialItems);
 
+    updateIndicators(quantity, initialTotal);
   });
-  window.addEventListener("cartUpdate", (event) => {
-    const { item, price } = event.detail || {};
+  window.addEventListener(UPDATE_CART, (event) => {
+    const { product, price } = event.detail || {};
 
-    if (!item || price == null) return;
+    if (!product || !price) return;
+    
+    const items = getCartItems();
+    const total = getCartTotal();
 
-    const existingCartItems = getCartItems();
-    const existingCartTotal = getCartTotal();
+    const newCartItems = mergeCartItems([product], items)
+    const quantity = getCartItemQuantity(newCartItems);
 
-    const updatedCartItems = [item, ...existingCartItems];
-    const updatedCartTotal = existingCartTotal + Number(price);
+    setCartItems(newCartItems)
+    setCartTotal(total + price);
 
-    setCartItems(updatedCartItems);
-    setCartTotal(updatedCartTotal);
+    updateIndicators(quantity, total + price);
+  });
+  window.addEventListener(REPLACE_CART, (event) => {
+    const { items, carttotal } = event.detail || {};
 
-    updateIndicators(updatedCartItems.length, updatedCartTotal);
+    if (!items || carttotal == null) return;
+
+    setCartItems(items);
+    setCartTotal(carttotal);
+
+    const quantity = getCartItemQuantity(items)
+
+    updateIndicators(quantity, carttotal);
+  });
+  window.addEventListener(CLEAR_CART, () => {
+    setCartItems([]);
+    setCartTotal(0);
+    updateIndicators(0, 0)
   });
 </script>
-<div class="dropdown dropdown-end">
+<div class={`dropdown dropdown-end ${position === "bottom" ? "dropdown-top" : ""}`}>
   <div tabindex="0" role="button" class="btn btn-primary">
     <div class="indicator flex gap-2">
       <svg
@@ -140,14 +193,14 @@ const { locale = "en" } = Astro.props;
   >
     <div class="card-body">
       <span class="text-lg font-bold"
-        ><span id="dropdown-item-indicator">0</span> Items</span
+        ><span id="dropdown-item-indicator">0</span> {t("Items")}</span
       >
       <span class="text-info"
-        >Subtotal: &pound;<span id="total-cost-indicator">00.00</span></span
+        >{t("Subtotal")}: &pound;<span id="total-cost-indicator">00.00</span></span
       >
       <div class="card-actions">
         <a href={`/${locale}/your-cart`} class="btn btn-primary btn-block"
-          >View cart</a
+          >{t("View cart")}</a
         >
       </div>
     </div>
