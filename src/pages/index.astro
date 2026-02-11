@@ -8,8 +8,16 @@ const homePageContent = await connector("fetchHomePage");
 const lang = 'en'
 ---
 <Layout locale={lang}>
-  <section class="container" id="intro">
-    {JSON.stringify(homePageContent.homepage)}
+  <section class="container max-w-3xl mx-auto [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl" id="intro">
+    <h1 class="text-3xl mt-8 mb-4">{homePageContent.homepage.introTitle}</h1>
+    <p>{homePageContent.homepage.introStructuredText.value.document.children[0].children[0].value}</p>
+    <h2>{homePageContent.homepage.aboutTitle}</h2>
+    <p>{homePageContent.homepage.aboutStructuredText.value.document.children[0].children[0].value}</p>
+    <p>{homePageContent.homepage.aboutStructuredText.value.document.children[1].children[0].value}</p>
+    <p>{homePageContent.homepage.aboutStructuredText.value.document.children[2].children[0].value}</p>
+    <p>{homePageContent.homepage.links}</p>
   </section>
+    <h2 class="mt-20">{JSON.stringify(homePageContent.homepage)}</h2>
+
+
 </Layout>
-  
