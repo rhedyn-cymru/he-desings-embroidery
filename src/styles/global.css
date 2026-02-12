@@ -22,3 +22,11 @@ h3.
 .hovertext {
   @apply hover:text-white transition-colors duration-300
 }
+
+.lang-cymru {
+  @apply btn-sm lg:btn rounded-l rounded-r-none active:translate-0 flex items-center hover:bg-primary hover:text-neutral xl:border-primary xl:border xl:border-r-0
+}
+
+.lang-english {
+  @apply btn-sm lg:btn rounded-r rounded-l-none active:translate-0 flex items-center hover:bg-primary hover:text-neutral xl:border-primary xl:border xl:border-l-0
+}
