@@ -11,9 +11,14 @@ export interface Product {
   quantity: number
   description: string
 }
-export interface CheckoutProps {
+export interface CartProps {
   allProducts: Product[];
   locale: string
+}
+
+export interface ProductImage {
+  url: string;
+  alt: string;
 }
 
 export type UpdateCartDetail = {

@@ -8,7 +8,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://he-designs.cymru",
+  site: import.meta.env.SITE_URL,
 
   i18n: {
     locales: ["en", "cy"],

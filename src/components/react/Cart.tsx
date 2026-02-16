@@ -3,41 +3,28 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "../../i18n/utils";
 
 import type {
-  CheckoutProps,
+  CartProps,
   Product,
   UpdateCartDetail
-} from "../Checkout.types";
+} from "../Cart.types";
 
 import {
   REPLACE_CART,
-  UPDATE_CART,
-  CART_TOTAL,
-  CART_ITEMS,
   CLEAR_CART,
-} from "../cart-actions";
+  UPDATE_CART,
+  deriveCartItemQuantity,
+  deriveCartTotal,
+  getCartItems,
+  setStorageDefaults,
+  formatAsGbp
+} from "../cart-common-functions"
 
-
-const Checkout = ({ locale }: CheckoutProps) => {
+const Cart = ({ locale }: CartProps) => {
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const [cartTotal, setCartTotal] = useState<number>(0);
   const hasMountedRef = useRef(false);
   
   const t = useTranslations(locale)
-
-  function getLSCartItems() {
-    const cartItemsRaw = localStorage.getItem(CART_ITEMS);
-    try {
-      return cartItemsRaw ? JSON.parse(cartItemsRaw) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  function getLSCartTotal() {
-    const cartTotalRaw = localStorage.getItem(CART_TOTAL);
-    const parsed = Number(cartTotalRaw || 0);
-    parsed;
-  }
 
   /*
    *
@@ -94,6 +81,16 @@ const Checkout = ({ locale }: CheckoutProps) => {
     increaseQuantity(product);
   };
 
+  useEffect(() => {
+    const onUpdateCart = (event: Event) => {
+      handleUpdateCart(event as CustomEvent<UpdateCartDetail>);
+    };
+
+    window.addEventListener(UPDATE_CART, onUpdateCart);
+    return () => {
+      window.removeEventListener(UPDATE_CART, onUpdateCart);
+    };
+  }, []);
 
   /*
    * Update minicart after initial load
@@ -120,17 +117,11 @@ const Checkout = ({ locale }: CheckoutProps) => {
    *
    */
   useEffect(() => {
-    const initialCartTotal = getLSCartTotal();
-    setCartTotal(initialCartTotal);
-
-    const initialCartItems = getLSCartItems();
-
-    setCartItems(initialCartItems);
-
-    window.addEventListener(UPDATE_CART, handleUpdateCart as EventListener);
-    return () => {
-      window.removeEventListener(UPDATE_CART, handleUpdateCart as EventListener);
-    };
+    setStorageDefaults()
+    const initialCartItems = getCartItems();
+    setCartItems(initialCartItems || []);
+    const initialCartTotal = deriveCartTotal(initialCartItems);
+    setCartTotal(initialCartTotal || 0);
   }, []);
 
   if (!cartItems.length) {
@@ -143,17 +134,24 @@ const Checkout = ({ locale }: CheckoutProps) => {
   }
 
   return (
-    <div className="max-w-xl">
-      <div className="mb-4 flex justify-between items-center">
-        <h2>
-          {cartItems.map(cartItem => cartItem.quantity)}&nbsp;{t("items")}, total cost: &pound;{cartTotal}
+    <div className="max-w-xl relative">
+      <div className="mb-4 flex justify-end items-center sticky">
+        <h2 className="mr-auto">
+          {deriveCartItemQuantity(cartItems)}&nbsp;{t("items")}, total cost: {formatAsGbp(cartTotal)}
         </h2>
         <button
           onClick={clearCart}
-          className="btn btn-sm btn-outline btn-error"
-        >
+          className="btn btn-sm btn-ghost btn-error"
+          >
           {t("Clear Cart")}
         </button>
+        <a
+          href={`/${locale}/checkout/`}
+          title="checkout now"
+          className="btn btn-sm btn-primary"
+        >
+          {t("Checkout")}
+        </a>
       </div>
       <hr className="my-4"/>
       {cartItems.map((cartItem) => (
@@ -167,8 +165,8 @@ const Checkout = ({ locale }: CheckoutProps) => {
           <div>
             <h3 className="text-lg">{cartItem.title}</h3>
             <p className="mb-2">{cartItem.description}</p>
-            <div>{t("price")}: &pound;{cartItem.price}</div>
-            <div>{t("Total cost")}: &pound;{cartItem.price * cartItem.quantity}</div>
+            <div>{t("price")}: {formatAsGbp(cartItem.price)}</div>
+            <div>{t("Total cost")}: {formatAsGbp(cartItem.price * cartItem.quantity)}</div>
 
             <div className="flex gap-2 mt-4 items-center">
               <button
@@ -198,4 +196,4 @@ const Checkout = ({ locale }: CheckoutProps) => {
   );
 };
 
-export default Checkout;
+export default Cart;

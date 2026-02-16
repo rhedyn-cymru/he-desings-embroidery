@@ -3,9 +3,9 @@ import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 
-import type { Product } from "../Checkout.types";
-import { CART_ITEMS, CART_TOTAL, CLEAR_CART, UPDATE_CART } from "../cart-actions";
-import Checkout from "./Checkout";
+import type { Product } from "../Cart.types";
+import { CART_ITEMS, CART_TOTAL, CLEAR_CART, UPDATE_CART } from "../cart-common-functions";
+import Cart from "./Cart";
 
 vi.mock("../../i18n/utils", () => ({
   useTranslations: () => (key: string) => key,
@@ -26,7 +26,7 @@ function setCart(items: Product[]) {
   localStorage.setItem(CART_TOTAL, `${total}`);
 }
 
-describe("<Checkout />", () => {
+describe("<Cart />", () => {
   beforeEach(() => {
     localStorage.clear();
   });
@@ -38,7 +38,7 @@ describe("<Checkout />", () => {
   });
 
   it("renders an empty state when cart is empty", () => {
-    render(<Checkout allProducts={[]} locale="en" />);
+    render(<Cart allProducts={[]} locale="en" />);
 
     expect(
       screen.getByText(/There are no items in your cart\s*\./i),
@@ -49,17 +49,17 @@ describe("<Checkout />", () => {
 
   it("renders cart items from localStorage", () => {
     setCart([product]);
-    render(<Checkout allProducts={[product]} locale="en" />);
+    render(<Cart allProducts={[product]} locale="en" />);
 
     expect(screen.getByRole("heading", { name: product.title })).not.toBeNull();
     expect(screen.getByText(product.description)).not.toBeNull();
-    expect(screen.getByText("price: £10")).not.toBeNull();
-    expect(screen.getByText("Total cost: £10")).not.toBeNull();
+    expect(screen.getByText("price: £10.00")).not.toBeNull();
+    expect(screen.getByText("Total cost: £10.00")).not.toBeNull();
   });
 
   it("increases quantity when + is clicked", () => {
     setCart([product]);
-    render(<Checkout allProducts={[product]} locale="en" />);
+    render(<Cart allProducts={[product]} locale="en" />);
 
     const increaseButton = screen.getAllByRole("button", { name: "+" })[0];
     const controls = increaseButton.parentElement as HTMLElement;
@@ -71,7 +71,7 @@ describe("<Checkout />", () => {
 
   it("decreases quantity when − is clicked", () => {
     setCart([{ ...product, quantity: 2 }]);
-    render(<Checkout allProducts={[product]} locale="en" />);
+    render(<Cart allProducts={[product]} locale="en" />);
 
     const decreaseButton = screen.getByRole("button", { name: "−" });
     const controls = decreaseButton.parentElement as HTMLElement;
@@ -83,7 +83,7 @@ describe("<Checkout />", () => {
 
   it("removes item when Remove is clicked", () => {
     setCart([product]);
-    render(<Checkout allProducts={[product]} locale="en" />);
+    render(<Cart allProducts={[product]} locale="en" />);
 
     const removeButton = screen.getByRole("button", { name: "Remove" });
     fireEvent.click(removeButton);
@@ -96,7 +96,7 @@ describe("<Checkout />", () => {
   it("dispatches CLEAR_CART when Clear Cart is clicked", () => {
     setCart([product]);
     const dispatchSpy = vi.spyOn(window, "dispatchEvent");
-    render(<Checkout allProducts={[product]} locale="en" />);
+    render(<Cart allProducts={[product]} locale="en" />);
 
     const clearButton = screen.getByRole("button", { name: "Clear Cart" });
     fireEvent.click(clearButton);
@@ -109,7 +109,7 @@ describe("<Checkout />", () => {
 
   it("handles UPDATE_CART custom event", () => {
     setCart([product]);
-    render(<Checkout allProducts={[product]} locale="en" />);
+    render(<Cart allProducts={[product]} locale="en" />);
 
     const increaseButton = screen.getAllByRole("button", { name: "+" })[0];
     const controls = increaseButton.parentElement as HTMLElement;
@@ -120,7 +120,7 @@ describe("<Checkout />", () => {
         detail: { product, price: product.price },
       }),
     );
-
+    
     expect(within(controls).getByText("2")).not.toBeNull();
   });
 });

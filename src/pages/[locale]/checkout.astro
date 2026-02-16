@@ -1,0 +1,407 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import { getLangFromUrl, useTranslations } from "../../i18n/utils";
+
+export async function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "cy" } }];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
+---
+
+<script src="https://js.stripe.com/v3/"></script>
+<script define:vars={{ stripeKey, lang }}>
+  window.__STRIPE_KEY__ = stripeKey;
+  window.__LANG__ = lang;
+</script>
+<script>
+  import {
+    deriveCartItemQuantity,
+    getCartItems,
+    deriveCartTotal,
+  } from "../../components/cart-common-functions.js";
+
+  declare global {
+    interface Window {
+      __STRIPE_KEY__: string;
+      __LANG__: string;
+      Stripe: (key: string) => any;
+    }
+  }
+
+  let stripe;
+  let elements;
+  let paymentElement;
+
+  const cartItems = getCartItems();
+  const cost = deriveCartTotal(cartItems);
+
+  /**
+   *
+   * @param {HTMLButtonElement} checkoutButton
+   * @param {HTMLElement} paymentForm
+   */
+  async function checkout(checkoutButton, paymentForm) {
+    checkoutButton.disabled = true;
+    checkoutButton.setAttribute("data-loading", "");
+
+    try {
+      const response = await fetch("/.netlify/functions/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          origin: window.location.origin,
+        },
+        body: JSON.stringify({
+          amount: cost * 100,
+          currency: "GBP",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.clientSecret) {
+        throw new Error("No clientSecret in response");
+      }
+
+      const { clientSecret } = data;
+
+      // Initialize Stripe Elements with the client secret and appearance
+      elements = stripe.elements({
+        clientSecret,
+        appearance: {
+          theme: "stripe",
+          rules: {
+            ".Label": {
+              color: "oklch(71.996% 0.123 62.756)",
+            },
+          },
+        },
+      });
+
+      // Create and mount the Payment Element
+      paymentElement = elements.create("payment");
+      paymentElement.mount("#payment-element");
+
+      // Show the payment form
+      if (paymentForm instanceof HTMLElement) {
+        checkoutButton.classList.add("hidden");
+        paymentForm.classList.remove("hidden");
+        paymentElement?.focus();
+      }
+    } catch (error) {
+      console.error("Error initializing payment:", error);
+      const messageContainer = document.querySelector("#payment-message");
+      if (messageContainer) {
+        messageContainer.textContent =
+          "Failed to initialize payment. Please try again.";
+      }
+    } finally {
+      checkoutButton.disabled = false;
+      checkoutButton.removeAttribute("data-loading");
+    }
+  }
+
+  /**
+   *
+   * @param {MouseEvent} event
+   * @param {HTMLButtonElement} submitButton
+   */
+  async function submit(event, submitButton) {
+    const lang = window.__LANG__;
+    const url = new URL(window.location.href);
+    event.preventDefault();
+    submitButton.disabled = true;
+    submitButton.setAttribute("data-loading", "");
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/${lang}/checkout/`,
+      },
+    });
+
+    if(error) {
+      url.searchParams.set("success", "false");
+      window.history.replaceState({}, "", url);
+      return;
+    }
+    url.searchParams.set("success", "true");
+    window.history.replaceState({}, "", url);
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    if (!window.Stripe) {
+      console.error("Stripe not loaded");
+      return;
+    }
+
+    const apiKey = window.__STRIPE_KEY__;
+
+    if (!apiKey) {
+      console.error("No API key, aborting payment");
+      return;
+    }
+
+    stripe = window.Stripe(apiKey);
+
+    const quantityElement = document.querySelector("#quantity");
+    const costElement = document.querySelector("#cost");
+
+    if (
+      !(costElement instanceof HTMLElement) ||
+      !(quantityElement instanceof HTMLElement)
+    )
+      return;
+
+    const quantity = deriveCartItemQuantity(cartItems);
+    const cost = deriveCartTotal(cartItems);
+
+    const costCurrency = new Intl.NumberFormat("en-GB", {
+      style: "currency",
+      currency: "GBP",
+    }).format(cost);
+
+    costElement.innerHTML = costCurrency;
+    quantityElement.innerHTML = `${quantity}`;
+
+    const checkoutButton = document.querySelector("#checkout");
+    const paymentForm = document.querySelector("#payment-form");
+    const submitButton = document.querySelector("#submit-payment");
+    const viewProductsButton = document.querySelector(
+      "#checkout-view-products",
+    );
+
+    if (!(checkoutButton instanceof HTMLButtonElement)) return;
+
+    if (!cartItems.length) {
+      checkoutButton.disabled = true;
+      viewProductsButton?.classList.add("btn-primary");
+      viewProductsButton?.classList.remove("btn-ghost");
+      return;
+    }
+
+    checkoutButton.addEventListener("click", async () =>
+      checkout(checkoutButton, paymentForm),
+    );
+
+    // Handle payment submission
+    if (!(submitButton instanceof HTMLButtonElement)) return;
+    submitButton.addEventListener("click", async (e) =>
+      submit(e, submitButton),
+    );
+  });
+</script>
+<script>
+  import { CLEAR_CART } from "../../components/cart-common-functions.js";
+
+  function clearCart() {
+    const url = new URL(window.location.href);
+    const paymentSuccess = url.searchParams.get("redirect_status");
+    const isSuccessful = paymentSuccess === "succeeded";
+    const messageContainerSuccess = document.querySelector("#payment-message-success")
+    const messageContainerError = document.querySelector("#payment-message-error")
+    
+    if (isSuccessful) {
+      const quantityElement = document.querySelector("#quantity");
+      const costElement = document.querySelector("#cost");
+
+      if (
+        !(costElement instanceof HTMLElement) ||
+        !(quantityElement instanceof HTMLElement)
+      )
+        return;
+
+      quantityElement.innerText = "";
+      costElement.innerText = "£00.00";
+
+      window.dispatchEvent(new CustomEvent(CLEAR_CART));
+
+      messageContainerSuccess?.classList.remove("hidden");
+      return;
+    }
+    if(paymentSuccess) {
+      messageContainerError?.classList.remove("hidden");
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => clearCart());
+</script>
+<PageLayout
+  pageTitle="Checkout"
+  pageDescription="Purchase your items"
+  pageUrl="checkout"
+  lang={lang}
+>
+  <div class="mb-6">
+    <p class="text-base-content/70">
+      {t("Review your order and proceed to payment")}.
+    </p>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="card bg-base-200 shadow">
+        <div class="card-body">
+          <h2 class="card-title">{t("Order summary")}</h2>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-base-content/70">{t("Items")}</span>
+            <span class="font-medium"><span id="quantity"></span></span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-base-content/70">{"Subtotal"}</span>
+            <span class="font-semibold"><span id="cost"></span></span>
+          </div>
+          <div class="divider my-2"></div>
+          <div class="flex items-center justify-between text-lg">
+            <span class="font-semibold">{t("Total")}</span>
+            <span class="font-bold"><span id="total-cost"></span></span>
+          </div>
+          <p class="text-sm text-base-content/60">
+            {t("Taxes calculated at checkout.")}
+          </p>
+        </div>
+      </div>
+      <div
+        role="alert"
+        class="alert alert-error hidden"
+        id="payment-message-error"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="h-6 w-6 shrink-0 stroke-current"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+          ></path>
+        </svg>
+        <span> There was a problem with payment. </span>
+      </div>
+      <div
+        role="alert"
+        class="alert alert-success hidden"
+        id="payment-message-success"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="h-6 w-6 shrink-0 stroke-current"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+          ></path>
+        </svg>
+        <span> Payment was successful! We will contact you with shipping details.</span>
+      </div>
+      <div class="card bg-base-200 shadow mb-6">
+        <div class="card-body">
+          <h2 class="card-title">{t("Delivery")}</h2>
+          <p class="text-base-content/70">
+            {
+              t(
+                "We will update you with shipping details once your products have been made.",
+              )
+            }
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <aside class="lg:col-span-1">
+      <div class="card bg-base-100 shadow sticky top-6">
+        <div class="card-body">
+          <h2 class="card-title sr-only">{t("Payment")}</h2>
+
+          <!-- Initial checkout button -->
+          <button id="checkout" class="btn btn-primary w-full group">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-4 icon group-data-loading:hidden"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+              ></path>
+            </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6 loading-icon hidden group-data-loading:block group-data-loading:animate-spin"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+              ></path>
+            </svg>
+
+            {t("Checkout now")}
+          </button>
+
+          <!-- Payment form (hidden initially) -->
+          <form id="payment-form" class="hidden space-y-4">
+            <div id="payment-element" class="mb-4">
+              <!-- Stripe Payment Element will be inserted here -->
+            </div>
+            <div id="payment-message" class="text-error text-sm"></div>
+            <button
+              id="submit-payment"
+              type="submit"
+              class="btn btn-primary w-full group"
+            >
+              {t("Pay now")}
+            </button>
+          </form>
+
+          <p class="text-xs text-base-content/60 mt-2 text-center">
+            {t("All cards accepted")}
+          </p>
+          <div class="divider">{t("or")}</div>
+          <div class="flex flex-col gap-2">
+            <a href={`/${lang}/your-cart/`} class="btn btn-ghost w-full"
+              >{t("Change quantities")}</a
+            >
+          </div>
+          <div class="flex flex-col gap-2">
+            <a
+              id="checkout-view-products"
+              href={`/${lang}/your-cart/`}
+              class="btn btn-ghost w-full">{t("View products")}</a
+            >
+          </div>
+          <a
+            href={`/${lang}/terms/`}
+            class="text-xs text-base-content/60 mt-2 text-center"
+          >
+            {t("By continuing, you agree to our terms")}.
+          </a>
+        </div>
+      </div>
+    </aside>
+  </div>
+</PageLayout>

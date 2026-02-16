@@ -1,18 +1,13 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
-import { getLangFromUrl, useTranslations } from "../../i18n/utils";
-import retrieveData from "../../components/datocms/connector";
-import Checkout from "../../components/react/Checkout";
+import { getLangFromUrl } from "../../i18n/utils";
+import Cart from "../../components/react/Cart";
 
 export async function getStaticPaths() {
   return [{ params: { locale: "en" } }, { params: { locale: "cy" } }];
 }
 
-const data = await retrieveData("fetchAllProducts");
-const allProducts = data?.allProducts || [];
-
 const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 ---
 <PageLayout
   pageTitle="Your cart"
@@ -20,6 +15,6 @@ const t = useTranslations(lang);
   pageUrl="your-cart"
 >
   <div id="content" class="mb-6">
-    <Checkout client:only="react" locale={lang} />
+    <Cart client:only="react" locale={lang} />
   </div>
 </PageLayout>
