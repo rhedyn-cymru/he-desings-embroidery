@@ -93,10 +93,21 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
           }),
         });
 
-        const { clientSecret } = await response.json();
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("API response:", data);
+
+        if (!data.clientSecret) {
+          throw new Error("No clientSecret in response");
+        }
+
+        const { clientSecret } = data;
 
         // Initialize Stripe Elements with the client secret
-        elements = stripe.elements({ clientSecret: clientSecret });
+        elements = stripe.elements({ clientSecret });
 
         // Create and mount the Payment Element
         paymentElement = elements.create("payment");

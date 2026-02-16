@@ -66,7 +66,7 @@ export const handler = async (event) => {
   const { amount = 0 } = payload
   const amountParsed = Number(amount)
 
-  if (!Number.isFinite(amount) || amount <= 0) {
+  if (!Number.isFinite(amountParsed) || amountParsed <= 0) {
     return {
       statusCode: 400,
       headers: corsHeaders,
@@ -77,16 +77,16 @@ export const handler = async (event) => {
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       currency: "gbp",
-      amount: Math.round(amountParsed * 100),
+      amount: Math.round(amountParsed),
       automatic_payment_methods: { enabled: true },
     });
 
     return {
       statusCode: 200,
       headers: corsHeaders,
-      body: JSON.stringify(JSON.stringify({
+      body: JSON.stringify({
         clientSecret: paymentIntent.client_secret,
-      })),
+      }),
     };
   } catch (error) {
     console.error("checkout:stripe-error", error)
