@@ -14,7 +14,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 <script src="https://js.stripe.com/v3/"></script>
 <script define:vars={{ stripeKey, lang }}>
   window.__STRIPE_KEY__ = stripeKey;
-  window.__LANG__ = lang
+  window.__LANG__ = lang;
 </script>
 <script>
   import {
@@ -36,7 +36,6 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
   let paymentElement;
 
   window.addEventListener("DOMContentLoaded", () => {
-    // Initialize Stripe after DOM and Stripe script have loaded
     if (!window.Stripe) {
       console.error("Stripe not loaded");
       return;
@@ -79,7 +78,6 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     if (!(checkoutButton instanceof HTMLButtonElement)) return;
 
     checkoutButton.addEventListener("click", async () => {
-      // Disable button while loading
       checkoutButton.disabled = true;
       checkoutButton.setAttribute("data-loading", "");
 
@@ -110,16 +108,16 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
         const { clientSecret } = data;
 
         // Initialize Stripe Elements with the client secret and appearance
-        elements = stripe.elements({ 
+        elements = stripe.elements({
           clientSecret,
           appearance: {
-            theme: 'stripe',
+            theme: "stripe",
             rules: {
-              '.Label': {
-                color: 'oklch(71.996% 0.123 62.756)',
+              ".Label": {
+                color: "oklch(71.996% 0.123 62.756)",
               },
-            }
-          }
+            },
+          },
         });
 
         // Create and mount the Payment Element
@@ -164,6 +162,30 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
         }
       });
     }
+  });
+</script>
+<script>
+  import { CLEAR_CART } from "../../components/cart-common-functions.js";
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const url = new URL(window.location.href);
+    const paymentSuccess = url.searchParams.get("success");
+    const isSuccessful = paymentSuccess === "true";
+
+    if (isSuccessful) {
+      const quantityElement = document.querySelector("#quantity");
+      const costElement = document.querySelector("#cost");
+
+      if (
+        !(costElement instanceof HTMLElement) ||
+        !(quantityElement instanceof HTMLElement)
+      ) return;
+      
+      quantityElement.innerText = ""
+      costElement.innerText = "£00.00"
+
+      window.dispatchEvent(new CustomEvent(CLEAR_CART))
+      }
   });
 </script>
 <PageLayout
