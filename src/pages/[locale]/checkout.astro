@@ -12,8 +12,9 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 ---
 
 <script src="https://js.stripe.com/v3/"></script>
-<script define:vars={{ stripeKey }}>
+<script define:vars={{ stripeKey, lang }}>
   window.__STRIPE_KEY__ = stripeKey;
+  window.__LANG__ = lang
 </script>
 <script>
   import {
@@ -25,6 +26,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
   declare global {
     interface Window {
       __STRIPE_KEY__: string;
+      __LANG__: string;
       Stripe: (key: string) => any;
     }
   }
@@ -41,6 +43,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     }
 
     const apiKey = window.__STRIPE_KEY__;
+    const lang = window.__LANG__;
 
     if (!apiKey) {
       console.error("No API key, aborting payment");
@@ -106,8 +109,18 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 
         const { clientSecret } = data;
 
-        // Initialize Stripe Elements with the client secret
-        elements = stripe.elements({ clientSecret });
+        // Initialize Stripe Elements with the client secret and appearance
+        elements = stripe.elements({ 
+          clientSecret,
+          appearance: {
+            theme: 'stripe',
+            rules: {
+              '.Label': {
+                color: 'oklch(71.996% 0.123 62.756)',
+              },
+            }
+          }
+        });
 
         // Create and mount the Payment Element
         paymentElement = elements.create("payment");
