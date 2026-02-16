@@ -6,47 +6,57 @@ export async function getStaticPaths() {
   return [{ params: { locale: "en" } }, { params: { locale: "cy" } }];
 }
 
-const { origin } = Astro.url;
-
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
-
 <script>
   import {
     deriveCartItemQuantity,
     getCartItems,
-  } from "../../components/cart-common-functions";
-  import { deriveCartTotal } from "../../components/cart-common-functions";
+    deriveCartTotal
+  } from "../../components/cart-common-functions.js";
 
   window.addEventListener("DOMContentLoaded", () => {
     const quantityElement = document.querySelector("#quantity");
     const costElement = document.querySelector("#cost");
-
+    
     if (
       !(costElement instanceof HTMLElement) ||
       !(quantityElement instanceof HTMLElement)
     )
-      return;
-
+    return;
+    
     const cartItems = getCartItems();
     const quantity = deriveCartItemQuantity(cartItems);
     const cost = deriveCartTotal(cartItems);
-
+    
     const costCurrency = new Intl.NumberFormat("en-GB", {
       style: "currency",
       currency: "GBP",
     }).format(cost);
-
+    
     costElement.innerHTML = costCurrency;
     quantityElement.innerHTML = `${quantity}`;
-
+    
     const checkoutButton = document.querySelector("#checkout");
-
+    
     if (!(checkoutButton instanceof HTMLButtonElement)) return;
-
+    
+    
     checkoutButton.addEventListener("click", async () => {
-      return await fetch("/.netlify/functions/checkout")
+      const intent = await fetch("/.netlify/functions/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          origin: window.location.origin,
+        },
+        body: JSON.stringify({
+          amount: cost,
+          currency: "GBP",
+        })
+      })
+      
+      console.log({intent})
     });
   });
 </script>
@@ -54,6 +64,7 @@ const t = useTranslations(lang);
   pageTitle="Checkout"
   pageDescription="Purchase your items"
   pageUrl="checkout"
+  lang={lang}
 >
   <div class="mb-6">
     <p class="text-base-content/70">

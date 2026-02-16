@@ -4,20 +4,50 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2023-10-16",
 });
 
+
 export const handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
+
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 204,
+      headers: corsHeaders,
+      body: "",
+    };
+  }
+
+  if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
-      headers: { Allow: 'POST' },
-      body: JSON.stringify({ error: 'Method Not Allowed' })
-    }
+      headers: { ...corsHeaders, Allow: "POST, OPTIONS" },
+      body: JSON.stringify({ error: "Method Not Allowed" }),
+    };
+  }
+
+  const origin = event.headers?.origin || event.headers?.Origin
+  console.log("checkout:origin", origin)
+
+  const allowedOrigins = ["https://hedesigns.cymru", "http://localhost:8888"];
+
+  if (!origin || !allowedOrigins.includes(origin)) {
+    return {
+      statusCode: 403,
+      headers: corsHeaders,
+      body: JSON.stringify({ error: "Not allowed" }),
+    };
   }
 
   if (!process.env.STRIPE_SECRET_KEY) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Missing STRIPE_SECRET_KEY' })
-    }
+      headers: corsHeaders,
+      body: JSON.stringify({ error: "Missing STRIPE_SECRET_KEY" }),
+    };
   }
 
   let payload
@@ -25,40 +55,45 @@ export const handler = async (event) => {
   try {
     payload = event.body ? JSON.parse(event.body) : {}
   } catch (error) {
+    console.error("checkout:invalid-json", error)
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Invalid JSON body' })
-    }
+      headers: corsHeaders,
+      body: JSON.stringify({ error: "Invalid JSON body" }),
+    };
+  }
+  
+  const { amount = 0 } = payload
+  const amountParsed = Number(amount)
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return {
+      statusCode: 400,
+      headers: corsHeaders,
+      body: JSON.stringify({ error: "Invalid amount" }),
+    };
   }
 
-  const {
-    lineItems = [],
-  } = payload
-
-  const origin = event.headers?.origin || event.headers?.Origin
-  const defaultSuccessUrl = origin ? `${origin}/checkout?success=1` : undefined
-  const defaultCancelUrl = origin ? `${origin}/checkout?canceled=1` : undefined
-
   try {
-    const session = await stripe.checkout.sessions.create({
-      success_url: 'https://example.com/success',
-      line_items: [
-        {
-          price: 'price_1MotwRLkdIwHu7ixYcPLm5uZ',
-          quantity: 2,
-        },
-      ],
-      mode: 'payment',
+    const paymentIntent = await stripe.paymentIntents.create({
+      currency: "gbp",
+      amount: Math.round(amountParsed * 100),
+      automatic_payment_methods: { enabled: true },
     });
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ id: session.id, url: session.url, clientSecret: session.client_secret })
-    }
+      headers: corsHeaders,
+      body: JSON.stringify(JSON.stringify({
+        clientSecret: paymentIntent.client_secret,
+      })),
+    };
   } catch (error) {
+    console.error("checkout:stripe-error", error)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    }
+      headers: corsHeaders,
+      body: JSON.stringify({ error: error.message }),
+    };
   }
 }
