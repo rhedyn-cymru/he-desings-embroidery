@@ -4,14 +4,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const handler = async (event) => {
 
+  const origin = event.headers?.origin || event.headers?.Origin
+
   const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
-
-    const origin = event.headers?.origin || event.headers?.Origin
-  console.log("checkout:origin", origin)
 
   const allowedOrigins = ["https://hedesigns.cymru", "http://localhost:8888"];
 

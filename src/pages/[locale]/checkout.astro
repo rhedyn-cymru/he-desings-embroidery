@@ -203,8 +203,8 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 
   function clearCart() {
     const url = new URL(window.location.href);
-    const paymentSuccess = url.searchParams.get("success");
-    const isSuccessful = paymentSuccess === "true";
+    const paymentSuccess = url.searchParams.get("redirect_status");
+    const isSuccessful = paymentSuccess === "succeeded";
     const messageContainerSuccess = document.querySelector("#payment-message-success")
     const messageContainerError = document.querySelector("#payment-message-error")
     
@@ -226,7 +226,9 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
       messageContainerSuccess?.classList.remove("hidden");
       return;
     }
-    messageContainerError?.classList.remove("hidden");
+    if(paymentSuccess) {
+      messageContainerError?.classList.remove("hidden");
+    }
   }
 
   window.addEventListener("DOMContentLoaded", () => clearCart());
@@ -259,7 +261,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
           <div class="divider my-2"></div>
           <div class="flex items-center justify-between text-lg">
             <span class="font-semibold">{t("Total")}</span>
-            <span class="font-bold"><span id="cost"></span></span>
+            <span class="font-bold"><span id="total-cost"></span></span>
           </div>
           <p class="text-sm text-base-content/60">
             {t("Taxes calculated at checkout.")}
