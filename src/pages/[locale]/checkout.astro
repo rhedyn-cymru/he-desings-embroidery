@@ -35,6 +35,93 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
   let elements;
   let paymentElement;
 
+  const cartItems = getCartItems();
+  const cost = deriveCartTotal(cartItems);
+
+  async function checkout(checkoutButton, paymentForm) {
+    checkoutButton.disabled = true;
+    checkoutButton.setAttribute("data-loading", "");
+
+    try {
+      const response = await fetch("/.netlify/functions/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          origin: window.location.origin,
+        },
+        body: JSON.stringify({
+          amount: cost * 100,
+          currency: "GBP",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.clientSecret) {
+        throw new Error("No clientSecret in response");
+      }
+
+      const { clientSecret } = data;
+
+      // Initialize Stripe Elements with the client secret and appearance
+      elements = stripe.elements({
+        clientSecret,
+        appearance: {
+          theme: "stripe",
+          rules: {
+            ".Label": {
+              color: "oklch(71.996% 0.123 62.756)",
+            },
+          },
+        },
+      });
+
+      // Create and mount the Payment Element
+      paymentElement = elements.create("payment");
+      paymentElement.mount("#payment-element");
+
+      // Show the payment form
+      if (paymentForm instanceof HTMLElement) {
+        paymentForm.classList.remove("hidden");
+        checkoutButton.classList.add("hidden");
+      }
+    } catch (error) {
+      console.error("Error initializing payment:", error);
+      alert("Failed to initialize payment. Please try again.");
+    } finally {
+      checkoutButton.disabled = false;
+      checkoutButton.removeAttribute("data-loading");
+    }
+  }
+
+  async function submit(event, submitButton) {
+    const lang = window.__LANG__;
+
+    event.preventDefault();
+    submitButton.disabled = true;
+    submitButton.setAttribute("data-loading", "");
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/${lang}/checkout/?success=true`,
+      },
+    });
+
+    const messageContainer = document.querySelector("#payment-message");
+    if (error && messageContainer) {
+      messageContainer.textContent = error.message;
+    }
+    if (error) {
+      submitButton.disabled = false;
+      submitButton.removeAttribute("data-loading");
+    }
+  }
+
   window.addEventListener("DOMContentLoaded", () => {
     if (!window.Stripe) {
       console.error("Stripe not loaded");
@@ -42,12 +129,12 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     }
 
     const apiKey = window.__STRIPE_KEY__;
-    const lang = window.__LANG__;
 
     if (!apiKey) {
       console.error("No API key, aborting payment");
       return;
     }
+
     stripe = window.Stripe(apiKey);
 
     const quantityElement = document.querySelector("#quantity");
@@ -77,97 +164,21 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 
     if (!(checkoutButton instanceof HTMLButtonElement)) return;
 
-    checkoutButton.addEventListener("click", async () => {
-      checkoutButton.disabled = true;
-      checkoutButton.setAttribute("data-loading", "");
-
-      try {
-        const response = await fetch("/.netlify/functions/checkout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            origin: window.location.origin,
-          },
-          body: JSON.stringify({
-            amount: cost * 100,
-            currency: "GBP",
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("API response:", data);
-
-        if (!data.clientSecret) {
-          throw new Error("No clientSecret in response");
-        }
-
-        const { clientSecret } = data;
-
-        // Initialize Stripe Elements with the client secret and appearance
-        elements = stripe.elements({
-          clientSecret,
-          appearance: {
-            theme: "stripe",
-            rules: {
-              ".Label": {
-                color: "oklch(71.996% 0.123 62.756)",
-              },
-            },
-          },
-        });
-
-        // Create and mount the Payment Element
-        paymentElement = elements.create("payment");
-        paymentElement.mount("#payment-element");
-
-        // Show the payment form
-        if (paymentForm instanceof HTMLElement) {
-          paymentForm.classList.remove("hidden");
-          checkoutButton.classList.add("hidden");
-        }
-      } catch (error) {
-        console.error("Error initializing payment:", error);
-        alert("Failed to initialize payment. Please try again.");
-      } finally {
-        checkoutButton.disabled = false;
-        checkoutButton.removeAttribute("data-loading");
-      }
-    });
+    checkoutButton.addEventListener("click", async () =>
+      checkout(checkoutButton, paymentForm),
+    );
 
     // Handle payment submission
-    if (submitButton instanceof HTMLButtonElement) {
-      submitButton.addEventListener("click", async (e) => {
-        e.preventDefault();
-        submitButton.disabled = true;
-        submitButton.setAttribute("data-loading", "");
-
-        const { error } = await stripe.confirmPayment({
-          elements,
-          confirmParams: {
-            return_url: `${window.location.origin}/${lang}/checkout/?success=true`,
-          },
-        });
-
-        if (error) {
-          const messageContainer = document.querySelector("#payment-message");
-          if (messageContainer) {
-            messageContainer.textContent = error.message;
-          }
-          submitButton.disabled = false;
-          submitButton.removeAttribute("data-loading");
-        }
-      });
-    }
+    if (!(submitButton instanceof HTMLButtonElement)) return;
+    submitButton.addEventListener("click", async (e) =>
+      submit(e, submitButton),
+    );
   });
 </script>
 <script>
   import { CLEAR_CART } from "../../components/cart-common-functions.js";
 
-  window.addEventListener("DOMContentLoaded", () => {
+  function clearCart() {
     const url = new URL(window.location.href);
     const paymentSuccess = url.searchParams.get("success");
     const isSuccessful = paymentSuccess === "true";
@@ -179,14 +190,17 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
       if (
         !(costElement instanceof HTMLElement) ||
         !(quantityElement instanceof HTMLElement)
-      ) return;
-      
-      quantityElement.innerText = ""
-      costElement.innerText = "£00.00"
+      )
+        return;
 
-      window.dispatchEvent(new CustomEvent(CLEAR_CART))
-      }
-  });
+      quantityElement.innerText = "";
+      costElement.innerText = "£00.00";
+
+      window.dispatchEvent(new CustomEvent(CLEAR_CART));
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => clearCart());
 </script>
 <PageLayout
   pageTitle="Checkout"
@@ -251,7 +265,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="size-4 icon group-data-[loading]:hidden"
+              class="size-4 icon group-data-loading:hidden"
             >
               <path
                 stroke-linecap="round"
@@ -265,7 +279,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="size-6 loading-icon hidden group-data-[loading]:block group-data-[loading]:animate-spin"
+              class="size-6 loading-icon hidden group-data-loading:block group-data-loading:animate-spin"
             >
               <path
                 stroke-linecap="round"
@@ -300,12 +314,9 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
             <a href={`/${lang}/your-cart/`} class="btn btn-ghost w-full"
               >{t("Change quantities")}</a
             >
-            <a href={`/${lang}/products/`} class="btn btn-ghost w-full"
-              >{t("View all products")}</a
-            >
           </div>
           <a
-            href={`/${lang}/terms`}
+            href={`/${lang}/terms/`}
             class="text-xs text-base-content/60 mt-2 text-center"
           >
             {t("By continuing, you agree to our terms")}.
