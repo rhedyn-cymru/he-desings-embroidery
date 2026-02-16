@@ -38,6 +38,11 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
   const cartItems = getCartItems();
   const cost = deriveCartTotal(cartItems);
 
+  /**
+   *
+   * @param {HTMLButtonElement} checkoutButton
+   * @param {HTMLElement} paymentForm
+   */
   async function checkout(checkoutButton, paymentForm) {
     checkoutButton.disabled = true;
     checkoutButton.setAttribute("data-loading", "");
@@ -86,21 +91,31 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 
       // Show the payment form
       if (paymentForm instanceof HTMLElement) {
-        paymentForm.classList.remove("hidden");
         checkoutButton.classList.add("hidden");
+        paymentForm.classList.remove("hidden");
+        paymentElement?.focus();
       }
     } catch (error) {
       console.error("Error initializing payment:", error);
-      alert("Failed to initialize payment. Please try again.");
+      const messageContainer = document.querySelector("#payment-message");
+      if (messageContainer) {
+        messageContainer.textContent =
+          "Failed to initialize payment. Please try again.";
+      }
     } finally {
       checkoutButton.disabled = false;
       checkoutButton.removeAttribute("data-loading");
     }
   }
 
+  /**
+   *
+   * @param {MouseEvent} event
+   * @param {HTMLButtonElement} submitButton
+   */
   async function submit(event, submitButton) {
     const lang = window.__LANG__;
-
+    const url = new URL(window.location.href);
     event.preventDefault();
     submitButton.disabled = true;
     submitButton.setAttribute("data-loading", "");
@@ -108,18 +123,17 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/${lang}/checkout/?success=true`,
+        return_url: `${window.location.origin}/${lang}/checkout/`,
       },
     });
 
-    const messageContainer = document.querySelector("#payment-message");
-    if (error && messageContainer) {
-      messageContainer.textContent = error.message;
+    if(error) {
+      url.searchParams.set("success", "false");
+      window.history.replaceState({}, "", url);
+      return;
     }
-    if (error) {
-      submitButton.disabled = false;
-      submitButton.removeAttribute("data-loading");
-    }
+    url.searchParams.set("success", "true");
+    window.history.replaceState({}, "", url);
   }
 
   window.addEventListener("DOMContentLoaded", () => {
@@ -146,7 +160,6 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     )
       return;
 
-    const cartItems = getCartItems();
     const quantity = deriveCartItemQuantity(cartItems);
     const cost = deriveCartTotal(cartItems);
 
@@ -161,8 +174,18 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     const checkoutButton = document.querySelector("#checkout");
     const paymentForm = document.querySelector("#payment-form");
     const submitButton = document.querySelector("#submit-payment");
+    const viewProductsButton = document.querySelector(
+      "#checkout-view-products",
+    );
 
     if (!(checkoutButton instanceof HTMLButtonElement)) return;
+
+    if (!cartItems.length) {
+      checkoutButton.disabled = true;
+      viewProductsButton?.classList.add("btn-primary");
+      viewProductsButton?.classList.remove("btn-ghost");
+      return;
+    }
 
     checkoutButton.addEventListener("click", async () =>
       checkout(checkoutButton, paymentForm),
@@ -182,7 +205,9 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     const url = new URL(window.location.href);
     const paymentSuccess = url.searchParams.get("success");
     const isSuccessful = paymentSuccess === "true";
-
+    const messageContainerSuccess = document.querySelector("#payment-message-success")
+    const messageContainerError = document.querySelector("#payment-message-error")
+    
     if (isSuccessful) {
       const quantityElement = document.querySelector("#quantity");
       const costElement = document.querySelector("#cost");
@@ -197,7 +222,11 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
       costElement.innerText = "£00.00";
 
       window.dispatchEvent(new CustomEvent(CLEAR_CART));
+
+      messageContainerSuccess?.classList.remove("hidden");
+      return;
     }
+    messageContainerError?.classList.remove("hidden");
   }
 
   window.addEventListener("DOMContentLoaded", () => clearCart());
@@ -237,7 +266,48 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
           </p>
         </div>
       </div>
-
+      <div
+        role="alert"
+        class="alert alert-error hidden"
+        id="payment-message-error"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="h-6 w-6 shrink-0 stroke-current"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+          ></path>
+        </svg>
+        <span> There was a problem with payment. </span>
+      </div>
+      <div
+        role="alert"
+        class="alert alert-success hidden"
+        id="payment-message-success"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="h-6 w-6 shrink-0 stroke-current"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+          ></path>
+        </svg>
+        <span> Payment was successful! We will contact you with shipping details.</span>
+      </div>
       <div class="card bg-base-200 shadow mb-6">
         <div class="card-body">
           <h2 class="card-title">{t("Delivery")}</h2>
@@ -313,6 +383,13 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
           <div class="flex flex-col gap-2">
             <a href={`/${lang}/your-cart/`} class="btn btn-ghost w-full"
               >{t("Change quantities")}</a
+            >
+          </div>
+          <div class="flex flex-col gap-2">
+            <a
+              id="checkout-view-products"
+              href={`/${lang}/your-cart/`}
+              class="btn btn-ghost w-full">{t("View products")}</a
             >
           </div>
           <a

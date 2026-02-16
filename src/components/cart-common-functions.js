@@ -2,8 +2,7 @@ export const CART_ITEMS = "cartitems";
 export const CART_TOTAL = "carttotal";
 export const CLEAR_CART = "clearcart";
 export const REPLACE_CART = "replacecart";
-export const UPDATE_CART = "updatecart"
-
+export const UPDATE_CART = "updatecart";
 /**
    *
    * Cart receives events and updates the cart
@@ -30,7 +29,7 @@ function getCartItems() {
  * @returns {number} 
  */
 function deriveCartTotal(cartItems) {
-  const total = cartItems.reduce((sum, cartItem) => sum + cartItem.price, 0)
+  const total = cartItems.reduce((sum, cartItem) =>sum + (cartItem.price * cartItem.quantity), 0)
   return total;
 }
 
@@ -61,7 +60,7 @@ function formatAsGbp(cost) {
       currency: "GBP",
     }).format(cost);
 
-    return costCurrency
+    return costCurrency;
 }
 
 export {
