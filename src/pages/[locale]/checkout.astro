@@ -8,23 +8,46 @@ export async function getStaticPaths() {
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 ---
 
-<script src="https://js.stripe.com/v3/" ></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script define:vars={{ stripeKey }}>
+  window.__STRIPE_KEY__ = stripeKey;
+</script>
 <script>
-  declare global {
-    interface Window {
-      Stripe: (key: string) => any;
-    }
-  }
-
   import {
     deriveCartItemQuantity,
     getCartItems,
     deriveCartTotal,
   } from "../../components/cart-common-functions.js";
 
+  declare global {
+    interface Window {
+      __STRIPE_KEY__: string;
+      Stripe: (key: string) => any;
+    }
+  }
+
+  let stripe;
+  let elements;
+  let paymentElement;
+
   window.addEventListener("DOMContentLoaded", () => {
+    // Initialize Stripe after DOM and Stripe script have loaded
+    if (!window.Stripe) {
+      console.error("Stripe not loaded");
+      return;
+    }
+
+    const apiKey = window.__STRIPE_KEY__;
+
+    if (!apiKey) {
+      console.error("No API key, aborting payment");
+      return;
+    }
+    stripe = window.Stripe(apiKey);
+
     const quantityElement = document.querySelector("#quantity");
     const costElement = document.querySelector("#cost");
 
@@ -45,14 +68,7 @@ const t = useTranslations(lang);
 
     costElement.innerHTML = costCurrency;
     quantityElement.innerHTML = `${quantity}`;
-  });
 
-  // Initialize Stripe (replace with your publishable key)
-  const stripe = window.Stripe(import.meta.env.VITE_PUBLIC_STRIPE_KEY); // Replace with your actual key
-  let elements;
-  let paymentElement;
-  const cost = deriveCartTotal(cartItems);
-  window.addEventListener("DOMContentLoaded", () => {
     const checkoutButton = document.querySelector("#checkout");
     const paymentForm = document.querySelector("#payment-form");
     const submitButton = document.querySelector("#submit-payment");
@@ -62,7 +78,7 @@ const t = useTranslations(lang);
     checkoutButton.addEventListener("click", async () => {
       // Disable button while loading
       checkoutButton.disabled = true;
-      checkoutButton.classList.add("loading");
+      checkoutButton.setAttribute("data-loading", "");
 
       try {
         const response = await fetch("/.netlify/functions/checkout", {
@@ -80,7 +96,7 @@ const t = useTranslations(lang);
         const { clientSecret } = await response.json();
 
         // Initialize Stripe Elements with the client secret
-        elements = stripe.elements({ clientSecret });
+        elements = stripe.elements({ clientSecret: clientSecret });
 
         // Create and mount the Payment Element
         paymentElement = elements.create("payment");
@@ -96,7 +112,7 @@ const t = useTranslations(lang);
         alert("Failed to initialize payment. Please try again.");
       } finally {
         checkoutButton.disabled = false;
-        checkoutButton.classList.remove("loading");
+        checkoutButton.removeAttribute("data-loading");
       }
     });
 
@@ -105,7 +121,7 @@ const t = useTranslations(lang);
       submitButton.addEventListener("click", async (e) => {
         e.preventDefault();
         submitButton.disabled = true;
-        submitButton.classList.add("loading");
+        submitButton.setAttribute("data-loading", "");
 
         const { error } = await stripe.confirmPayment({
           elements,
@@ -120,7 +136,7 @@ const t = useTranslations(lang);
             messageContainer.textContent = error.message;
           }
           submitButton.disabled = false;
-          submitButton.classList.remove("loading");
+          submitButton.removeAttribute("data-loading");
         }
       });
     }
@@ -182,14 +198,14 @@ const t = useTranslations(lang);
           <h2 class="card-title sr-only">{t("Payment")}</h2>
 
           <!-- Initial checkout button -->
-          <button id="checkout" class="btn btn-primary w-full">
+          <button id="checkout" class="btn btn-primary w-full group">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="size-4"
+              class="size-4 icon group-data-[loading]:hidden"
             >
               <path
                 stroke-linecap="round"
@@ -197,6 +213,21 @@ const t = useTranslations(lang);
                 d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
               ></path>
             </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6 loading-icon hidden group-data-[loading]:block group-data-[loading]:animate-spin"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+              ></path>
+            </svg>
+
             {t("Checkout now")}
           </button>
 
@@ -209,7 +240,7 @@ const t = useTranslations(lang);
             <button
               id="submit-payment"
               type="submit"
-              class="btn btn-primary w-full"
+              class="btn btn-primary w-full group"
             >
               {t("Pay now")}
             </button>

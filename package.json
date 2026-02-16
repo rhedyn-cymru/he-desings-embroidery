@@ -17,23 +17,23 @@
     "@datocms/cda-client": "^0.2.10",
     "@netlify/functions": "^5.1.2",
     "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.16.14",
+    "astro": "^5.17.2",
     "astro-seo": "^1.1.0",
     "datocms-listen": "^1.0.2",
     "datocms-structured-text-generic-html-renderer": "^5.1.7",
     "datocms-structured-text-to-plain-text": "^5.1.7",
     "datocms-structured-text-utils": "^5.1.7",
     "gql.tada": "^1.9.0",
-    "react": "^19.1.0",
+    "react": "^19.2.4",
     "react-datocms": "^7.2.14",
-    "react-dom": "^19.1.0",
+    "react-dom": "^19.2.4",
     "stripe": "^20.3.1",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.2",
-    "daisyui": "^5.5.14",
-    "jsdom": "^26.1.0",
+    "daisyui": "^5.5.18",
+    "jsdom": "^28.1.0",
     "vitest": "^4.0.18"
   }
 }
