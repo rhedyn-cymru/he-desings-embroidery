@@ -1,20 +1,61 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import connector from "../components/datocms/connector"
+import connector from "../components/datocms/connector";
+import { StructuredText } from "../components/datocms";
+import { HeadingWithAnchorLink } from "../components/datocms/HeadingWithAnchorLink";
+import { PageInline } from "../components/datocms/inlineRecord/PageInline";
+import { PageLink } from "../components/datocms/linkToRecord/PageLink";
+import { VideoBlock } from "../components/datocms/blocks/VideoBlock";
+import { ImageBlock } from "../components/datocms/blocks/ImageBlock";
+import { ImageGalleryBlock } from "../components/datocms/blocks/ImageGalleryBlock";
+import AddToCartButton from "../components/AddToCartButton.astro";
 
 const pagesData = await connector("fetchAllPages");
 const homePageContent = await connector("fetchHomePage");
 
-const lang = 'en'
+const lang = 'en';
 ---
 <Layout locale={lang}>
   <section class="container max-w-3xl mx-auto [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl" id="intro">
-    <h1 class="text-3xl mt-8 mb-4">{homePageContent.homepage.introTitle}</h1>
-    <p>{homePageContent.homepage.introStructuredText.value.document.children[0].children[0].value}</p>
-    <h2>{homePageContent.homepage.aboutTitle}</h2>
-    <p>{homePageContent.homepage.aboutStructuredText.value.document.children[0].children[0].value}</p>
-    <p>{homePageContent.homepage.aboutStructuredText.value.document.children[1].children[0].value}</p>
-    <p>{homePageContent.homepage.aboutStructuredText.value.document.children[2].children[0].value}</p>
-    <p>{homePageContent.homepage.aboutStructuredText.value.links}</p>
+    <div class="w-full">
+      <h1 class="text-3xl mt-8 mb-4">{homePageContent.homepage.introTitle}</h1>
+      <StructuredText
+        data={homePageContent.homepage.introStructuredText}
+        blockComponents={{
+          ImageBlockRecord: ImageBlock,
+          ImageGalleryBlockRecord: ImageGalleryBlock,
+          VideoBlockRecord: VideoBlock,
+        }}
+        linkToRecordComponents={{
+          PageRecord: PageLink,
+        }}
+        inlineRecordComponents={{
+          PageRecord: PageInline,
+        }}
+        nodeOverrides={{
+          heading: HeadingWithAnchorLink,
+        }}
+      />
+    </div>
+    <div class="w-full">
+      <h2>{homePageContent.homepage.aboutTitle}</h2>
+      <StructuredText
+        data={homePageContent.homepage.aboutStructuredText}
+        blockComponents={{
+          ImageBlockRecord: ImageBlock,
+          ImageGalleryBlockRecord: ImageGalleryBlock,
+          VideoBlockRecord: VideoBlock,
+        }}
+        linkToRecordComponents={{
+          PageRecord: PageLink,
+        }}
+        inlineRecordComponents={{
+          PageRecord: PageInline,
+        }}
+        nodeOverrides={{
+          heading: HeadingWithAnchorLink,
+        }}
+      />
+    </div>
   </section>
 </Layout>
