@@ -43,19 +43,35 @@ const t = useTranslations(lang)
 });
 </script>
 <Layout locale={lang} pageTitle={t("Contact Us")} pageDescription={t("Get in touch with us today")} pageUrl={`contact`}>
-  <section>
+  <section class="container max-w-7xl px-2 mx-auto">
     <h1>{t("Contact Us")}</h1>
     <p>{t("We'd love to hear from you! We typically respond within 2 working days")}.</p>
-    <form id="contact-form" name="contact" method="POST" data-netlify="true" action={`/${lang}/contact?success=true`}>
-      <label for="your-name">{t("Your name")}</label>
-      <input type="text" name="name" id="your-name" placeholder="name" required maxlength="40" minlength="3">
-      <label for="your-company">{t("your company")}</label>
-      <input type="text" name="company" id="your-company" placeholder="company" required maxlength="40" minlength="3">
-      <label for="your-email">{t("your email")}</label>
-      <input type="email" name="email" id="your-email" placeholder="email" required maxlength="40" minlength="3">
-      <label for="your-enquiry">{t("your enquiry")}</label>
-      <textarea name="enquiry" id="your-enquiry" placeholder="your enquiry" required maxlength="180" minlength="3"/>
-      <input type="submit" value={t("Send")}>
+    <form id="contact-form" name="contact" method="POST" data-netlify="true" action={`/${lang}/contact?success=true`} class="space-y-4 max-w-md mb-6">
+      <div class="form-control w-full">
+        <label class="label" for="your-name">
+          <span class="label-text">{t("Your name")}</span>
+        </label>
+        <input type="text" name="name" id="your-name" placeholder="John Smith" required maxlength="40" minlength="3" class="input input-bordered w-full" />
+      </div>
+      <div class="form-control w-full">
+        <label class="label" for="your-company">
+          <span class="label-text">{t("your company")}</span>
+        </label>
+        <input type="text" name="company" id="your-company" placeholder="Your Company" required maxlength="40" minlength="3" class="input input-bordered w-full" />
+      </div>
+      <div class="form-control w-full">
+        <label class="label" for="your-email">
+          <span class="label-text">{t("your email")}</span>
+        </label>
+        <input type="email" name="email" id="your-email" placeholder="name@example.com" required maxlength="40" minlength="3" class="input input-bordered w-full" />
+      </div>
+      <div class="form-control w-full">
+        <label class="label" for="your-enquiry">
+          <span class="label-text">{t("your enquiry")}</span>
+        </label>
+        <textarea name="enquiry" id="your-enquiry" placeholder="Tell us about your enquiry..." required maxlength="180" minlength="3" class="textarea textarea-bordered w-full h-32" rows="4"/>
+      </div>
+      <button type="submit" class="btn btn-primary w-full">{t("Send")}</button>
     </form>
     <template name="submission-success">
       <div>

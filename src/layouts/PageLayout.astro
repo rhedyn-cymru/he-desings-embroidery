@@ -2,7 +2,13 @@
 import { getLangFromUrl } from "../i18n/utils";
 import Layout from "./Layout.astro";
 
-const { pageUrl, pageTitle, pageDescription } = Astro.props
+interface Props {
+  pageUrl: string;
+  pageTitle: string;
+  pageDescription: string;
+}
+
+const { pageUrl, pageTitle, pageDescription }: Props = Astro.props
 
 export async function getStaticPaths() {
   return [
