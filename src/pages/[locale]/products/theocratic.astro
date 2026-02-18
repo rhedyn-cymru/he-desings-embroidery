@@ -11,9 +11,11 @@ export async function getStaticPaths() {
 const data = await retrieveData("fetchAllProducts");
 const allProducts = data?.allProducts || [];
 
-const onlyTheocraticProducts = allProducts.filter(product => 
-  !product.category.some(category => category.category !== "Theocratic")
-)
+
+const onlyTheocraticProducts = allProducts.filter((product) =>
+  Array.isArray(product.category) &&
+  product.category.length > 0 &&
+  product.category.every((productCategory) => productCategory.category === "Theocratic"))
 
 const lang = getLangFromUrl(Astro.url);
 ---
