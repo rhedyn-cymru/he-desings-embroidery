@@ -63,11 +63,38 @@ function formatAsGbp(cost) {
     return costCurrency;
 }
 
+function calculateShippingCost(itemsCount) {
+  const costs = [
+    {
+      itemCount: 1,
+      shippingCost: 4
+    },
+    {
+      itemCount: 4,
+      shippingCost: 8
+    },
+    {
+      itemCount: 12,
+      shippingCost: 4
+    },
+  ]
+  
+  const applicableTier = costs.reduce((selected, tier) => {
+    if (tier.itemCount <= itemsCount) {
+      return tier.itemCount > (selected?.itemCount || 0) ? tier : selected;
+    }
+    return selected;
+  }, null);
+
+  return applicableTier?.shippingCost || costs[0].shippingCost;
+}
+
 export {
   setStorageDefaults,
   deriveCartItemQuantity,
   getCartItems,
   setCartItems,
   deriveCartTotal,
-  formatAsGbp
+  formatAsGbp,
+  calculateShippingCost
 }

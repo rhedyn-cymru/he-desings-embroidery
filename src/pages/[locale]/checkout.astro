@@ -21,6 +21,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     deriveCartItemQuantity,
     getCartItems,
     deriveCartTotal,
+    calculateShippingCost
   } from "../../components/cart-common-functions.js";
 
   declare global {
@@ -221,23 +222,42 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 
     const quantityElement = document.querySelector("#quantity");
     const costElement = document.querySelector("#cost");
-
-    if (
-      !(costElement instanceof HTMLElement) ||
-      !(quantityElement instanceof HTMLElement)
-    )
-      return;
+    const totalCostElement = document.querySelector("#total-cost");
+    const shippingCostElement = document.querySelector("#shipping-cost");
 
     const quantity = deriveCartItemQuantity(cartItems);
     const cost = deriveCartTotal(cartItems);
+    const shippingCost = calculateShippingCost(cartItems.length)
+    const totalCost = cost + shippingCost
 
     const costCurrency = new Intl.NumberFormat("en-GB", {
       style: "currency",
       currency: "GBP",
     }).format(cost);
 
-    costElement.innerHTML = costCurrency;
-    quantityElement.innerHTML = `${quantity}`;
+    const shippingCostCurrency = new Intl.NumberFormat("en-GB", {
+      style: "currency",
+      currency: "GBP",
+    }).format(shippingCost);
+
+    const totalCostCurrency = new Intl.NumberFormat("en-GB", {
+      style: "currency",
+      currency: "GBP",
+    }).format(totalCost);
+
+    if(shippingCostElement instanceof HTMLElement) {
+      const pluralise = quantity > 1 ? 's' : ''
+      shippingCostElement.innerHTML = `${quantity} item${pluralise}: ${shippingCostCurrency}`
+    }
+    if(costElement instanceof HTMLElement) {
+      costElement.innerHTML = costCurrency;
+    }
+    if(quantityElement instanceof HTMLElement) {
+      quantityElement.innerHTML = `${quantity}`;
+    }
+    if(totalCostElement instanceof HTMLElement) {
+      totalCostElement.innerHTML = `${totalCostCurrency}`;
+    }
 
     const checkoutButton = document.querySelector("#checkout");
     const paymentForm = document.querySelector("#payment-form");
@@ -333,6 +353,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
           <div class="divider my-2"></div>
           <div class="flex items-center justify-between text-lg">
             <span class="font-semibold">{t("Total")}</span>
+            <span class="font-bold"><span id="shipping-cost"></span></span>
             <span class="font-bold"><span id="total-cost"></span></span>
           </div>
           <p class="text-sm text-base-content/60">
@@ -479,8 +500,8 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
           <div class="flex flex-col gap-2">
             <a
               id="checkout-view-products"
-              href={`/${lang}/your-cart/`}
-              class="btn btn-ghost w-full">{t("View products")}</a
+              href={`/${lang}/products/`}
+              class="btn btn-ghost w-full">{t("View all products")}</a
             >
           </div>
           <a

@@ -5,7 +5,7 @@ import Logo from "../assets/logo.png";
 ---
 
 <footer class="footer sm:footer-horizontal bg-base-200 text-base-content p-10">
-  <div class="container mx-auto flex justify-between">
+  <div class="container mx-auto flex flex-col md:flex-row justify-between">
     {
       Boolean(navLinks?.length) && (
         <nav>
@@ -23,10 +23,10 @@ import Logo from "../assets/logo.png";
       )
     }
     <div>
-      <a href="/" class="px-2">
+      <a href="/" class="px-2 mb-6">
         <img src={Logo.src} alt="Logo" class="h-12" />
       </a>
-      <p class="mb-2">All artwork and items &copy; HE Designs. All rights reserved.</p>
+      <p class="mb-6">All artwork and items &copy; HE Designs. All rights reserved.</p>
       <ul class="flex flex-row gap-2">
         <li><a href={`/${lang}/privacy/`} class="btn">Privacy</a></li>
         <li><a href={`/${lang}/cookies/`} class="btn">Cookies</a></li>
@@ -36,10 +36,10 @@ import Logo from "../assets/logo.png";
     <div>
       <h6 class="footer-title">Your products:</h6>
       <nav>
-        <ul>
-          <li><a class="btn btn-primary" href={`/${lang}/checkout/`}>Checkout now</a></li>
-          <li><a class="btn" href={`/${lang}/your-cart/`}>View Your Cart</a></li>
-          <li><a class="btn" href={`/${lang}/products/`}>All products</a></li>
+        <ul class="w-full flex gap-2 flex-col">
+          <li><a class="btn w-full btn-primary" href={`/${lang}/checkout/`}>Checkout now</a></li>
+          <li><a class="btn w-full" href={`/${lang}/your-cart/`}>View Your Cart</a></li>
+          <li><a class="btn w-full" href={`/${lang}/products/`}>All products</a></li>
         </ul>
       </nav>
     </div>

@@ -30,3 +30,25 @@ h3.
 .lang-english {
   @apply btn-sm lg:btn rounded-r rounded-l-none active:translate-0 flex items-center hover:bg-primary hover:text-neutral xl:border-primary xl:border xl:border-l-0
 }
+
+.gallery div {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  gap: 1rem;
+  
+  /* Hide scrollbar while keeping functionality */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.gallery::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery > * {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}

@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 const lang = getLangFromUrl(Astro.url)
 ---
 <Layout locale={lang} pageTitle={pageTitle} pageDescription={pageDescription} pageUrl={pageUrl}>
-  <div class="container mx-auto">
+  <div class="container mx-auto px-2">
     <slot />
   </div>
 </Layout>
