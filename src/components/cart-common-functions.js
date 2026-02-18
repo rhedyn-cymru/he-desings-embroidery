@@ -75,7 +75,7 @@ function calculateShippingCost(itemsCount) {
     },
     {
       itemCount: 12,
-      shippingCost: 4
+      shippingCost: 14
     },
   ]
   
