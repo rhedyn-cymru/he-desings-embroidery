@@ -11,9 +11,11 @@ export async function getStaticPaths() {
 const data = await retrieveData("fetchAllProducts");
 const allProducts = data?.allProducts || [];
 
-const nonTheocraticProducts = allProducts.filter(product => 
-  !product.category.some(category => category.category === "Theocratic")
-)
+
+const onlyTheocraticProducts = allProducts.filter((product) =>
+  Array.isArray(product.category) &&
+  product.category.length > 0 &&
+  product.category.every((productCategory) => productCategory.category === "Theocratic"))
 
 const lang = getLangFromUrl(Astro.url);
 ---
@@ -21,14 +23,14 @@ const lang = getLangFromUrl(Astro.url);
 <Layout 
   locale={lang}
   pageDescription="Embroidered bags, tote bags and other custom embroidery products made exclusively in North Wales"
-  pageTitle="All Products"
+  pageTitle="All Theocratic Products"
   pageUrl="products"
 >
   <section class="container m-auto" id="intro">
     <div class="flex gap-4">
       <div class="grid grid-cols-4 gap-4">
         {
-          nonTheocraticProducts.map((product) => (
+          onlyTheocraticProducts.map((product) => (
             <article class="card bg-base-100 shadow-sm">
               <a href={product.slug}>
                 {product.images && (

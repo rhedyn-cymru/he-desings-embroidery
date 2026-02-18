@@ -63,13 +63,13 @@ const domain = "https://hedesigns.cymru"
     <SEO
       title={metaTitle}
       description={metaDescription}
-      canonical={`${domain}${pageUrl}`}
+      canonical={`${domain}/${locale}/${pageUrl}/`}
       openGraph={{
         basic: {
           title: metaTitle,
           type,
           image: shareImage,
-          url: `${domain}${pageUrl}`
+          url: `${domain}/${locale}/${pageUrl}/`
         },
       }}
     />

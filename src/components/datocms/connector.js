@@ -51,6 +51,7 @@ const queries = {
         description
         images {
           url
+          alt
         }
       }
     }
