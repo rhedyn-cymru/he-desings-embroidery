@@ -344,7 +344,6 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
       <div class="card bg-base-100 shadow sticky top-6">
         <div class="card-body">
           <h2 class="card-title sr-only">{t("Payment")}</h2>
-
           <!-- Initial checkout button -->
           <button id="checkout" class="btn btn-primary w-full group">
             <svg
@@ -385,6 +384,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
               <label class="input">
                 <span class="label-text">{t("Email")}</span>
                 <input
+                  required
                   id="customer-email"
                   type="email"
                   autocomplete="email"
@@ -394,6 +394,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
               <label class="input" for="shipping-name">
                 <span class="label-text">{t("Full name")}</span>
                 <input
+                  required
                   id="shipping-name"
                   type="text"
                   autocomplete="name"
@@ -403,6 +404,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
               <label class="input" for="shipping-line1">
                 <span class="label-text">{t("Address line 1")}</span>
                 <input
+                  required
                   id="shipping-line1"
                   type="text"
                   autocomplete="address-line1"
@@ -412,6 +414,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
               <label class="input" for="shipping-line2">
                 <span class="label-text">{t("Address line 2")}</span>
                 <input
+                  required
                   id="shipping-line2"
                   type="text"
                   autocomplete="address-line2"
@@ -421,6 +424,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
               <label class="input" for="shipping-city">
                 <span class="label-text">{t("City")}</span>
                 <input
+                  required
                   id="shipping-city"
                   type="text"
                   autocomplete="address-level2"
@@ -430,6 +434,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
               <label class="input" for="shipping-postal">
                 <span class="label-text">{t("Postal code")}</span>
                 <input
+                  required
                   id="shipping-postal"
                   type="text"
                   autocomplete="postal-code"
@@ -442,12 +447,13 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
                   id="shipping-country"
                   autocomplete="country"
                   class="w-full"
+                  required
                 >
-                  <option value="">{t("Select country")}</option>
+                  <option disabled value="">{t("Select country")}</option>
                   <option value="GB">{t("United Kingdom")}</option>
                 </select>
               </label>
-              <p class="small">Sorry, we only ship to the UK at the moment.</p>
+              <p class="small">{t("Sorry, we only ship to the UK at the moment")}.</p>
             </div>
             <div id="payment-element" class="mb-4">
               <!-- Stripe Payment Element will be inserted here -->
