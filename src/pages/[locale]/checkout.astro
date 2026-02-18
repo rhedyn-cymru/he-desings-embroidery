@@ -73,7 +73,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
       const { clientSecret } = data;
 
       // Initialize Stripe Elements with the client secret and appearance
-      const elements = stripe.elements({
+      elements = stripe.elements({
         clientSecret,
         appearance: {
           theme: "stripe",
@@ -81,6 +81,26 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
             ".Label": {
               color: "oklch(71.996% 0.123 62.756)",
             },
+            ".Tab": {
+              backgroundColor: "transparent",
+              color: "oklch(71.996% 0.123 62.756)",
+              borderColor: "oklch(72.354% 0.092 79.129)"
+            },
+            ".Input": {
+              backgroundColor: "transparent",
+              color: "oklch(71.996% 0.123 62.756)",
+              borderColor: "oklch(72.354% 0.092 79.129)"
+            },
+            ".Block": {
+              backgroundColor: "transparent",
+              color: "oklch(71.996% 0.123 62.756)",
+              borderColor: "oklch(72.354% 0.092 79.129)"
+            },
+            ".LinkOptIn": {
+              backgroundColor: "transparent",
+              color: "oklch(71.996% 0.123 62.756)",
+              borderColor: "oklch(72.354% 0.092 79.129)"
+            }
           },
         },
       });
