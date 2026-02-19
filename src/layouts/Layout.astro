@@ -61,32 +61,31 @@ const domain = "https://hedesigns.cymru"
     <link rel="preload" href="/TitanOne-Regular.woff" as="font" type="font/woff" crossorigin="anonymous">
     <link rel="preload" href={logoSimple.src} as="image">
     <script is:inline>
-      (function() {
-        function languageSwitcher() {
-          const url = new URL(window.location.href);
-          const segments = url.pathname
-            .replace(/^\/+/, "")
-            .split("/")
-            .filter(Boolean);
-          const currentLanguage = segments[0] === "cy" ? "cy" : "en";
+      function languageSwitcher() {
+        const url = new URL(window.location.href);
+        const segments = url.pathname
+          .replace(/^\/+/, "")
+          .split("/")
+          .filter(Boolean);
+        const currentLanguage = segments[0] === "cy" ? "cy" : "en";
 
-          const allLangDivs = document.querySelectorAll("#language-switcher > div");
-          allLangDivs.forEach((div) => div.classList.remove("active"));
+        const allLangDivs = document.querySelectorAll("#language-switcher > div");
+        allLangDivs.forEach((div) => div.classList.remove("active"));
 
-          const activeDiv = document.querySelector(
-            `#language-switcher #${currentLanguage}`
-          );
-          if (activeDiv) {
-            activeDiv.classList.add("active");
-          }
+        const activeDiv = document.querySelector(
+          `#language-switcher #${currentLanguage}`
+        );
+        if (activeDiv) {
+          activeDiv.classList.add("active");
         }
-        
-        if (document.readyState === 'loading') {
-          document.addEventListener("DOMContentLoaded", languageSwitcher);
-        } else {
-          languageSwitcher();
-        }
-      })();
+      }
+      
+      if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", languageSwitcher);
+      } else {
+        languageSwitcher();
+      }
+      window.addEventListener("DOMContentLoaded", () => () => languageSwitcher())
     </script>
     <SEO
       title={metaTitle}
