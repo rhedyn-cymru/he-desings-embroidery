@@ -45,6 +45,8 @@ const queries = {
         title
         slug
         price
+        isFeatured
+        isCustomisable
         category {
           category
         }
