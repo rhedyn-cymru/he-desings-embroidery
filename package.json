@@ -15,7 +15,7 @@
     "@datocms/astro": "^0.6.11",
     "@datocms/cda-client": "^0.2.10",
     "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.16.14",
+    "astro": "^5.17.3",
     "astro-seo": "^1.1.0",
     "datocms-listen": "^1.0.2",
     "datocms-structured-text-generic-html-renderer": "^5.1.7",
