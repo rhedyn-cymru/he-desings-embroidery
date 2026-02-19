@@ -5,6 +5,7 @@ const isHomepage = currentPath === "/" || currentPath === "/en" || currentPath =
 const currentPathMinusLanguage = currentPath.split("/").slice(2).join("/");
 ---
 
+<<<<<<< Updated upstream
 <script>
   function languageSwitcher() {
     // use URL to read current language
@@ -33,6 +34,12 @@ const currentPathMinusLanguage = currentPath.split("/").slice(2).join("/");
   <div id="cy">
     <a class="btn" href={`/cy/${currentPathMinusLanguage}`}>
       Cymraeg
+=======
+<div id="language-switcher" class="flex overflow-hidden justify-between border-primary border rounded xl:border-none">
+  <div id="cy" class="join-item">
+    <a class="lang-cymru" href={`/cy/${currentPathMinusLanguage}`}>
+      <p class="mr-1 xl:mr-0">Cymraeg</p>
+>>>>>>> Stashed changes
       <svg
         width="17"
         height="17"
