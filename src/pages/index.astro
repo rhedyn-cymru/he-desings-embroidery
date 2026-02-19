@@ -12,9 +12,13 @@ import AddToCartButton from "../components/AddToCartButton.astro";
 
 const pagesData = await connector("fetchAllPages");
 const homePageContent = await connector("fetchHomePage");
+const productsData = await connector("fetchAllProducts");
+const featuredProducts = productsData.allProducts.filter((product) => product.isFeatured);
+const featuredPublicProducts = featuredProducts.filter(product => product.category.filter(category => category.category !== "Theocratic"));
 
 const lang = 'en';
 ---
+
 <Layout locale={lang}>
   <section class="container max-w-3xl mx-auto [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl" id="intro">
     <div class="w-full">
@@ -37,6 +41,14 @@ const lang = 'en';
         }}
       />
     </div>
+  </section>
+
+  <section>
+    {JSON.stringify(featuredPublicProducts)}
+
+  </section>
+
+  <section class="container max-w-3xl mx-auto [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl" id="intro">
     <div class="w-full">
       <h2>{homePageContent.homepage.aboutTitle}</h2>
       <StructuredText
