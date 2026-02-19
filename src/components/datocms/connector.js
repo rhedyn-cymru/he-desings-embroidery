@@ -58,6 +58,26 @@ const queries = {
       }
     }
   `),
+  fetchFeaturedProducts: graphql(/* GraphQL */ `
+    {
+      allProducts(filter: { isFeatured: { eq: true } }) {
+        id
+        title
+        slug
+        price
+        isFeatured
+        isCustomisable
+        category {
+          category
+        }
+        description
+        images {
+          url
+          alt
+        }
+      }
+    }
+  `),
   fetchHomePage: graphql(/* GraphQL */ `
     {
       homepage {

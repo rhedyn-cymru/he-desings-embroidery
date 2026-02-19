@@ -8,13 +8,18 @@ import { PageLink } from "../components/datocms/linkToRecord/PageLink";
 import { VideoBlock } from "../components/datocms/blocks/VideoBlock";
 import { ImageBlock } from "../components/datocms/blocks/ImageBlock";
 import { ImageGalleryBlock } from "../components/datocms/blocks/ImageGalleryBlock";
-import AddToCartButton from "../components/AddToCartButton.astro";
 
-const pagesData = await connector("fetchAllPages");
 const homePageContent = await connector("fetchHomePage");
-const productsData = await connector("fetchAllProducts");
-const featuredProducts = productsData.allProducts.filter((product) => product.isFeatured);
-const featuredPublicProducts = featuredProducts.filter(product => product.category.filter(category => category.category !== "Theocratic"));
+const featuredProducts = await connector("fetchFeaturedProducts");
+const featuredProductsData = (featuredProducts as any)?.allProducts ?? [];
+
+const featuredPublicProducts = featuredProductsData.filter(
+  (product: any) =>
+    !product.category?.some(
+      (category: any) => category.category === "Theocratic",
+    ),
+);
+
 
 const lang = 'en';
 ---
@@ -43,7 +48,7 @@ const lang = 'en';
     </div>
   </section>
 
-  <section>
+  <section class="container max-w-3xl mx-auto [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl" id="featured-products">
     {JSON.stringify(featuredPublicProducts)}
 
   </section>

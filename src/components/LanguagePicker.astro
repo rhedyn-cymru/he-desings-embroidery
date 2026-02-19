@@ -4,32 +4,6 @@ const currentPath = Astro.url.pathname;
 const isHomepage = currentPath === "/" || currentPath === "/en" || currentPath === "/en/" || currentPath === "/cy" || currentPath === "/cy/";
 const currentPathMinusLanguage = currentPath.split("/").slice(2).join("/");
 ---
-
-<script>
-  function languageSwitcher() {
-    // use URL to read current language
-    const url = new URL(window.location.href);
-    const segments = url.pathname
-      .replace(/^\/+/, "")
-      .split("/")
-      .filter(Boolean);
-    const currentLanguage = segments[0] === "cy" ? "cy" : "en";
-
-    // Remove active class from all language options
-    const allLangDivs = document.querySelectorAll("#language-switcher > div");
-    allLangDivs.forEach((div) => div.classList.remove("active"));
-
-    // Add active class to current language
-    const activeDiv = document.querySelector(
-      `#language-switcher #${currentLanguage}`
-    );
-    if (activeDiv) {
-      activeDiv.classList.add("active");
-    }
-  }
-  document.addEventListener("DOMContentLoaded", () => languageSwitcher());
-</script>
-
 <div id="language-switcher" class="flex overflow-hidden justify-between border-primary border rounded xl:border-none">
   <div id="cy" class="join-item">
     <a class="lang-cymru" href={`/cy/${currentPathMinusLanguage}`}>
