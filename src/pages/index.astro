@@ -89,7 +89,7 @@ const lang = "en";
       id="featured-products"
     >
       {
-        featuredPublicProducts.map((product) => (
+        featuredPublicProducts.slice(0, 3).map((product) => (
           <article class="card bg-base-100 shadow-sm">
             <a href={`/${lang}/${product.slug}/`}>
               {product.images && (
@@ -163,7 +163,7 @@ const lang = "en";
           class="relative z-10 py-12 px-6 md:px-0 bg-base-100 container max-w-3xl mx-auto grid md:grid-cols-3 gap-4"
           id="special-products"
         >
-          {reducedPricePublicProducts.map((product) => (
+          {reducedPricePublicProducts.slice(0, 3).map((product) => (
             <article class="card bg-base-100 shadow-sm">
               <a href={`/${lang}/${product.slug}/`}>
                 {product.images && (

@@ -52,48 +52,69 @@ const lang = getLangFromUrl(Astro.url);
   pageUrl={`products/${Astro.params.slug}/`}
   pageImage={productData.product.images[0].url}
 >
-  <article class="grid lg:grid-cols-2 gap-6 mb-6 max-w-7xl mx-auto">
-    {
-      productData.product.images && (
-        <div class="product-images flex overflow-x-auto scroll-snap-type-x-mandatory scroll-smooth">
-          {productData.product.images.map((image) => (
-            <figure class="flex-shrink-0 w-full scroll-snap-align-start scroll-snap-stop-always">
-              <img src={image.url} alt={image.alt} class="rounded w-full h-full object-cover" />
-            </figure>
-          ))}
-        </div>
-      )
-    }
-    <div>
+  <article class="mb-6 max-w-7xl mx-auto">
+    <div class="lg:hidden">
       <div class="breadcrumbs text-sm">
         <ul>
           <li><a href="/">Home</a></li>
-          <li><aa href={`/${lang}/products`}>Products</a></li>
+          <li><a href={`/${lang}/product/`}>Products</a></li>
           <li>{page.title}</li>
         </ul>
       </div>
       <h1 class="colour-special text-3xl mb-2">{page.title}</h1>
-      <StructuredText
-        data={productData.product.structuredText}
-        blockComponents={{
-          ImageBlockRecord: ImageBlock,
-          ImageGalleryBlockRecord: ImageGalleryBlock,
-          VideoBlockRecord: VideoBlock,
-        }}
-        linkToRecordComponents={{
-          PageRecord: PageLink,
-        }}
-        inlineRecordComponents={{
-          PageRecord: PageInline,
-        }}
-        nodeOverrides={{
-          heading: HeadingWithAnchorLink,
-        }}
-      />
-      <hr class="my-4">
-      <div class="flex justify-between items-center">
-        &pound;{productData.product.price}
-        <AddToCartButton product={productData.product} price={productData.product.price}/>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-6">
+      {
+        productData.product.images && (
+          <div class="product-images flex overflow-x-auto scroll-snap-type-x-mandatory scroll-smooth">
+            {productData.product.images.map((image) => (
+              <figure class="flex-shrink-0 w-full scroll-snap-align-start scroll-snap-stop-always">
+                <img
+                  src={image.url}
+                  alt={image.alt}
+                  class="rounded w-full h-full object-cover"
+                />
+              </figure>
+            ))}
+          </div>
+        )
+      }
+      <div>
+        <div class="hidden lg:block">
+          <div class="breadcrumbs text-sm">
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href={`/${lang}/products/`}>Products</a></li>
+            <li>{page.title}</li>
+          </ul>
+        </div>
+        <h1 class="colour-special text-3xl mb-2">{page.title}</h1>
+        </div>
+        <StructuredText
+          data={productData.product.structuredText}
+          blockComponents={{
+            ImageBlockRecord: ImageBlock,
+            ImageGalleryBlockRecord: ImageGalleryBlock,
+            VideoBlockRecord: VideoBlock,
+          }}
+          linkToRecordComponents={{
+            PageRecord: PageLink,
+          }}
+          inlineRecordComponents={{
+            PageRecord: PageInline,
+          }}
+          nodeOverrides={{
+            heading: HeadingWithAnchorLink,
+          }}
+        />
+        <hr class="my-4" />
+        <div class="flex justify-between items-center">
+          &pound;{productData.product.price}
+          <AddToCartButton
+            product={productData.product}
+            price={productData.product.price}
+          />
+        </div>
       </div>
     </div>
   </article>
