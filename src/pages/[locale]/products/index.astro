@@ -38,11 +38,9 @@ const lang = getLangFromUrl(Astro.url)
               <a href={product.slug}>
                 {product.images && (
                   <div class="product-images">
-                    {product.images.map((image) => (
                       <figure>
-                        <img src={image.url} alt={image.alt} class="rounded" />
+                        <img src={product.images[0].url} alt={product.images[0].alt} class="rounded" />
                       </figure>
-                    ))}
                   </div>
                 )}
               </a>
