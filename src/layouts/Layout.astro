@@ -51,8 +51,12 @@ const domain = "https://hedesigns.cymru"
 ---
 <script>
   import languageSwitcher  from "../components/language-switcher.js"
+  import addToCart from "../components/add-to-cart.js"
 
-  window.addEventListener("DOMContentLoaded", () => languageSwitcher())
+  window.addEventListener("DOMContentLoaded", () => {
+    addToCart()
+    languageSwitcher()
+    })
 </script>
 <!doctype html>
 <html lang={locale}>
