@@ -8,14 +8,17 @@ import { CART_ITEMS, CART_TOTAL, CLEAR_CART, UPDATE_CART } from "../cart-common-
 import Cart from "./Cart";
 
 // Mock Temporal
-const mockEpochMilliseconds = 1640000000000; // Fixed timestamp for tests
-vi.stubGlobal('Temporal', {
-  Now: {
-    instant: () => ({
-      epochMilliseconds: mockEpochMilliseconds
-    })
+let mockEpochMilliseconds = 1640000000000; // Fixed timestamp for tests
+
+vi.mock("@js-temporal/polyfill", () => ({
+  Temporal: {
+    Now: {
+      instant: () => ({
+        epochMilliseconds: mockEpochMilliseconds
+      })
+    }
   }
-});
+}));
 
 vi.mock("../../i18n/utils", () => ({
   useTranslations: () => (key: string) => key,
@@ -135,5 +138,58 @@ describe("<Cart />", () => {
     );
     
     expect(within(controls).getByText("2")).not.toBeNull();
+  });
+
+  it("clears expired cart items older than 2 hours", () => {
+    const twoHoursInMs = 2 * 60 * 60 * 1000;
+    const oldTimestamp = mockEpochMilliseconds - twoHoursInMs - 1000; // 2 hours + 1 second ago
+    
+    // Set cart with old timestamp
+    localStorage.setItem(CART_ITEMS, JSON.stringify({
+      items: [product],
+      timestamp: oldTimestamp
+    }));
+
+    render(<Cart allProducts={[product]} locale="en" />);
+
+    // Cart should be empty due to expiration
+    expect(
+      screen.getByText(/There are no items in your cart\s*\./i),
+    ).not.toBeNull();
+  });
+
+  it("preserves cart items within 2 hours", () => {
+    const oneHourInMs = 1 * 60 * 60 * 1000;
+    const recentTimestamp = mockEpochMilliseconds - oneHourInMs; // 1 hour ago
+    
+    // Set cart with recent timestamp
+    localStorage.setItem(CART_ITEMS, JSON.stringify({
+      items: [product],
+      timestamp: recentTimestamp
+    }));
+
+    render(<Cart allProducts={[product]} locale="en" />);
+
+    // Cart should still have items
+    expect(screen.getByRole("heading", { name: product.title })).not.toBeNull();
+    expect(screen.getByText(product.description)).not.toBeNull();
+  });
+
+  it("clears cart items exactly at 2 hour boundary", () => {
+    const twoHoursInMs = 2 * 60 * 60 * 1000;
+    const exactlyTwoHoursAgo = mockEpochMilliseconds - twoHoursInMs - 1; // Just over 2 hours
+    
+    // Set cart at exact 2 hour boundary
+    localStorage.setItem(CART_ITEMS, JSON.stringify({
+      items: [product],
+      timestamp: exactlyTwoHoursAgo
+    }));
+
+    render(<Cart allProducts={[product]} locale="en" />);
+
+    // Cart should be empty
+    expect(
+      screen.getByText(/There are no items in your cart\s*\./i),
+    ).not.toBeNull();
   });
 });

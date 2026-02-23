@@ -11,8 +11,9 @@ export const UPDATE_CART = "updatecart";
    *
    */
 function setStorageDefaults() {
+  if(localStorage.getItem(CART_ITEMS)) return;
   localStorage.setItem(CART_ITEMS, JSON.stringify({ 
-    timestamp: Temporal.Now.instant().epochMilliseconds , 
+    timestamp: Temporal.Now.instant().epochMilliseconds, 
     items: [] 
   }));
 }
@@ -24,13 +25,13 @@ function getCartItems() {
     return [];
   }
   try {
-    const { items, timestamp } = JSON.parse(cartItemsRaw)
+    const { items, timestamp } = JSON.parse(cartItemsRaw);
     const now = Temporal.Now.instant().epochMilliseconds;
     const twoHoursInMs = 2 * 60 * 60 * 1000;
 
-    if((now - timestamp) > twoHoursInMs) {
-      setStorageDefaults()
-      return []
+    if ((now - timestamp) > twoHoursInMs) {
+      setStorageDefaults();
+      return [];
     }
     return items;
 
