@@ -52,7 +52,7 @@ const queries = {
         }
         description
         images {
-          url
+          url(imgixParams: { w: 600, h: 600, fit: crop, crop: focalpoint })
           alt
         }
       }
@@ -72,7 +72,7 @@ const queries = {
         }
         description
         images {
-          url
+          url(imgixParams: { w: 600, h: 600, fit: crop, crop: focalpoint })
           alt
         }
       }

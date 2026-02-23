@@ -8,6 +8,7 @@ import { PageLink } from "../components/datocms/linkToRecord/PageLink";
 import { VideoBlock } from "../components/datocms/blocks/VideoBlock";
 import { ImageBlock } from "../components/datocms/blocks/ImageBlock";
 import { ImageGalleryBlock } from "../components/datocms/blocks/ImageGalleryBlock";
+import AddToCartButton from "../components/AddToCartButton.astro";
 
 const homePageContent = await connector("fetchHomePage");
 const featuredProducts = await connector("fetchFeaturedProducts");
@@ -47,8 +48,32 @@ const lang = 'en';
     </div>
   </section>
 
-  <section class="container max-w-3xl mx-auto [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl" id="featured-products">
-    {JSON.stringify(featuredPublicProducts)}
+  <section class="container max-w-3xl mx-auto grid md:grid-cols-3 gap-4" id="featured-products">
+   {featuredPublicProducts.map((product) => (
+      <article
+        class="card bg-base-100 shadow-sm"
+      >
+        <a href={product.slug}>
+          {product.images && (
+          <div class="product-images">
+            {product.images.map((image) => (
+              <figure>
+                <img src={image.url} alt={image.alt} class="rounded" />
+              </figure>
+            ))}
+          </div>
+        )}
+        </a>
+        <div class="card-body">
+          <h2 class="card-title"><a href={product.slug}>{product.title}</a></h2>
+          <p class="mb-4">{product.description}</p>
+          <div class="card-actions justify-between items-center">
+            &pound;{product.price}
+            <AddToCartButton product={product} price={product.price} />
+          </div>
+        </div>
+      </article>
+   ))}
   </section>
 
   <section class="container max-w-3xl mx-auto [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl" id="intro">
