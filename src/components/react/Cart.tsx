@@ -156,7 +156,7 @@ const Cart = ({ locale }: CartProps) => {
       <hr className="my-4"/>
       {cartItems.map((cartItem) => (
         <article
-          className="grid grid-cols-2 gap-4 mb-4"
+          className="grid md:grid-cols-2 gap-4 mb-4"
           key={cartItem.id}
         >
           {cartItem.images?.length ? (

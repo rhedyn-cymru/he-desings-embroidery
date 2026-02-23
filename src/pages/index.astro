@@ -9,6 +9,7 @@ import { VideoBlock } from "../components/datocms/blocks/VideoBlock";
 import { ImageBlock } from "../components/datocms/blocks/ImageBlock";
 import { ImageGalleryBlock } from "../components/datocms/blocks/ImageGalleryBlock";
 import AddToCartButton from "../components/AddToCartButton.astro";
+import Logo from "../assets/logo.png";
 
 const homePageContent = await connector("fetchHomePage");
 const featuredProducts = await connector("fetchFeaturedProducts");
@@ -21,81 +22,121 @@ const featuredPublicProducts = featuredProductsData.filter(
     ),
 );
 
-const lang = 'en';
+const lang = "en";
 ---
 
 <Layout locale={lang}>
-  <section class="container max-w-3xl mx-auto [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl" id="intro">
-    <div class="w-full">
-      <h1 class="text-3xl mt-8 mb-4">{homePageContent.homepage.introTitle}</h1>
-      <StructuredText
-        data={homePageContent.homepage.introStructuredText}
-        blockComponents={{
-          ImageBlockRecord: ImageBlock,
-          ImageGalleryBlockRecord: ImageGalleryBlock,
-          VideoBlockRecord: VideoBlock,
-        }}
-        linkToRecordComponents={{
-          PageRecord: PageLink,
-        }}
-        inlineRecordComponents={{
-          PageRecord: PageInline,
-        }}
-        nodeOverrides={{
-          heading: HeadingWithAnchorLink,
-        }}
+  <div class="fixed inset-0 -z-10">
+    <img
+      src={homePageContent.homepage.introFeaturedImage.url}
+      alt={homePageContent.homepage.introFeaturedImage.alt}
+      loading="eager"
+      class="h-full w-full object-cover"
+    />
+  </div>
+  <div class="w-full relative h-[36vh] min-h-36">
+    <div class="absolute top-0 h-full w-full z-10">
+      <section class="container h-full mx-auto">
+        <div class="max-w-xl m-auto">
+          <img class="shadow-2xl shadow-base-100 p-6 md:p-24 rounded-xl mt-6 bg-base-100/20" src={Logo.src} alt="Stylised sewing machine logo" /></div>
+      </section>
+    </div>
+  </div>
+  <div class="relative z-10 bg-base-100">
+    <section
+      class="container max-w-3xl mx-auto pt-12 [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl"
+      id="intro"
+    >
+      <div class="w-full px-6 md:px-0">
+        <h1 class="text-3xl mt-8 mb-4">
+          {homePageContent.homepage.introTitle}
+        </h1>
+        <StructuredText
+          data={homePageContent.homepage.introStructuredText}
+          blockComponents={{
+            ImageBlockRecord: ImageBlock,
+            ImageGalleryBlockRecord: ImageGalleryBlock,
+            VideoBlockRecord: VideoBlock,
+          }}
+          linkToRecordComponents={{
+            PageRecord: PageLink,
+          }}
+          inlineRecordComponents={{
+            PageRecord: PageInline,
+          }}
+          nodeOverrides={{
+            heading: HeadingWithAnchorLink,
+          }}
+        />
+      </div>
+    </section>
+    <section
+      class="relative z-10 py-12 px-6 md:px-0 bg-base-100 container max-w-3xl mx-auto grid md:grid-cols-3 gap-4"
+      id="featured-products"
+    >
+      {
+        featuredPublicProducts.map((product) => (
+          <article class="card bg-base-100 shadow-sm">
+            <a href={product.slug}>
+              {product.images && (
+                <div class="product-images">
+                  {product.images.map((image) => (
+                    <figure>
+                      <img src={image.url} alt={image.alt} class="rounded" />
+                    </figure>
+                  ))}
+                </div>
+              )}
+            </a>
+            <div class="card-body">
+              <h2 class="card-title">
+                <a href={product.slug}>{product.title}</a>
+              </h2>
+              <p class="mb-4">{product.description}</p>
+              <div class="card-actions justify-between items-center">
+                &pound;{product.price}
+                <AddToCartButton product={product} price={product.price} />
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </section>
+  </div>
+
+  <section class="relative" id="about">
+    <div class="absolute inset-0 -z-10">
+      <img
+        src={homePageContent.homepage.aboutFeaturedImage.url}
+        alt={homePageContent.homepage.aboutFeaturedImage.alt}
+        loading="eager"
+        class="h-full w-full object-cover"
       />
     </div>
-  </section>
 
-  <section class="container max-w-3xl mx-auto grid md:grid-cols-3 gap-4" id="featured-products">
-   {featuredPublicProducts.map((product) => (
-      <article
-        class="card bg-base-100 shadow-sm"
-      >
-        <a href={product.slug}>
-          {product.images && (
-          <div class="product-images">
-            {product.images.map((image) => (
-              <figure>
-                <img src={image.url} alt={image.alt} class="rounded" />
-              </figure>
-            ))}
-          </div>
-        )}
-        </a>
-        <div class="card-body">
-          <h2 class="card-title"><a href={product.slug}>{product.title}</a></h2>
-          <p class="mb-4">{product.description}</p>
-          <div class="card-actions justify-between items-center">
-            &pound;{product.price}
-            <AddToCartButton product={product} price={product.price} />
-          </div>
+    <div class="relative z-10 container h-full mx-auto py-12">
+      <div class="max-w-xl m-auto p-8 md:p-0">
+        <div class="w-full bg-base-100 rounded-xl p-6 md:p-24 [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl">
+          <h2>{homePageContent.homepage.aboutTitle}</h2>
+          <StructuredText
+            data={homePageContent.homepage.aboutStructuredText}
+            blockComponents={{
+              ImageBlockRecord: ImageBlock,
+              ImageGalleryBlockRecord: ImageGalleryBlock,
+              VideoBlockRecord: VideoBlock,
+            }}
+            linkToRecordComponents={{
+              PageRecord: PageLink,
+            }}
+            inlineRecordComponents={{
+              PageRecord: PageInline,
+            }}
+            nodeOverrides={{
+              heading: HeadingWithAnchorLink,
+            }}
+          />
         </div>
-      </article>
-   ))}
-  </section>
-
-  <section class="container max-w-3xl mx-auto [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl" id="intro">
-    <div class="w-full">
-      <h2>{homePageContent.homepage.aboutTitle}</h2>
-      <StructuredText
-        data={homePageContent.homepage.aboutStructuredText}
-        blockComponents={{
-          ImageBlockRecord: ImageBlock,
-          ImageGalleryBlockRecord: ImageGalleryBlock,
-          VideoBlockRecord: VideoBlock,
-        }}
-        linkToRecordComponents={{
-          PageRecord: PageLink,
-        }}
-        inlineRecordComponents={{
-          PageRecord: PageInline,
-        }}
-        nodeOverrides={{
-          heading: HeadingWithAnchorLink,
-        }}
-      />
+      </div>
     </div>
   </section>
 </Layout>
