@@ -1,5 +1,5 @@
 ---
-const { navLinks, lang = "en" } = Astro.props;
+const { navLinks, description = "", locale = "en" } = Astro.props;
 
 import Logo from "../assets/logo.png";
 ---
@@ -28,18 +28,18 @@ import Logo from "../assets/logo.png";
       </a>
       <p class="mb-6">All artwork and items &copy; HE Designs. All rights reserved.</p>
       <ul class="flex flex-row gap-2">
-        <li><a href={`/${lang}/privacy/`} class="btn">Privacy</a></li>
-        <li><a href={`/${lang}/cookies/`} class="btn">Cookies</a></li>
-        <li><a href={`/${lang}/terms/`} class="btn">Terms</a></li>
+        <li><a href={`/${locale}/privacy/`} class="btn">Privacy</a></li>
+        <li><a href={`/${locale}/cookies/`} class="btn">Cookies</a></li>
+        <li><a href={`/${locale}/terms/`} class="btn">Terms</a></li>
       </ul>
     </div>
     <div>
       <h6 class="footer-title">Your products:</h6>
       <nav>
         <ul class="w-full flex gap-2 flex-col">
-          <li><a class="btn w-full btn-primary" href={`/${lang}/checkout/`}>Checkout now</a></li>
-          <li><a class="btn w-full" href={`/${lang}/your-cart/`}>View Your Cart</a></li>
-          <li><a class="btn w-full" href={`/${lang}/products/`}>All products</a></li>
+          <li><a class="btn w-full btn-primary" href={`/${locale}/checkout/`}>Checkout now</a></li>
+          <li><a class="btn w-full" href={`/${locale}/your-cart/`}>View Your Cart</a></li>
+          <li><a class="btn w-full" href={`/${locale}/products/`}>All products</a></li>
         </ul>
       </nav>
     </div>
