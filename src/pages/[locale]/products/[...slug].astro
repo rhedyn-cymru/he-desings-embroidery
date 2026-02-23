@@ -55,10 +55,10 @@ const lang = getLangFromUrl(Astro.url);
   <article class="grid lg:grid-cols-2 gap-6 mb-6 max-w-7xl mx-auto">
     {
       productData.product.images && (
-        <div class="product-images">
+        <div class="product-images flex overflow-x-auto scroll-snap-type-x-mandatory scroll-smooth">
           {productData.product.images.map((image) => (
-            <figure>
-              <img src={image.url} alt={image.alt} class="rounded" />
+            <figure class="flex-shrink-0 w-full scroll-snap-align-start scroll-snap-stop-always">
+              <img src={image.url} alt={image.alt} class="rounded w-full h-full object-cover" />
             </figure>
           ))}
         </div>
