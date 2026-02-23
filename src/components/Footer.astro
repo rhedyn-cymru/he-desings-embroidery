@@ -5,7 +5,7 @@ import Logo from "../assets/logo.png";
 ---
 
 <footer class="footer sm:footer-horizontal bg-base-200 text-base-content p-10">
-  <div class="container mx-auto flex flex-col md:flex-row justify-between">
+  <div class="container mx-auto flex gap-6 md:gap-24 flex-col md:flex-row justify-between">
     {
       Boolean(navLinks?.length) && (
         <nav>
@@ -22,11 +22,12 @@ import Logo from "../assets/logo.png";
         </nav>
       )
     }
-    <div>
-      <a href="/" class="px-2 mb-6">
+    <div class="grow">
+      <a href="/" class="px-2 mb-6 btn btn-ghost">
         <img src={Logo.src} alt="Logo" class="h-12" />
       </a>
-      <p class="mb-6">All artwork and items &copy; HE Designs. All rights reserved.</p>
+      <p class="mb-4">All artwork and items &copy; HE Designs. All rights reserved.</p>
+      <p class="mb-6"><a class="hover:text-amber-700" href="https://rhedyn.cymru">Website by Rhedyn</a>.</p>
       <ul class="flex flex-row gap-2">
         <li><a href={`/${locale}/privacy/`} class="btn">Privacy</a></li>
         <li><a href={`/${locale}/cookies/`} class="btn">Cookies</a></li>
