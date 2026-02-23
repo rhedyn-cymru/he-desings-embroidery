@@ -20,13 +20,8 @@ export async function getStaticPaths() {
 const lang = getLangFromUrl(Astro.url)
 ---
 <Layout locale={lang} pageTitle={pageTitle} pageDescription={pageDescription} pageUrl={pageUrl}>
-<<<<<<< HEAD
-  <div class="container max-w-7xl mx-auto mb-20 px-8">
+  <div class="container max-w-3xl mx-auto mb-20 px-8">
     <h1 class="colour-special text-4xl my-8">{pageTitle}</h1>
-=======
-  <div class="container mx-auto px-6 md:px-0 max-w-3xl">
-    <h1 class="colour-special text-3xl mb-2">{pageTitle}</h1>
->>>>>>> 77bb23e (page layout, homepage offers)
     <slot />
   </div>
 </Layout>
