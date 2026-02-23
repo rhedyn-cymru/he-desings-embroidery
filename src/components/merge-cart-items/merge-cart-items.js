@@ -1,14 +1,16 @@
 // @ts-check
 /**
- * @typedef {import("../Checkout.types").Product} Product
+ * @typedef {import("../Cart.types").Product} Product
  */
 
 /**
- * @param {Product[]} baseProducts - initial products in the cart
- * @param {Product[]} itemsToMerge - items to merge into the base products
+ * @param {Product[] | []} baseProducts - initial products in the cart
+ * @param {Product[]} [itemsToMerge] - items to merge into the base products
  * @returns {Product[]} - all products
  */
 export function mergeCartItems(baseProducts, itemsToMerge) {
+  if(!itemsToMerge) return baseProducts;
+
   if (!baseProducts.length) {
     return itemsToMerge;
   }

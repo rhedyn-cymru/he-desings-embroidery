@@ -86,7 +86,6 @@ const t = useTranslations(locale)
     const initialItems = getCartItems();
     const initialTotal = deriveCartTotal(initialItems);
     const quantity = deriveCartItemQuantity(initialItems);
-
     updateIndicators(quantity, initialTotal);
   });
   window.addEventListener(UPDATE_CART, (event) => {

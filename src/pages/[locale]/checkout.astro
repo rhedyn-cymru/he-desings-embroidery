@@ -21,7 +21,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     deriveCartItemQuantity,
     getCartItems,
     deriveCartTotal,
-    calculateShippingCost
+    calculateShippingCost,
   } from "../../components/cart-common-functions.js";
 
   declare global {
@@ -85,23 +85,23 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
             ".Tab": {
               backgroundColor: "transparent",
               color: "oklch(71.996% 0.123 62.756)",
-              borderColor: "oklch(72.354% 0.092 79.129)"
+              borderColor: "oklch(72.354% 0.092 79.129)",
             },
             ".Input": {
               backgroundColor: "transparent",
               color: "oklch(71.996% 0.123 62.756)",
-              borderColor: "oklch(72.354% 0.092 79.129)"
+              borderColor: "oklch(72.354% 0.092 79.129)",
             },
             ".Block": {
               backgroundColor: "transparent",
               color: "oklch(71.996% 0.123 62.756)",
-              borderColor: "oklch(72.354% 0.092 79.129)"
+              borderColor: "oklch(72.354% 0.092 79.129)",
             },
             ".LinkOptIn": {
               backgroundColor: "transparent",
               color: "oklch(71.996% 0.123 62.756)",
-              borderColor: "oklch(72.354% 0.092 79.129)"
-            }
+              borderColor: "oklch(72.354% 0.092 79.129)",
+            },
           },
         },
       });
@@ -227,8 +227,8 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 
     const quantity = deriveCartItemQuantity(cartItems);
     const cost = deriveCartTotal(cartItems);
-    const shippingCost = calculateShippingCost(cartItems.length)
-    const totalCost = cost + shippingCost
+    const shippingCost = calculateShippingCost(cartItems.length);
+    const totalCost = cost + shippingCost;
 
     const costCurrency = new Intl.NumberFormat("en-GB", {
       style: "currency",
@@ -245,17 +245,17 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
       currency: "GBP",
     }).format(totalCost);
 
-    if(shippingCostElement instanceof HTMLElement) {
-      const pluralise = quantity > 1 ? 's' : ''
-      shippingCostElement.innerHTML = `${quantity} item${pluralise}: ${shippingCostCurrency}`
+    if (shippingCostElement instanceof HTMLElement) {
+      const pluralise = quantity > 1 ? "s" : "";
+      shippingCostElement.innerHTML = `${quantity} item${pluralise}: ${shippingCostCurrency}`;
     }
-    if(costElement instanceof HTMLElement) {
+    if (costElement instanceof HTMLElement) {
       costElement.innerHTML = costCurrency;
     }
-    if(quantityElement instanceof HTMLElement) {
+    if (quantityElement instanceof HTMLElement) {
       quantityElement.innerHTML = `${quantity}`;
     }
-    if(totalCostElement instanceof HTMLElement) {
+    if (totalCostElement instanceof HTMLElement) {
       totalCostElement.innerHTML = `${totalCostCurrency}`;
     }
 
@@ -293,6 +293,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     const url = new URL(window.location.href);
     const paymentSuccess = url.searchParams.get("redirect_status");
     const isSuccessful = paymentSuccess === "succeeded";
+
     const messageContainerSuccess = document.querySelector(
       "#payment-message-success",
     );
@@ -312,6 +313,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 
       quantityElement.innerText = "";
       costElement.innerText = "£00.00";
+      
 
       window.dispatchEvent(new CustomEvent(CLEAR_CART));
 
@@ -337,7 +339,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
     </p>
   </div>
 
-  <div class="flex gap-6">
+  <div class="flex flex-col md:flex-row gap-6">
     <div class="lg:w-2/3 space-y-6">
       <div class="card bg-base-200 shadow">
         <div class="card-body">
@@ -403,7 +405,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
           <!-- Payment form (hidden initially) -->
           <form id="payment-form" class="hidden space-y-4">
             <div class="space-y-3">
-              <label class="input">
+              <label class="input w-full">
                 <span class="label-text">{t("Email")}</span>
                 <input
                   required
@@ -413,7 +415,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
                   placeholder="name@example.com"
                 />
               </label>
-              <label class="input" for="shipping-name">
+              <label class="input w-full" for="shipping-name">
                 <span class="label-text">{t("Full name")}</span>
                 <input
                   required
@@ -423,7 +425,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
                   placeholder="Full name"
                 />
               </label>
-              <label class="input" for="shipping-line1">
+              <label class="input w-full" for="shipping-line1">
                 <span class="label-text">{t("Address line 1")}</span>
                 <input
                   required
@@ -433,7 +435,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
                   placeholder="Street address"
                 />
               </label>
-              <label class="input" for="shipping-line2">
+              <label class="input w-full" for="shipping-line2">
                 <span class="label-text">{t("Address line 2")}</span>
                 <input
                   id="shipping-line2"
@@ -442,7 +444,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
                   placeholder="Apartment, suite, etc."
                 />
               </label>
-              <label class="input" for="shipping-city">
+              <label class="input w-full" for="shipping-city">
                 <span class="label-text">{t("City")}</span>
                 <input
                   required
@@ -452,7 +454,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
                   placeholder="City"
                 />
               </label>
-              <label class="input" for="shipping-postal">
+              <label class="input w-full" for="shipping-postal">
                 <span class="label-text">{t("Postal code")}</span>
                 <input
                   required
@@ -462,7 +464,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
                   placeholder="Postcode"
                 />
               </label>
-              <label class="input" for="shipping-country">
+              <label class="input w-full" for="shipping-country">
                 <span class="label-text">{t("Country")}</span>
                 <select
                   id="shipping-country"
@@ -474,7 +476,9 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
                   <option value="GB">{t("United Kingdom")}</option>
                 </select>
               </label>
-              <p class="small">{t("Sorry, we only ship to the UK at the moment")}.</p>
+              <p class="small">
+                {t("Sorry, we only ship to the UK at the moment")}.
+              </p>
             </div>
             <div id="payment-element" class="mb-4">
               <!-- Stripe Payment Element will be inserted here -->
@@ -493,24 +497,73 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
       <!-- END CHECKOUT -->
     </div>
 
-    <aside class="lg:w-1/3"><div class="flex flex-col gap-2">
-            <a href={`/${lang}/your-cart/`} class="btn btn-ghost w-full"
-              >{t("Change quantities")}</a
-            >
-          </div>
-          <div class="flex flex-col gap-2">
-            <a
-              id="checkout-view-products"
-              href={`/${lang}/products/`}
-              class="btn btn-ghost w-full">{t("View all products")}</a
-            >
-          </div>
-          <a
-            href={`/${lang}/terms/`}
-            class="text-xs text-base-content/60 my-6 text-center block"
+    <aside class="lg:w-1/3">
+      <div class="flex flex-col gap-2">
+        <div
+          role="alert"
+          class="alert alert-error hidden"
+          id="payment-message-error"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="h-6 w-6 shrink-0 stroke-current"
           >
-            {t("By continuing, you agree to our terms")}.
-          </a>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+            ></path>
+          </svg>
+          <span>{t("There was a problem with payment")}.</span>
+        </div>
+        <div
+          role="alert"
+          class="alert alert-success hidden"
+          id="payment-message-success"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="h-6 w-6 shrink-0 stroke-current"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+            ></path>
+          </svg>
+          <span>
+            {
+              t(
+                "Payment was successful! We will contact you with shipping details",
+              )
+            }.</span
+          >
+        </div>
+        <a href={`/${lang}/your-cart/`} class="btn btn-ghost w-full"
+          >{t("Change quantities")}</a
+        >
+      </div>
+      <div class="flex flex-col gap-2">
+        <a
+          id="checkout-view-products"
+          href={`/${lang}/products/`}
+          class="btn btn-ghost w-full">{t("View all products")}</a
+        >
+      </div>
+      <a
+        href={`/${lang}/terms/`}
+        class="text-xs text-base-content/60 my-6 text-center block"
+      >
+        {t("By continuing, you agree to our terms")}.
+      </a>
       <div class="card bg-base-200 shadow mb-6">
         <div class="card-body">
           <h2 class="card-title">{t("Delivery")}</h2>
@@ -522,50 +575,6 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
             }
           </p>
         </div>
-      </div>
-      <div
-        role="alert"
-        class="alert alert-error hidden"
-        id="payment-message-error"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="h-6 w-6 shrink-0 stroke-current"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-          ></path>
-        </svg>
-        <span>{t("There was a problem with payment")}.</span>
-      </div>
-      <div
-        role="alert"
-        class="alert alert-success hidden"
-        id="payment-message-success"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="h-6 w-6 shrink-0 stroke-current"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-          ></path>
-        </svg>
-        <span>
-          {t("Payment was successful! We will contact you with shipping details")}.</span
-        >
       </div>
     </aside>
   </div>

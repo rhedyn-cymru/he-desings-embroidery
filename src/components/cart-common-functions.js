@@ -18,6 +18,10 @@ function setStorageDefaults() {
   }));
 }
 
+/**
+ * 
+ * @returns {Product[] | []}
+ */
 function getCartItems() {
   const cartItemsRaw = localStorage.getItem(CART_ITEMS);
   if (!cartItemsRaw) {
@@ -47,6 +51,7 @@ function getCartItems() {
  * @returns {number} 
  */
 function deriveCartTotal(cartItems) {
+  if(!cartItems || !Array.isArray(cartItems)) return 0;
   const total = cartItems.reduce((sum, cartItem) => sum + (cartItem.price * cartItem.quantity), 0)
   return total;
 }
@@ -57,7 +62,9 @@ function deriveCartTotal(cartItems) {
  * @returns {number} 
  */
 function deriveCartItemQuantity(cartItems) {
-  return cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+  if(!cartItems || !Array.isArray(cartItems)) return 0;
+  const total = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+  return total;
 }
 
 /**
