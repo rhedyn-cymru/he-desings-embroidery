@@ -18,7 +18,7 @@ export const handler = async (event) => {
     return {
       statusCode: 403,
       headers: corsHeaders,
-      body: JSON.stringify({ error: "Not allowed" }),
+      body: JSON.stringify({ error: `Origin ${origin} Not allowed` }),
     };
   }
 

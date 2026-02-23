@@ -45,6 +45,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
    * @param {HTMLElement} paymentForm
    */
   async function checkout(checkoutButton, paymentForm) {
+
     checkoutButton.disabled = true;
     checkoutButton.setAttribute("data-loading", "");
 
@@ -274,7 +275,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
       viewProductsButton?.classList.remove("btn-ghost");
       return;
     }
-
+  
     checkoutButton.addEventListener("click", async () =>
       checkout(checkoutButton, paymentForm),
     );
