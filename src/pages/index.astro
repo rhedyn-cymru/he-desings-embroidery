@@ -91,7 +91,7 @@ const lang = "en";
       {
         featuredPublicProducts.map((product) => (
           <article class="card bg-base-100 shadow-sm">
-            <a href={product.slug}>
+            <a href={`/${lang}/${product.slug}/`}>
               {product.images && (
                 <div class="product-images">
                   {product.images.map((image) => (
@@ -104,7 +104,7 @@ const lang = "en";
             </a>
             <div class="card-body">
               <h2 class="card-title">
-                <a href={product.slug}>{product.title}</a>
+                <a href={`/${lang}/${product.slug}/`}>{product.title}</a>
               </h2>
               <p class="mb-4">{product.description}</p>
               <div class="card-actions justify-between items-center">
@@ -167,7 +167,7 @@ const lang = "en";
         >
           {reducedPricePublicProducts.map((product) => (
             <article class="card bg-base-100 shadow-sm">
-              <a href={product.slug}>
+              <a href={`/${lang}/${product.slug}/`}>
                 {product.images && (
                   <div class="product-images">
                     {product.images.map((image) => (
@@ -180,7 +180,7 @@ const lang = "en";
               </a>
               <div class="card-body">
                 <h2 class="card-title">
-                  <a href={product.slug}>{product.title}</a>
+                  <a href={`/${lang}/${product.slug}/`}>{product.title}</a>
                 </h2>
                 <p class="mb-4">{product.description}</p>
                 <div class="card-actions justify-between items-center">
