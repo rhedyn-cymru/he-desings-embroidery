@@ -1,5 +1,5 @@
 ---
-import Layout from "../../../layouts/PageLayout.astro";
+import Layout from "../../../layouts/Layout.astro";
 import { getLangFromUrl } from "../../../i18n/utils";
 import retrieveData from "../../../components/datocms/connector";
 import AddToCartButton from "../../../components/AddToCartButton.astro";
@@ -21,25 +21,31 @@ const lang = getLangFromUrl(Astro.url);
 ---
 
 <Layout 
-  locale={lang}
   pageDescription="Embroidered bags, tote bags and other custom embroidery products made exclusively in North Wales"
-  pageTitle="All Theocratic Products"
-  pageUrl="products"
+  pageTitle="Theocratic Products"
+  pageUrl="products/theocratic"
+  locale={lang}
 >
+<section class="container mx-auto py-16">
+  <div class="card bg-base-200 max-w-2xl mx-auto p-16">
+    <h1 class="text-2xl mb-4">All Theocratic products</h1>
+    <p class="mb-4">All of our designs are hand made by Hannah in Wales. We hope you find something for the little pioneer in your life, or a little something for yourself!</p>
+    <p class="mb-4">We've got a lot else besides these, checkout our main shop page for all other products:</p>
+    <a href={`/${lang}/products/`} class="btn btn-primary mr-auto">See all products</a>
+  </div>
+</section>
   <section class="container m-auto" id="intro">
     <div class="flex gap-4">
-      <div class="grid grid-cols-4 gap-4">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         {
           onlyTheocraticProducts.map((product) => (
             <article class="card bg-base-100 shadow-sm">
               <a href={product.slug}>
                 {product.images && (
                   <div class="product-images">
-                    {product.images.map((image) => (
                       <figure>
-                        <img src={image.url} alt={image.alt} class="rounded" />
+                        <img src={product.images[0].url} alt={product.images[0].alt} class="rounded" />
                       </figure>
-                    ))}
                   </div>
                 )}
               </a>
@@ -57,6 +63,13 @@ const lang = getLangFromUrl(Astro.url);
           ))
         }
       </div>
+    </div>
+  </section>
+  <section class="container py-16 mx-auto">
+    <div class="card bg-base-300 max-w-2xl mx-auto p-16">
+      <h2 class="text-xl mb-4">Custom designs available</h2>
+      <p class="mb-4">If you're struggling to find something you like, or would like a personalised item, please get in touch via our contact form. We'd be happy to help!</p>
+      <a href={`${lang}/contact/`} class="btn btn-primary mr-auto">Contact form</a>
     </div>
   </section>
 </Layout>
