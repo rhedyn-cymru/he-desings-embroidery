@@ -12,7 +12,7 @@ export const handler = async (event) => {
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
 
-  const allowedOrigins = ["https://hedesigns.cymru", "http://localhost:8888"];
+  const allowedOrigins = ["https://www.hedesigns.cymru", "http://localhost:8888"];
 
   if (!origin || !allowedOrigins.includes(origin)) {
     return {
