@@ -352,13 +352,14 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
           </div>
           <div class="divider my-2"></div>
           <div class="flex items-center justify-between text-lg">
-            <span class="font-semibold">{t("Total")}</span>
+            <span class="font-semibold">{t("Delivery")}</span>
             <span class="font-bold"><span id="shipping-cost"></span></span>
+          </div>
+          <div class="divider my-2"></div>
+          <div class="flex items-center justify-between text-lg">
+            <span class="font-semibold">{t("Total to pay:")}</span>
             <span class="font-bold"><span id="total-cost"></span></span>
           </div>
-          <p class="text-sm text-base-content/60">
-            {t("Taxes calculated at checkout.")}
-          </p>
         </div>
       </div>
       <!-- CHECKOUT -->

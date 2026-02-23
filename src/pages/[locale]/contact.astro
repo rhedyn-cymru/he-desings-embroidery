@@ -43,9 +43,11 @@ const t = useTranslations(lang)
 });
 </script>
 <Layout locale={lang} pageTitle={t("Contact Us")} pageDescription={t("Get in touch with us today")} pageUrl={`contact`}>
-  <section class="container max-w-7xl px-2 mx-auto">
-    <h1>{t("Contact Us")}</h1>
-    <p>{t("We'd love to hear from you! We typically respond within 2 working days")}.</p>
+  <section class="container max-w-3xl px-2 mx-auto mb-12 lg:mb-24">
+    <h1 class="text-2xl mb-4">{t("Contact Us")}</h1>
+    <p class="mb-6">
+      {t("Get in touch with us! We'd be happy to hear from you. We try to respond quickly but it depends how busy we are!")}
+    </p>
     <form id="contact-form" name="contact" method="POST" data-netlify="true" action={`/${lang}/contact?success=true`} class="space-y-4 max-w-md mb-6">
       <div class="form-control w-full">
         <label class="label" for="your-name">

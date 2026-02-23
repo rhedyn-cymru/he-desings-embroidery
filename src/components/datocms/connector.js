@@ -45,12 +45,54 @@ const queries = {
         title
         slug
         price
+        isFeatured
+        isCustomisable
         category {
           category
         }
         description
         images {
-          url
+          url(imgixParams: { w: 600, h: 600, fit: crop, crop: focalpoint })
+          alt
+        }
+      }
+    }
+  `),
+  fetchFeaturedProducts: graphql(/* GraphQL */ `
+    {
+      allProducts(filter: { isFeatured: { eq: true } }) {
+        id
+        title
+        slug
+        price
+        isFeatured
+        isCustomisable
+        category {
+          category
+        }
+        description
+        images {
+          url(imgixParams: { w: 600, h: 600, fit: crop, crop: focalpoint })
+          alt
+        }
+      }
+    }
+  `),
+  fetchReducedPriceProducts: graphql(/* GraphQL */ `
+    {
+      allProducts(filter: { isReducedPrice: { eq: true } }) {
+        id
+        title
+        slug
+        price
+				isReducedPrice
+        isCustomisable
+        category {
+          category
+        }
+        description
+        images {
+          url(imgixParams: { w: 600, h: 600, fit: crop, crop: focalpoint })
           alt
         }
       }

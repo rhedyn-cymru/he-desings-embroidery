@@ -1,5 +1,5 @@
 ---
-import Layout from "../../../layouts/PageLayout.astro";
+import Layout from "../../../layouts/Layout.astro";
 import { getLangFromUrl } from "../../../i18n/utils";
 import retrieveData from "../../../components/datocms/connector";
 import AddToCartButton from "../../../components/AddToCartButton.astro";
@@ -15,14 +15,20 @@ const nonTheocraticProducts = allProducts.filter((product) =>
   !product.category.some((category) => category.category === "Theocratic")
 )
 
-const lang = getLangFromUrl(Astro.url);
+const lang = getLangFromUrl(Astro.url)
 ---
-
 <Layout 
   pageDescription="Embroidered bags, tote bags and other custom embroidery products made exclusively in North Wales"
   pageTitle="All Products"
   pageUrl="products"
+  locale={lang}
 >
+<section class="container py-16">
+  <div class="card bg-base-200 max-w-2xl mx-auto p-16">
+    <h1 class="text-2xl mb-4">All products</h1>
+    <p class="mb-6">All of our designs are hand made in Wales. We pride ourselves on procuring the finest fabrics which we then carefully embroider by hand on our professional machinery.</p>
+  </div>
+</section>
   <section class="container m-auto" id="intro">
     <div class="flex gap-4">
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -54,6 +60,12 @@ const lang = getLangFromUrl(Astro.url);
           ))
         }
       </div>
+    </div>
+  </section>
+  <section class="container py-16">
+    <div class="card bg-base-300 max-w-2xl mx-auto p-16">
+      <h2 class="text-xl mb-4">Custom designs available</h2>
+      <p class="mb-6">If you're struggling to find something you like, or would like a personalised item, please get in touch via our contact form. We'd be happy to help!</p>
     </div>
   </section>
 </Layout>

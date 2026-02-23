@@ -13,9 +13,9 @@ const { block } = Astro.props;
 const unmaskedBlock = readFragment(ImageBlockFragment, block);
 ---
 
-<figure>
+<figure class="my-4">
   {/* Display responsive image */}
   <ResponsiveImage data={unmaskedBlock.asset.responsiveImage} />
   {/* Display image title */}
-  <figcaption>{unmaskedBlock.asset.title}</figcaption>
+  {unmaskedBlock.asset.title && <figcaption>{unmaskedBlock.asset.title}</figcaption>}
 </figure>

@@ -7,21 +7,11 @@ import { StructuredText } from "../../components/datocms";
 
 // Structured text components
 import { HeadingWithAnchorLink } from '../../components/datocms/HeadingWithAnchorLink';
-
 import { PageInline } from '../../components/datocms/inlineRecord/PageInline';
-import { PageInlineFragment } from '../../components/datocms/inlineRecord/PageInline/fragments';
-
 import { PageLink } from '../../components/datocms/linkToRecord/PageLink';
-import { PageLinkFragment } from '../../components/datocms/linkToRecord/PageLink/fragments';
-
 import { VideoBlock } from '../../components/datocms/blocks/VideoBlock';
-import { VideoBlockFragment } from '../../components/datocms/blocks/VideoBlock/fragments';
-
 import { ImageBlock } from '../../components/datocms/blocks/ImageBlock';
-import { ImageBlockFragment } from '../../components/datocms/blocks/ImageBlock/fragments';
-
 import { ImageGalleryBlock } from '../../components/datocms/blocks/ImageGalleryBlock';
-import { ImageGalleryBlockFragment } from '../../components/datocms/blocks/ImageGalleryBlock/fragments';
 
 
 export async function getStaticPaths() {
@@ -52,8 +42,6 @@ export async function getStaticPaths() {
 }
 
 const { page, pageData } = Astro.props;
-
-const lang = getLangFromUrl(Astro.url);
 ---
 
 <PageLayout
@@ -62,7 +50,6 @@ const lang = getLangFromUrl(Astro.url);
   pageUrl={Astro.params.slug}
 >
   <div class="[&_p]:my-6 [&_h2]:my-8 [&_h3]:my-8 [&_h4]:my-8 [&_h5]:my-8 [&_h6]:my-8 [&_img]:mt-6 [&_figcaption]:mb-6 [&_ul]:my-6 [&_ol]:my-6 [&_hr]:my-10">
-    <!-- {JSON.stringify(pageData.page.structuredText)} -->
     <StructuredText
       data={pageData.page.structuredText}
       blockComponents={/*
