@@ -15,7 +15,6 @@ import {
   deriveCartItemQuantity,
   deriveCartTotal,
   getCartItems,
-  setStorageDefaults,
   formatAsGbp
 } from "../cart-common-functions"
 
@@ -117,7 +116,6 @@ const Cart = ({ locale }: CartProps) => {
    *
    */
   useEffect(() => {
-    setStorageDefaults()
     const initialCartItems = getCartItems();
     setCartItems(initialCartItems || []);
     const initialCartTotal = deriveCartTotal(initialCartItems);

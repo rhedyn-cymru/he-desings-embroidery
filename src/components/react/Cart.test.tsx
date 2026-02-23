@@ -7,6 +7,16 @@ import type { Product } from "../Cart.types";
 import { CART_ITEMS, CART_TOTAL, CLEAR_CART, UPDATE_CART } from "../cart-common-functions";
 import Cart from "./Cart";
 
+// Mock Temporal
+const mockEpochMilliseconds = 1640000000000; // Fixed timestamp for tests
+vi.stubGlobal('Temporal', {
+  Now: {
+    instant: () => ({
+      epochMilliseconds: mockEpochMilliseconds
+    })
+  }
+});
+
 vi.mock("../../i18n/utils", () => ({
   useTranslations: () => (key: string) => key,
 }));
@@ -21,7 +31,10 @@ const product: Product = {
 };
 
 function setCart(items: Product[]) {
-  localStorage.setItem(CART_ITEMS, JSON.stringify(items));
+  localStorage.setItem(CART_ITEMS, JSON.stringify({
+    items,
+    timestamp: mockEpochMilliseconds
+  }));
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   localStorage.setItem(CART_TOTAL, `${total}`);
 }
