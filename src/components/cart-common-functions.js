@@ -1,3 +1,5 @@
+import { Temporal } from "@js-temporal/polyfill";
+
 export const CART_ITEMS = "cartitems";
 export const CART_TOTAL = "carttotal";
 export const CLEAR_CART = "clearcart";
@@ -9,16 +11,32 @@ export const UPDATE_CART = "updatecart";
    *
    */
 function setStorageDefaults() {
-  if (!localStorage.getItem(CART_ITEMS)) {
-    localStorage.setItem(CART_ITEMS, JSON.stringify([]));
-  }
+  if(localStorage.getItem(CART_ITEMS)) return;
+  localStorage.setItem(CART_ITEMS, JSON.stringify({ 
+    timestamp: Temporal.Now.instant().epochMilliseconds, 
+    items: [] 
+  }));
 }
 
 function getCartItems() {
   const cartItemsRaw = localStorage.getItem(CART_ITEMS);
+  if (!cartItemsRaw) {
+    setStorageDefaults();
+    return [];
+  }
   try {
-    return cartItemsRaw ? JSON.parse(cartItemsRaw) : [];
+    const { items, timestamp } = JSON.parse(cartItemsRaw);
+    const now = Temporal.Now.instant().epochMilliseconds;
+    const twoHoursInMs = 2 * 60 * 60 * 1000;
+
+    if ((now - timestamp) > twoHoursInMs) {
+      setStorageDefaults();
+      return [];
+    }
+    return items;
+
   } catch {
+    setStorageDefaults();
     return [];
   }
 }
@@ -29,7 +47,7 @@ function getCartItems() {
  * @returns {number} 
  */
 function deriveCartTotal(cartItems) {
-  const total = cartItems.reduce((sum, cartItem) =>sum + (cartItem.price * cartItem.quantity), 0)
+  const total = cartItems.reduce((sum, cartItem) => sum + (cartItem.price * cartItem.quantity), 0)
   return total;
 }
 
@@ -48,19 +66,22 @@ function deriveCartItemQuantity(cartItems) {
  * @returns {void} 
  */
 function setCartItems(items) {
-  localStorage.setItem(CART_ITEMS, JSON.stringify(items));
+  localStorage.setItem(CART_ITEMS, JSON.stringify({
+    items,
+    timestamp: Temporal.Now.instant().epochMilliseconds
+  }));
 }
 
 /**
  * 
  */
 function formatAsGbp(cost) {
-      const costCurrency = new Intl.NumberFormat("en-GB", {
-      style: "currency",
-      currency: "GBP",
-    }).format(cost);
+  const costCurrency = new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+  }).format(cost);
 
-    return costCurrency;
+  return costCurrency;
 }
 
 function calculateShippingCost(itemsCount) {
@@ -78,7 +99,7 @@ function calculateShippingCost(itemsCount) {
       shippingCost: 14
     },
   ]
-  
+
   const applicableTier = costs.reduce((selected, tier) => {
     if (tier.itemCount <= itemsCount) {
       return tier.itemCount > (selected?.itemCount || 0) ? tier : selected;

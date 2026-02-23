@@ -4,8 +4,8 @@ const currentPath = Astro.url.pathname;
 const isHomepage = currentPath === "/" || currentPath === "/en" || currentPath === "/en/" || currentPath === "/cy" || currentPath === "/cy/";
 const currentPathMinusLanguage = currentPath.split("/").slice(2).join("/");
 ---
-<div id="language-switcher" class="flex overflow-hidden justify-between border-primary border rounded xl:border-none">
-  <div id="cy" class="join-item">
+<div class={`${classes} flex overflow-hidden justify-between border-primary border rounded xl:border-none`}>
+  <div class="join-item " data-language="cy">
     <a class="lang-cymru" href={`/cy/${currentPathMinusLanguage}`}>
       <p class="mr-1 xl:mr-0">Cymraeg</p>
       <svg
@@ -18,7 +18,7 @@ const currentPathMinusLanguage = currentPath.split("/").slice(2).join("/");
       </svg>
     </a>
   </div>
-  <div id="en" class="join-item">
+  <div class="join-item" data-language="en">
     <a class="lang-english" href={isHomepage ? "/" : `/en/${currentPathMinusLanguage}`}>
       <p class="mr-1 xl:mr-0">English</p>
       <svg

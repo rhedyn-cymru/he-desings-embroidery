@@ -1,4 +1,3 @@
-
 ---
 import MiniCart from "./MiniCart.astro";
 import Logo from "../assets/logo.png";
@@ -37,7 +36,6 @@ const { navlinks } = Astro.props;
               </li>
             ))
           }
-          <li><LanguagePicker /></li>
         </ul>
       </div>
       <a href="/" class="px-2 btn btn-ghost normal-case">
@@ -56,9 +54,6 @@ const { navlinks } = Astro.props;
       </div>
     </div>
     <div class="lg:flex gap-2 navbar-end">
-      <span class="hidden lg:block">
-        <LanguagePicker />
-      </span>
       <MiniCart />
     </div>
   </div>

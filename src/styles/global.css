@@ -6,7 +6,7 @@
 
 @font-face {
   font-family: "TitanOne";
-  src: url("/TitanOne-Regular.woff2") format("woff");
+  src: url("/TitanOne-Regular.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
