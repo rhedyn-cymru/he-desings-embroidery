@@ -78,6 +78,26 @@ const queries = {
       }
     }
   `),
+  fetchReducedPriceProducts: graphql(/* GraphQL */ `
+    {
+      allProducts(filter: { isReducedPrice: { eq: true } }) {
+        id
+        title
+        slug
+        price
+				isReducedPrice
+        isCustomisable
+        category {
+          category
+        }
+        description
+        images {
+          url(imgixParams: { w: 600, h: 600, fit: crop, crop: focalpoint })
+          alt
+        }
+      }
+    }
+  `),
   fetchHomePage: graphql(/* GraphQL */ `
     {
       homepage {

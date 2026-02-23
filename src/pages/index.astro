@@ -13,9 +13,18 @@ import Logo from "../assets/logo.png";
 
 const homePageContent = await connector("fetchHomePage");
 const featuredProducts = await connector("fetchFeaturedProducts");
+const reducedPriceProducts = await connector("fetchReducedPriceProducts");
+
 const featuredProductsData = (featuredProducts as any)?.allProducts ?? [];
 
 const featuredPublicProducts = featuredProductsData.filter(
+  (product: any) =>
+    !product.category?.some(
+      (category: any) => category.category === "Theocratic",
+    ),
+);
+
+const reducedPricePublicProducts = reducedPriceProducts.allProducts.filter(
   (product: any) =>
     !product.category?.some(
       (category: any) => category.category === "Theocratic",
@@ -38,7 +47,12 @@ const lang = "en";
     <div class="absolute top-0 h-full w-full z-10">
       <section class="container h-full mx-auto">
         <div class="max-w-xl m-auto">
-          <img class="shadow-2xl shadow-base-100 p-6 md:p-24 rounded-xl mt-6 bg-base-100/20" src={Logo.src} alt="Stylised sewing machine logo" /></div>
+          <img
+            class="shadow-2xl shadow-base-100 p-6 md:p-24 rounded-xl mt-6 bg-base-100/20"
+            src={Logo.src}
+            alt="Stylised sewing machine logo"
+          />
+        </div>
       </section>
     </div>
   </div>
@@ -116,7 +130,9 @@ const lang = "en";
 
     <div class="relative z-10 container h-full mx-auto py-12">
       <div class="max-w-xl m-auto p-8 md:p-0">
-        <div class="w-full bg-base-100 rounded-xl p-6 md:p-24 [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl">
+        <div
+          class="w-full bg-base-100 rounded-xl p-6 md:p-24 [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl"
+        >
           <h2>{homePageContent.homepage.aboutTitle}</h2>
           <StructuredText
             data={homePageContent.homepage.aboutStructuredText}
@@ -139,4 +155,43 @@ const lang = "en";
       </div>
     </div>
   </section>
+  {
+    reducedPricePublicProducts.length && (
+      <div class="bg-base-100">
+        <div class="relative z-10 md:pt-12 pt-6 md:px-0 bg-base-100 container max-w-3xl mx-auto ">
+          <h2 class="text-2xl">Special offers:</h2>
+        </div>
+        <section
+          class="relative z-10 py-12 px-6 md:px-0 bg-base-100 container max-w-3xl mx-auto grid md:grid-cols-3 gap-4"
+          id="featured-products"
+        >
+          {reducedPricePublicProducts.map((product) => (
+            <article class="card bg-base-100 shadow-sm">
+              <a href={product.slug}>
+                {product.images && (
+                  <div class="product-images">
+                    {product.images.map((image) => (
+                      <figure>
+                        <img src={image.url} alt={image.alt} class="rounded" />
+                      </figure>
+                    ))}
+                  </div>
+                )}
+              </a>
+              <div class="card-body">
+                <h2 class="card-title">
+                  <a href={product.slug}>{product.title}</a>
+                </h2>
+                <p class="mb-4">{product.description}</p>
+                <div class="card-actions justify-between items-center">
+                  &pound;{product.price}
+                  <AddToCartButton product={product} price={product.price} />
+                </div>
+              </div>
+            </article>
+          ))}
+        </section>
+      </div>
+    )
+  }
 </Layout>
