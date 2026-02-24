@@ -5,17 +5,26 @@ export const CART_TOTAL = "carttotal";
 export const CLEAR_CART = "clearcart";
 export const REPLACE_CART = "replacecart";
 export const UPDATE_CART = "updatecart";
+
 /**
    *
    * Cart receives events and updates the cart
    *
    */
 function setStorageDefaults() {
-  if(localStorage.getItem(CART_ITEMS)) return;
-  localStorage.setItem(CART_ITEMS, JSON.stringify({ 
-    timestamp: Temporal.Now.instant().epochMilliseconds, 
-    items: [] 
-  }));
+  const CURRENT_VERSION =  window.__APPVERSION__;
+  const SAVED_VERSION = localStorage.getItem('app_version');
+
+  console.log(appCurrentVersion, SAVED_VERSION)
+
+  if (!SAVED_VERSION || SAVED_VERSION !== appCurrentVersion) {
+    localStorage.setItem('app_version', CURRENT_VERSION);  
+    localStorage.setItem(CART_ITEMS, JSON.stringify({
+      timestamp: Temporal.Now.instant().epochMilliseconds,
+      items: []
+    }));
+    return;
+  }
 }
 
 /**
@@ -23,21 +32,23 @@ function setStorageDefaults() {
  * @returns {Product[] | []}
  */
 function getCartItems() {
+  const CURRENT_VERSION = import.meta.env.PUBLIC_APP_VERSION || "000000";
+  const SAVED_VERSION = localStorage.getItem('app_version');
+
+  if (!SAVED_VERSION || SAVED_VERSION !== CURRENT_VERSION) {
+    setStorageDefaults();
+    return [];
+  }
+
   const cartItemsRaw = localStorage.getItem(CART_ITEMS);
   if (!cartItemsRaw) {
     setStorageDefaults();
     return [];
   }
-  try {
-    const { items, timestamp } = JSON.parse(cartItemsRaw);
-    const now = Temporal.Now.instant().epochMilliseconds;
-    const twoHoursInMs = 2 * 60 * 60 * 1000;
 
-    if ((now - timestamp) > twoHoursInMs) {
-      setStorageDefaults();
-      return [];
-    }
-    return items;
+  try {
+    const parsedCart = JSON.parse(cartItemsRaw);
+    return Array.isArray(parsedCart?.items) ? parsedCart.items : [];
 
   } catch {
     setStorageDefaults();
@@ -51,7 +62,7 @@ function getCartItems() {
  * @returns {number} 
  */
 function deriveCartTotal(cartItems) {
-  if(!cartItems || !Array.isArray(cartItems)) return 0;
+  if (!cartItems || !Array.isArray(cartItems)) return 0;
   const total = cartItems.reduce((sum, cartItem) => sum + (cartItem.price * cartItem.quantity), 0)
   return total;
 }
@@ -62,7 +73,7 @@ function deriveCartTotal(cartItems) {
  * @returns {number} 
  */
 function deriveCartItemQuantity(cartItems) {
-  if(!cartItems || !Array.isArray(cartItems)) return 0;
+  if (!cartItems || !Array.isArray(cartItems)) return 0;
   const total = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
   return total;
 }
