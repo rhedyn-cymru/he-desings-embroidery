@@ -3,26 +3,32 @@ import "../styles/global.css";
 
 import { SEO } from "astro-seo";
 import logoSimple from "../assets/logo.png";
-import { useTranslations } from "../i18n/utils"
+import { useTranslations } from "../i18n/utils";
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import retrieveData from "../components/datocms/connector";
 
-const { pageTitle, pageDescription, pageType, pageImage, pageUrl = "", locale } =
-  Astro.props;
-  
+const {
+  pageTitle,
+  pageDescription,
+  pageType,
+  pageImage,
+  pageUrl = "",
+  locale,
+} = Astro.props;
+
 const t = useTranslations(locale);
-const globalSEO = await retrieveData("fetchGlobalSeo")
+const globalSEO = await retrieveData("fetchGlobalSeo");
 
-const { globalSeo } = globalSEO._site
-const { fallbackSeo, titleSuffix } = globalSeo
-const { title, description, image } = fallbackSeo
+const { globalSeo } = globalSEO._site;
+const { fallbackSeo, titleSuffix } = globalSeo;
+const { title, description, image } = fallbackSeo;
 
-const metaTitle = pageTitle ? `${pageTitle} - ${title} ${titleSuffix}` : `Home - ${title} ${titleSuffix}`;
+const metaTitle = pageTitle
+  ? `${pageTitle} - ${title} ${titleSuffix}`
+  : `Home - ${title} ${titleSuffix}`;
 
-const metaDescription =
-  pageDescription ??
-  description;
+const metaDescription = pageDescription ?? description;
 
 const type = pageType ?? "Page";
 const shareImage = pageImage?.src ?? image.url;
@@ -30,7 +36,7 @@ const shareImage = pageImage?.src ?? image.url;
 const navLinks = [
   {
     title: t("Home"),
-    url: locale === 'en' ? `/` : `/${locale}/`,
+    url: locale === "en" ? `/` : `/${locale}/`,
   },
   {
     title: t("Products"),
@@ -46,19 +52,31 @@ const navLinks = [
   },
 ];
 
-const domain = "https://hedesigns.cymru"
-
+const domain = "https://hedesigns.cymru";
 ---
+
 <script>
-  import languageSwitcher  from "../components/language-switcher.js"
-  import addToCart from "../components/add-to-cart.js"
+  import languageSwitcher from "../components/language-switcher.js";
+  import addToCart from "../components/add-to-cart.js";
 
   window.addEventListener("DOMContentLoaded", () => {
-    addToCart()
-    languageSwitcher()
-    })
+    addToCart();
+    languageSwitcher();
+  });
+  const currentVersion = import.meta.env.PUBLIC_APP_VERSION;
+  const savedVersion = localStorage.getItem("site_version");
+
+  // If version has changed, or never existed
+  if (currentVersion && savedVersion !== currentVersion) {
+    console.log(`New version detected: ${currentVersion}. Clearing storage.`);
+
+    // Clear everything or specific keys
+    localStorage.clear();
+
+    // Set the new version so we don't clear again until the next deploy
+    localStorage.setItem("site_version", currentVersion);
+  }
 </script>
-<!doctype html>
 <html lang={locale}>
   <head>
     <meta charset="UTF-8" />
@@ -67,8 +85,14 @@ const domain = "https://hedesigns.cymru"
     <meta name="generator" content={Astro.generator} />
     <script async src="https://scripts.withcabin.com/hello.js"></script>
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="preload" href="/TitanOne-Regular.woff" as="font" type="font/woff" crossorigin="anonymous">
-    <link rel="preload" href={logoSimple.src} as="image">
+    <link
+      rel="preload"
+      href="/TitanOne-Regular.woff"
+      as="font"
+      type="font/woff"
+      crossorigin="anonymous"
+    />
+    <link rel="preload" href={logoSimple.src} as="image" />
     <SEO
       title={metaTitle}
       description={metaDescription}
@@ -78,7 +102,7 @@ const domain = "https://hedesigns.cymru"
           title: metaTitle,
           type,
           image: shareImage,
-          url: `${domain}/${locale}/${pageUrl}/`
+          url: `${domain}/${locale}/${pageUrl}/`,
         },
       }}
     />
