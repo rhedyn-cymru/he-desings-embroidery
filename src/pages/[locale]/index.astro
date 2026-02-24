@@ -12,10 +12,10 @@ export async function getStaticPaths() {
 const lang = getLangFromUrl(Astro.url);
 ---
 <Layout locale={lang} >
-  <section class="container" id="intro">
-    <h1 class="colour-special">Croeso &bull; Welcome</h1>
-    <p>dewiswch eich iaith &bull; Choose your language:</p>
-    <a href={`/cy/`}>Hafan - Cymraeg</a>
-    <a href={`/`}>Home - English</a>
+  <section class="container mx-auto h-full py-24 min-h-[80vh]" id="intro">
+    <h1 class="colour-special text-2xl mb-4">Croeso &bull; Welcome</h1>
+    <p class="mb-4">dewiswch eich iaith &bull; Choose your language:</p>
+    <a class="btn btn-primary m-2" href={`/cy/`}>Hafan - Cymraeg</a>
+    <a class="btn btn-primary m-2" href={`/`}>Home - English</a>
   </section>
 </Layout>

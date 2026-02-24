@@ -10,10 +10,14 @@ export async function getStaticPaths() {
 }
 
 const lang = getLangFromUrl(Astro.url);
+
+const prefix = lang === "en" ? "" : `/${lang}`
 ---
 <Layout locale={lang} pageTitle="Not Found" pageDescription="This page cannot be found">
-  <section class="container" id="intro">
-    <h1 class="colour-special">Not Found</h1>
-    <p>Sorry, no page was found for that route.</p>
+  <section class="container mx-auto h-full py-24 min-h-[80vh]" id="intro">
+    <h1 class="colour-special text-2xl mb-4">Not Found</h1>
+    <p class="mb-6">Sorry, no page was found for that route.</p>
+    <a href={`${lang}/products/`} class="btn btn-primary m-2">All products</a>
+    <a href={`${prefix}/`} class="btn m-2">Home page</a>
   </section>
 </Layout>
