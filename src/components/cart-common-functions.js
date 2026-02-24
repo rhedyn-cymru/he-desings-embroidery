@@ -12,12 +12,12 @@ export const UPDATE_CART = "updatecart";
    *
    */
 function setStorageDefaults() {
-  const CURRENT_VERSION = import.meta.env.PUBLIC_APP_VERSION || "000000";
+  const CURRENT_VERSION =  window.__APPVERSION__;
   const SAVED_VERSION = localStorage.getItem('app_version');
 
-  console.log(CURRENT_VERSION, SAVED_VERSION)
+  console.log(appCurrentVersion, SAVED_VERSION)
 
-  if (!SAVED_VERSION || SAVED_VERSION !== CURRENT_VERSION) {
+  if (!SAVED_VERSION || SAVED_VERSION !== appCurrentVersion) {
     localStorage.setItem('app_version', CURRENT_VERSION);  
     localStorage.setItem(CART_ITEMS, JSON.stringify({
       timestamp: Temporal.Now.instant().epochMilliseconds,

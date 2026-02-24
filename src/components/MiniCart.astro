@@ -3,8 +3,12 @@ import { useTranslations } from "../i18n/utils";
 
 const { locale = "en", position = "top" } = Astro.props;
 const t = useTranslations(locale)
----
 
+const appCurrentVersion = import.meta.env.PUBLIC_APP_VERSION;
+---
+<script define:vars={{ appCurrentVersion }}>
+  window.__APPVERSION__ = appCurrentVersion;
+</script>
 <script>
   import { UPDATE_CART } from "./cart-common-functions";
 
