@@ -6,6 +6,8 @@ import sitemap from "@astrojs/sitemap";
 
 import tailwindcss from "@tailwindcss/vite";
 
+const appVersion = process.env.PUBLIC_APP_VERSION || process.env.COMMIT_REF || "000000";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://hedesigns.cymru",
@@ -30,5 +32,8 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    define: {
+      "import.meta.env.PUBLIC_APP_VERSION": JSON.stringify(appVersion),
+    },
   },
 });
