@@ -63,19 +63,6 @@ const domain = "https://hedesigns.cymru";
     addToCart();
     languageSwitcher();
   });
-  const currentVersion = import.meta.env.PUBLIC_APP_VERSION;
-  const savedVersion = localStorage.getItem("site_version");
-
-  // If version has changed, or never existed
-  if (currentVersion && savedVersion !== currentVersion) {
-    console.log(`New version detected: ${currentVersion}. Clearing storage.`);
-
-    // Clear everything or specific keys
-    localStorage.clear();
-
-    // Set the new version so we don't clear again until the next deploy
-    localStorage.setItem("site_version", currentVersion);
-  }
 </script>
 <html lang={locale}>
   <head>
