@@ -91,7 +91,7 @@ const lang = "en";
       {
         featuredPublicProducts.slice(0, 3).map((product) => (
           <article class="card bg-base-100 shadow-sm">
-            <a href={`/${lang}/${product.slug}/`}>
+            <a href={`/${lang}/products/${product.slug}/`}>
               {product.images && (
                 <div class="product-images">
                     <figure>
@@ -165,7 +165,7 @@ const lang = "en";
         >
           {reducedPricePublicProducts.slice(0, 3).map((product) => (
             <article class="card bg-base-100 shadow-sm">
-              <a href={`/${lang}/${product.slug}/`}>
+              <a href={`/${lang}/products/${product.slug}/`}>
                 {product.images && (
                   <div class="product-images">
                       <figure>
@@ -176,7 +176,7 @@ const lang = "en";
               </a>
               <div class="card-body">
                 <h2 class="card-title">
-                  <a href={`/${lang}/${product.slug}/`}>{product.title}</a>
+                  <a href={`/${lang}/products/${product.slug}/`}>{product.title}</a>
                 </h2>
                 <p class="mb-4">{product.description}</p>
                 <div class="card-actions justify-between items-center">
