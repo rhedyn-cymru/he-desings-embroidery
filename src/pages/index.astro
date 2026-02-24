@@ -132,7 +132,8 @@ const lang = "en";
           class="w-full bg-base-100 rounded-xl p-6 md:p-24 [&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl"
         >
           <h2>{homePageContent.homepage.aboutTitle}</h2>
-          <StructuredText
+          <div class="[&_p]:text-md [&_p]:my-4 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl [&_ul]:ml-4 [&_ul]:list-disc">
+            <StructuredText
             data={homePageContent.homepage.aboutStructuredText}
             blockComponents={{
               ImageBlockRecord: ImageBlock,
@@ -149,6 +150,7 @@ const lang = "en";
               heading: HeadingWithAnchorLink,
             }}
           />
+          </div>
         </div>
       </div>
     </div>
