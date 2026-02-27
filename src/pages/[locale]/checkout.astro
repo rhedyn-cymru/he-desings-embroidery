@@ -47,7 +47,6 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
    * @param {HTMLElement} paymentForm
    */
   async function checkout(checkoutButton, paymentForm) {
-
     checkoutButton.disabled = true;
     checkoutButton.setAttribute("data-loading", "");
 
@@ -170,12 +169,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
         ? countryInput.value.trim()
         : "";
 
-    const hasShipping =
-      shippingName &&
-      shippingLine1 &&
-      shippingCity &&
-      shippingPostal &&
-      shippingCountry;
+    const hasShipping = shippingLine1 && shippingPostal;
 
     const { error } = await stripe.confirmPayment({
       elements,
@@ -193,20 +187,21 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
                   postal_code: shippingPostal,
                   country: shippingCountry,
                 },
-              },
             }
+          }
           : {}),
       },
     });
 
     if (error) {
       url.searchParams.set("success", "false");
+      console.error(JSON.stringify(error))
       window.history.replaceState({}, "", url);
       return;
     }
     url.searchParams.set("success", "true");
     window.history.replaceState({}, "", url);
-    window.dispatchEvent(new CustomEvent(CLEAR_CART))
+    window.dispatchEvent(new CustomEvent(CLEAR_CART));
   }
 
   window.addEventListener("DOMContentLoaded", () => {
@@ -278,7 +273,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
       viewProductsButton?.classList.remove("btn-ghost");
       return;
     }
-  
+
     checkoutButton.addEventListener("click", async () =>
       checkout(checkoutButton, paymentForm),
     );
@@ -296,6 +291,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
   function clearCart() {
     const url = new URL(window.location.href);
     const paymentSuccess = url.searchParams.get("redirect_status");
+    const apiSuccess = url.searchParams.get("success");
     const isSuccessful = paymentSuccess === "succeeded";
 
     const messageContainerSuccess = document.querySelector(
@@ -317,14 +313,13 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 
       quantityElement.innerText = "";
       costElement.innerText = "£00.00";
-      
 
       window.dispatchEvent(new CustomEvent(CLEAR_CART));
 
       messageContainerSuccess?.classList.remove("hidden");
       return;
     }
-    if (paymentSuccess) {
+    if (paymentSuccess || apiSuccess === "false") {
       messageContainerError?.classList.remove("hidden");
     }
   }
@@ -522,7 +517,7 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
               d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
             ></path>
           </svg>
-          <span>{t("There was a problem with payment")}.</span>
+          <span>{t("There was a problem with your payment. Please try again later")}.</span>
         </div>
         <div
           role="alert"
