@@ -40,7 +40,7 @@ const queries = {
   `),
   fetchAllProducts: graphql(/* GraphQL */ `
     {
-      allProducts {
+      allProducts(first:50) {
         id
         title
         slug
