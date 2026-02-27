@@ -26,7 +26,7 @@ const queries = {
   `),
   fetchAllPages: graphql(/* GraphQL */ `
     {
-      allPages {
+      allPages(first:50) {
         id
         title
         _status
