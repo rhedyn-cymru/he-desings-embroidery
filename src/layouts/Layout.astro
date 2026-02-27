@@ -57,6 +57,12 @@ const domain = "https://hedesigns.cymru"
     <link rel="icon" type="image/svg+xml" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
     <script async src="https://scripts.withcabin.com/hello.js"></script>
+    <script is:inline>
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+    </script>
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="preload" href="/TitanOne-Regular.woff" as="font" type="font/woff" crossorigin="anonymous">
     <link rel="preload" href={logoSimple.src} as="image">

@@ -1,11 +1,13 @@
 ---
 import MiniCart from "./MiniCart.astro";
 import Logo from "../assets/logo.png";
+import LightDark from "./LightDark.astro";
 
+const { nav } = Astro.props;
 const { navlinks } = Astro.props;
 ---
 
-<div class="navbar bg-base-100 shadow-sm mb-6">
+<div class="navbar bg-base-100 shadow-sm mb-6" id="light-dark">
   <div class="container mx-auto flex">
     <div class="flex-1 navbar-start">
       <div class="dropdown lg:hidden">
@@ -54,6 +56,7 @@ const { navlinks } = Astro.props;
         </ul>
       </nav>
     </div>
-    <MiniCart />
+    <LightDark />
+    <MiniCart nav={nav} />
   </div>
 </div>

@@ -1,7 +1,7 @@
 ---
 import { useTranslations } from "../i18n/utils";
 
-const { locale = "en", position = "top" } = Astro.props;
+const { locale = "en", position = "top", nav = "nav" } = Astro.props;
 const t = useTranslations(locale)
 ---
 
@@ -167,12 +167,12 @@ const t = useTranslations(locale)
     updateIndicators(0, 0)
   });
 </script>
-<div class={`dropdown dropdown-end ${position === "bottom" ? "dropdown-top" : ""}`}>
-  <div tabindex="0" role="button" class="btn btn-primary">
+<div class={`dropdown dropdown-end ${nav === "nav" ? "my-auto" : ""} ${position === "bottom" ? "dropdown-top" : ""}`}>
+  <div tabindex="0" role="button" class="btn btn-secondary">
     <div class="indicator flex gap-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5 text-secondary"
+        class="h-5 w-5 text-primary-content"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -199,7 +199,7 @@ const t = useTranslations(locale)
         >{t("Subtotal")}: &pound;<span id="total-cost-indicator">00.00</span></span
       >
       <div class="card-actions">
-        <a href={`/${locale}/your-cart`} class="btn btn-primary btn-block"
+        <a href={`/${locale}/your-cart`} class="btn btn-neutral btn-block"
           >{t("View cart")}</a
         >
       </div>

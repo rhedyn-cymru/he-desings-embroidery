@@ -1,7 +1,7 @@
 ---
 const { product, price, classes = "" } = Astro.props;
 
-const allClasses = `btn btn-primary ${classes}`.trim();
+const allClasses = `btn btn-secondary text-primary-content ${classes}`.trim();
 
 const productWithQuantity = {
   ...product,

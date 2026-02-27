@@ -1,7 +1,17 @@
 @import "tailwindcss";
  @plugin "daisyui" {
-   themes: coffee --default;
+  themes: caramellatte --default, coffee;
  }
+ @plugin "daisyui/theme" {
+  name: "caramellatte";
+  default: true;
+  --color-secondary: #da924e;
+  }
+  @plugin "daisyui/theme" {
+  name: "coffee";
+  default: false;
+  --color-secondary: #db924d;
+  }
 
 
 @font-face {
@@ -14,11 +24,15 @@
 
 h1,
 h2,
-h3.
+h3,
 .font-special {
   font-family: "TitanOne", sans-serif;
 }
 
 .hovertext {
   @apply hover:text-white transition-colors duration-300
+}
+
+* {
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
