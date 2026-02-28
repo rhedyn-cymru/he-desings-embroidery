@@ -92,6 +92,8 @@ function formatAsGbp(cost) {
 }
 
 function calculateShippingCost(itemsCount) {
+  if(itemsCount == 0) return 0
+  
   const costs = [
     {
       itemCount: 1,
