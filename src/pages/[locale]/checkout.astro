@@ -39,8 +39,9 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
 
   const cartItems = getCartItems();
   const cost = deriveCartTotal(cartItems);
-  const shipping = calculateShippingCost(cartItems);
-  
+  const quantity = deriveCartItemQuantity(cartItems);
+  const shipping = calculateShippingCost(quantity);
+
   const apiCartItems = cartItems.map(cartItem => ({
     id: cartItem.id,
     title: cartItem.title,
