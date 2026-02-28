@@ -51,8 +51,13 @@ export const handler = async (event) => {
     };
   }
   
-  const { amount = 0 } = payload
+  const { amount = 0, currency, cartItems } = payload;
+
   const amountParsed = Number(amount)
+  const cartItemsMetadataRaw = typeof cartItems === "string"
+    ? cartItems
+    : JSON.stringify(cartItems ?? {})
+  const cartItemsMetadata = cartItemsMetadataRaw.slice(0, 500)
 
   if (!Number.isFinite(amountParsed) || amountParsed <= 0) {
     return {
@@ -64,9 +69,12 @@ export const handler = async (event) => {
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      currency: "gbp",
+      currency: currency ?? "gbp",
       amount: Math.round(amountParsed),
       automatic_payment_methods: { enabled: true },
+      metadata: {
+        cartItems: cartItemsMetadata
+      }
     });
 
     return {

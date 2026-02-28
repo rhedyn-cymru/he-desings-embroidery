@@ -40,6 +40,14 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
   const cartItems = getCartItems();
   const cost = deriveCartTotal(cartItems);
   const shipping = calculateShippingCost(cartItems);
+  
+  const apiCartItems = cartItems.map(cartItem => ({
+    id: cartItem.id,
+    title: cartItem.title,
+    slug: cartItem.slug,
+    price: cartItem.price,
+    quantity: cartItem.quantity
+  }))
 
   /**
    *
@@ -59,7 +67,8 @@ const stripeKey = import.meta.env.VITE_PUBLIC_STRIPE_KEY;
         },
         body: JSON.stringify({
           amount: (cost + shipping) * 100,
-          currency: "GBP",
+          currency: "gbp",
+          cartItems: apiCartItems,
         }),
       });
 
